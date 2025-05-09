@@ -5,6 +5,7 @@ LINKFLAGS += -lglfw -ldl -lpthread -lX11 -lXxf86vm -lXrandr -lXi -lxcb # these a
 
 CFLAGS     =  -O2 -Wall -Wextra -Wshadow -Wconversion
 CFLAGS     += -std=gnu++20
+CFLAGS     += -std=gnu++20
 CC         = g++
 SRCS       = $(wildcard *.cpp) $(wildcard */*.cpp)
 OBJS       = $(SRCS:.cpp=.o)
@@ -13,8 +14,11 @@ PROG       = main
 SHADERS    = $(wildcard shader/*.glsl)
 SPVS       = $(SHADERS:.glsl=.spv)
 
+.PHONY: all debug clean depend clean
 
 all: $(SRCS) $(PROG)
+debug: CFLAGS += -D DEBUG -g
+debug: $(SRCS) $(PROG)
 
 $(PROG): $(OBJS) $(SPVS)
 	$(CC) $(CFLAGS) $(OBJS) -o $@ $(LINKFLAGS)

@@ -5,6 +5,7 @@
 #include <GLFW/glfw3native.h>
 
 #include "src/device.h"
+#include "src/instance.h"
 
 #include <iostream>
 #include <fstream>
@@ -52,38 +53,7 @@ int main()
     vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, nullptr);
     std::cout << extensionCount << " extensions supported\n";
 
-    VkInstance instance;
-    {
-        uint32_t glfwExtensionCount = 0;
-        const char **glfwExtensions;
-
-        glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
-
-        VkApplicationInfo appInfo = {
-            .sType = VK_STRUCTURE_TYPE_APPLICATION_INFO,
-            .pNext = nullptr,
-            .pApplicationName = "Hello Triangle",
-            .applicationVersion = VK_MAKE_VERSION(1, 0, 0),
-            .pEngineName = "None",
-            .engineVersion = VK_MAKE_VERSION(1, 0, 0),
-            .apiVersion = VK_API_VERSION_1_0,
-        };
-        VkInstanceCreateInfo createInfo{
-            .sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
-            .pNext = nullptr,
-            .flags = 0,
-            .pApplicationInfo = &appInfo,
-            .enabledLayerCount = 0,
-            .ppEnabledLayerNames = nullptr,
-            .enabledExtensionCount = glfwExtensionCount,
-            .ppEnabledExtensionNames = glfwExtensions,
-        };
-        VkResult result = vkCreateInstance(&createInfo, nullptr, &instance);
-        if (vkCreateInstance(&createInfo, nullptr, &instance) != VK_SUCCESS)
-        {
-            throw std::runtime_error("failed to create instance!");
-        }
-    }
+    VkInstance instance = initVulkanInstance();
     initVulkanDevice(instance);
 
     VkSurfaceKHR surface;
@@ -128,7 +98,7 @@ int main()
     vkDestroyShaderModule(logicalDevice, fragShaderModule, nullptr);
     vkDestroyShaderModule(logicalDevice, vertShaderModule, nullptr);
     vkDestroyDevice(logicalDevice, nullptr);
-    vkDestroyInstance(instance, nullptr);
+    destroyVulkanInstance(instance);
 
     return 0;
 }
