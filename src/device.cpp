@@ -1,9 +1,14 @@
 #include "device.h"
+#include "instance.h"
+#include "swap-chain.h"
+
+#include <set>
+#include <string>
 
 VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
 VkDevice logicalDevice = VK_NULL_HANDLE;
 
-QueueCollections::QueueCollections(VkPhysicalDevice device)
+QueueCollections::QueueCollections(VkPhysicalDevice device, VkSurfaceKHR surface)
 {
     uint32_t queueFamilyCount = 0;
     vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, nullptr);
@@ -18,34 +23,63 @@ QueueCollections::QueueCollections(VkPhysicalDevice device)
         {
             this->graphicsIndex = i;
         }
+        VkBool32 presentSupport = false;
+        vkGetPhysicalDeviceSurfaceSupportKHR(device, i, surface, &presentSupport);
+        if (presentSupport)
+        {
+            this->presentIndex = i;
+        }
         i++;
     }
 }
 
 bool QueueCollections::isComplete()
 {
-    return graphicsIndex.has_value();
+    return graphicsIndex.has_value() && presentIndex.has_value();
 }
 
 // Physical Device Selection
 
+// Check if device support all extension required, including GLFW
+bool checkDeviceExtensionSupport(VkPhysicalDevice device)
+{
+    uint32_t extensionCount;
+    vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, nullptr);
+
+    std::vector<VkExtensionProperties> availableExtensions(extensionCount);
+    vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, availableExtensions.data());
+
+    std::set<std::string> requiredExtensions(deviceExtensions.begin(), deviceExtensions.end());
+
+    for (const auto &extension : availableExtensions)
+    {
+        requiredExtensions.erase(extension.extensionName);
+    }
+
+    return requiredExtensions.empty();
+}
+
 // Check if a device is suitable for Vulkan.
 // Currently, it checks some basic properties.
-bool isDeviceSuitable(VkPhysicalDevice device)
+bool isDeviceSuitable(VkPhysicalDevice device, VkSurfaceKHR surface)
 {
-    QueueCollections indices(device);
+    QueueCollections indices(device, surface);
     VkPhysicalDeviceProperties deviceProperties;
     VkPhysicalDeviceFeatures deviceFeatures;
     vkGetPhysicalDeviceProperties(device, &deviceProperties);
     vkGetPhysicalDeviceFeatures(device, &deviceFeatures);
 
-    return deviceProperties.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU &&
-           deviceFeatures.geometryShader &&
-           indices.isComplete();
+    bool extensionsSupported = checkDeviceExtensionSupport(device);
+    bool swapChainAdequate = false;
+    if (extensionsSupported)
+    {
+        SwapChainSupportDetails swapChainSupport = querySwapChainSupport(device, surface);
+        swapChainAdequate = !swapChainSupport.formats.empty() && !swapChainSupport.presentModes.empty();
+    }
+    return indices.isComplete() && extensionsSupported && swapChainAdequate;
 }
-
 // Pick a suitable device according to `isDeviceSuitable`.
-void pickPhysicalDevice(VkInstance instance)
+void pickPhysicalDevice(VkInstance instance, VkSurfaceKHR surface)
 {
     uint32_t deviceCount = 0;
     vkEnumeratePhysicalDevices(instance, &deviceCount, nullptr);
@@ -58,7 +92,7 @@ void pickPhysicalDevice(VkInstance instance)
     vkEnumeratePhysicalDevices(instance, &deviceCount, devices.data());
     for (const auto &device : devices)
     {
-        if (isDeviceSuitable(device))
+        if (isDeviceSuitable(device, surface))
         {
             physicalDevice = device;
             return;
@@ -68,21 +102,28 @@ void pickPhysicalDevice(VkInstance instance)
     throw std::runtime_error("failed to find a suitable GPU!");
 }
 
-
 // Logical Device Initialization
 
-void createLogicalDevice()
+VkQueue createLogicalDevice(VkSurfaceKHR surface)
 {
-    QueueCollections collections(physicalDevice);
+    QueueCollections collections(physicalDevice, surface);
     float queuePriority[] = {1.0f};
-    VkDeviceQueueCreateInfo queueCreateInfo{
-        .sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO,
-        .pNext = nullptr,
-        .flags = 0,
-        .queueFamilyIndex = collections.graphicsIndex.value(),
-        .queueCount = 1,
-        .pQueuePriorities = queuePriority
-    };
+
+    std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
+    std::set<uint32_t> uniqueQueueIndices = {collections.graphicsIndex.value(), collections.presentIndex.value()};
+
+    for (uint32_t queueFamily : uniqueQueueIndices)
+    {
+        VkDeviceQueueCreateInfo queueCreateInfo{
+            .sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO,
+            .pNext = nullptr,
+            .flags = 0,
+            .queueFamilyIndex = queueFamily,
+            .queueCount = 1,
+            .pQueuePriorities = queuePriority
+        };
+        queueCreateInfos.push_back(queueCreateInfo);
+    }
 
     VkPhysicalDeviceFeatures deviceFeatures;
     vkGetPhysicalDeviceFeatures(physicalDevice, &deviceFeatures);
@@ -91,23 +132,27 @@ void createLogicalDevice()
         .sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,
         .pNext = nullptr,
         .flags = 0,
-        .queueCreateInfoCount = 1,
-        .pQueueCreateInfos = &queueCreateInfo,
+        .queueCreateInfoCount = static_cast<uint32_t>(queueCreateInfos.size()),
+        .pQueueCreateInfos = queueCreateInfos.data(),
         .enabledLayerCount = 0,
         .ppEnabledLayerNames = nullptr,
-        .enabledExtensionCount = 0, 
-        .ppEnabledExtensionNames = nullptr,
-        .pEnabledFeatures = &deviceFeatures
-    };
+        .enabledExtensionCount = static_cast<uint32_t>(deviceExtensions.size()),
+        .ppEnabledExtensionNames = deviceExtensions.data(),
+        .pEnabledFeatures = &deviceFeatures};
 
     if (vkCreateDevice(physicalDevice, &createInfo, nullptr, &logicalDevice) != VK_SUCCESS)
     {
         throw std::runtime_error("failed to create logical device!");
     }
+    
+    VkQueue presentQueue;
+    vkGetDeviceQueue(logicalDevice, collections.presentIndex.value(), 0, &presentQueue);
+
+    return presentQueue;
 }
 
-void initVulkanDevice(VkInstance instance)
+VkQueue initVulkanDevice(VkInstance instance, VkSurfaceKHR surface)
 {
-    pickPhysicalDevice(instance);
-    createLogicalDevice();
+    pickPhysicalDevice(instance, surface);
+    return createLogicalDevice(surface);
 }

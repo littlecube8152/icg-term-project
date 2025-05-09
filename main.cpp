@@ -4,8 +4,10 @@
 #define GLFW_EXPOSE_NATIVE_X11
 #include <GLFW/glfw3native.h>
 
+#include "src/window.h"
 #include "src/device.h"
 #include "src/instance.h"
+#include "src/swap-chain.h"
 
 #include <iostream>
 #include <fstream>
@@ -54,21 +56,9 @@ int main()
     std::cout << extensionCount << " extensions supported\n";
 
     VkInstance instance = initVulkanInstance();
-    initVulkanDevice(instance);
-
-    VkSurfaceKHR surface;
-    int screen_index = 0;
-    VkXcbSurfaceCreateInfoKHR createInfo = {
-        .sType = VK_STRUCTURE_TYPE_XCB_SURFACE_CREATE_INFO_KHR,
-        .pNext = nullptr,
-        .flags = 0,
-        .connection = xcb_connect(NULL, &screen_index),
-        .window = static_cast<xcb_window_t>(glfwGetX11Window(window))};
-
-    if (vkCreateXcbSurfaceKHR(instance, &createInfo, nullptr, &surface) != VK_SUCCESS)
-    {
-        throw std::runtime_error("failed to create window surface!");
-    }
+    auto surface = initVulkanWindowSurface(instance, window);
+    initVulkanDevice(instance, surface);
+    auto swapChain = createSwapChain(window, surface);
 
     auto vertShaderCode = readFile("shaders/vert.spv");
     auto fragShaderCode = readFile("shaders/frag.spv");
@@ -97,6 +87,7 @@ int main()
     glfwTerminate();
     vkDestroyShaderModule(logicalDevice, fragShaderModule, nullptr);
     vkDestroyShaderModule(logicalDevice, vertShaderModule, nullptr);
+    vkDestroySwapchainKHR(logicalDevice, swapChain, nullptr);
     vkDestroyDevice(logicalDevice, nullptr);
     destroyVulkanInstance(instance);
 
