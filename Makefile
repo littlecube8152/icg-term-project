@@ -1,7 +1,7 @@
 INCFLAGS   = -I /usr/include/GL
 
 LINKFLAGS  = -lvulkan
-LINKFLAGS += -lglfw -ldl -lpthread -lX11 -lXxf86vm -lXrandr -lXi # these are required by GLFW
+LINKFLAGS += -lglfw -ldl -lpthread -lX11 -lXxf86vm -lXrandr -lXi -lxcb # these are required by GLFW
 
 CFLAGS     =  -O2 -Wall -Wextra -Wshadow -Wconversion
 CFLAGS     += -std=gnu++20
