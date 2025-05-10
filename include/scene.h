@@ -4,6 +4,7 @@
 #include "GL/glew.h"
 
 #include "camera.h"
+#include "hittable_list.h"
 
 
 class Scene {
@@ -13,6 +14,7 @@ public:
 
 private:
     Camera camera;
+    HittableList world;
 };
 
 #endif

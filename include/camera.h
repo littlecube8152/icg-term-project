@@ -7,6 +7,7 @@
 #include "glm/glm.hpp"
 
 #include "ray.h"
+#include "hittable.h"
 
 
 class Camera {
@@ -14,7 +15,7 @@ public:
     void setImageDimension(int width, int height);
     void initViewport();
     Ray getRayToPixel(int x, int y);
-    glm::vec4 getRayColor(const Ray &ray);
+    glm::vec4 getRayColor(const Ray &ray, const Hittable &hittable);
 
 private:
     GLuint image_width;

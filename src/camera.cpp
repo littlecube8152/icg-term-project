@@ -32,8 +32,13 @@ Ray Camera::getRayToPixel(int x, int y) {
 }
 
 
-glm::vec4 Camera::getRayColor(const Ray &ray) {
-    float dotval = glm::dot(glm::normalize(ray.direction()), glm::vec3(0, 1, 0));
-    float ratio = (dotval + 1) / 2.0f;
-    return (1.0f - ratio) * glm::vec4(1, 1, 1, 1) + ratio * glm::vec4(0.5, 0.7, 1.0, 1.0);
+glm::vec4 Camera::getRayColor(const Ray &ray, const Hittable &hittable) {
+    HitRecord rec;
+    if (hittable.hit(ray, Interval::universe, rec)) {
+        return glm::vec4(1, 0, 0, 1);
+    } else {
+        float dotval = glm::dot(glm::normalize(ray.direction()), glm::vec3(0, 1, 0));
+        float ratio = (dotval + 1) / 2.0f;
+        return (1.0f - ratio) * glm::vec4(1, 1, 1, 1) + ratio * glm::vec4(0.5, 0.7, 1.0, 1.0);
+    }
 }
