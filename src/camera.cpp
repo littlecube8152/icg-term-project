@@ -3,7 +3,7 @@
 #include <vector>
 
 GLuint Camera::renderAsTexture(void) {
-    texture_data.resize(image_width * image_height * 4);
+    std::vector<GLubyte> texture_data(image_width * image_height * 4);
     int data_index = 0;
     for (GLuint y = 0; y < image_height; y++) {
         for (GLuint x = 0; x < image_width; x++) {

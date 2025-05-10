@@ -10,7 +10,6 @@ class Camera {
 public:
     GLuint image_width;
     GLuint image_height;
-    std::vector<GLubyte> texture_data;
 
     GLuint renderAsTexture(void);
 };

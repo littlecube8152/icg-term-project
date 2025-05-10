@@ -9,6 +9,9 @@
 #include "shaders.h"
 
 
+bool window_should_close = false;
+
+
 GLuint createWindowVao(GLuint shader) {
     GLuint vao;
     glGenVertexArrays(1, &vao);
@@ -52,6 +55,13 @@ GLuint createWindowVao(GLuint shader) {
 }
 
 
+void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
+    (void)window; (void)scancode; (void)mods;
+    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+        window_should_close = true;
+}
+
+
 int main(void)
 {
     GLFWwindow* window;
@@ -80,24 +90,27 @@ int main(void)
     Camera camera;
     camera.image_width = 640;
     camera.image_height = 480;
-    GLuint texture = camera.renderAsTexture();
 
     GLuint shader = loadShaderProgram();
     glUseProgram(shader);
+
     GLuint vao = createWindowVao(shader);
+    glBindVertexArray(vao);
+
+    GLuint texture = camera.renderAsTexture();
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, texture);
+    GLint u_texture = glGetUniformLocation(shader, "u_texture");
+    glUniform1i(u_texture, 0);
+
+    glfwSetKeyCallback(window, keyCallback);
 
     /* Loop until the user closes the window */
-    while (!glfwWindowShouldClose(window))
+    while (!window_should_close && !glfwWindowShouldClose(window))
     {
         /* Render here */
         glClear(GL_COLOR_BUFFER_BIT);
 
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, texture);
-        GLint u_texture = glGetUniformLocation(shader, "u_texture");
-        glUniform1i(u_texture, 0);
-        
-        glBindVertexArray(vao);
         glDrawArrays(GL_TRIANGLES, 0, 6);
 
         /* Swap front and back buffers */
