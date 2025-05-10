@@ -2,9 +2,54 @@
 
 #include <iostream>
 
+#include "GL/glew.h"
 #include "GLFW/glfw3.h"
 
 #include "camera.h"
+#include "shaders.h"
+
+
+GLuint createWindowVao(GLuint shader) {
+    GLuint vao;
+    glGenVertexArrays(1, &vao);
+    glBindVertexArray(vao);
+
+    GLfloat position_data[] = {
+        -1.0f, -1.0f,
+         1.0f, -1.0f,
+         1.0f,  1.0f,
+        -1.0f, -1.0f,
+        -1.0f,  1.0f,
+         1.0f,  1.0f,
+    };
+    GLuint vbo_position;
+    glGenBuffers(1, &vbo_position);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo_position);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(position_data), position_data, GL_STATIC_DRAW);
+    GLint a_position = glGetAttribLocation(shader, "a_position");
+    glEnableVertexAttribArray(a_position);
+    glVertexAttribPointer(a_position, 2, GL_FLOAT,  GL_FALSE, sizeof(GLfloat) * 2, 0);
+
+    GLfloat texcoord_data[] = {
+        0.0f, 0.0f,
+        1.0f, 0.0f,
+        1.0f, 1.0f,
+        0.0f, 0.0f,
+        0.0f, 1.0f,
+        1.0f, 1.0f,
+    };
+    GLuint vbo_texcoord;
+    glGenBuffers(1, &vbo_texcoord);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo_texcoord);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(texcoord_data), texcoord_data, GL_STATIC_DRAW);
+    GLint a_texcoord = glGetAttribLocation(shader, "a_texcoord");
+    glEnableVertexAttribArray(a_texcoord);
+    glVertexAttribPointer(a_texcoord, 2, GL_FLOAT,  GL_FALSE, sizeof(GLfloat) * 2, 0);
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
+    return vao;
+}
 
 
 int main(void)
@@ -26,10 +71,20 @@ int main(void)
     /* Make the window's context current */
     glfwMakeContextCurrent(window);
 
+    GLenum err = glewInit();
+    if (err != GLEW_OK) {
+        std::cerr << "Error: " << glewGetErrorString(err) << std::endl;
+        exit(1);
+    }
+
     Camera camera;
     camera.image_width = 640;
     camera.image_height = 480;
     GLuint texture = camera.renderAsTexture();
+
+    GLuint shader = loadShaderProgram();
+    glUseProgram(shader);
+    GLuint vao = createWindowVao(shader);
 
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window))
@@ -37,7 +92,13 @@ int main(void)
         /* Render here */
         glClear(GL_COLOR_BUFFER_BIT);
 
-        // todo: display the texture
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, texture);
+        GLint u_texture = glGetUniformLocation(shader, "u_texture");
+        glUniform1i(u_texture, 0);
+        
+        glBindVertexArray(vao);
+        glDrawArrays(GL_TRIANGLES, 0, 6);
 
         /* Swap front and back buffers */
         glfwSwapBuffers(window);

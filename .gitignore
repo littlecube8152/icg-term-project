@@ -1,5 +1,6 @@
 # built binaries
 build/
+shaders/*.h
 
 # editor stuff
 .vscode/

@@ -1,6 +1,7 @@
 INCFLAGS   = -I /usr/include/GL
 INCFLAGS   += -I dependencies/glfw/include
 INCFLAGS   += -I dependencies/glew/include
+INCFLAGS   += -I .
 
 LINKFLAGS  = -lGL -lGLU -lglut
 LINKFLAGS  += -L dependencies/glfw/lib -lglfw3
@@ -12,6 +13,8 @@ CC         = g++
 SRCS       = $(shell find src -name '*.cpp')
 OBJS       = $(SRCS:src/%.cpp=build/intermediates/%.o)
 PROG       = build/bin/main
+SHADER_SRCS = shaders/vertex.vert shaders/fragment.frag
+SHADER_HEADERS = $(SHADER_SRCS:%=%.h)
 
 all: $(SRCS) $(PROG)
 
@@ -23,8 +26,16 @@ build/intermediates/%.o: src/%.cpp
 	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) $< -c -o $@ $(INCFLAGS)
 
+build/intermediates/shaders.o: src/shaders.cpp $(SHADER_HEADERS)
+	@mkdir -p $(dir $@)
+	$(CC) $(CFLAGS) $< -c -o $@ $(INCFLAGS)
+
+shaders/%.h: shaders/%
+	xxd -i $< > $@
+
 depend:
 	makedepend $(INCFLAGS) -Y $(SRCS)
 
 clean:
 	rm -rf build
+	rm $(SHADER_HEADERS)
