@@ -1,2 +1,5 @@
 # built binaries
 build/
+
+# editor stuff
+.vscode/
