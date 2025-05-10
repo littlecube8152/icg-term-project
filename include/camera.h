@@ -12,10 +12,7 @@
 
 class Camera {
 public:
-    void setImageDimension(int width, int height);
-    void initViewport();
-    Ray getRayToPixel(int x, int y);
-    glm::vec4 getRayColor(const Ray &ray, const Hittable &hittable);
+    GLuint renderAsTexture(GLuint texture_width, GLuint texture_height, const Hittable &world);
 
 private:
     GLuint image_width;
@@ -29,6 +26,13 @@ private:
     glm::vec3 viewport_lower_left;
     glm::vec3 viewport_dx;
     glm::vec3 viewport_dy;
+    int sqrt_samples_per_pixel;
+
+    void setImageDimension(int width, int height);
+    void initViewport();
+    Ray getRayToPixel(float x, float y);
+    glm::vec4 getRayColor(const Ray &ray, const Hittable &hittable);
+    glm::vec4 getPixelColor(float x, float y, const Hittable &hittable);
 };
 
 #endif
