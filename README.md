@@ -1,7 +1,6 @@
 # Interactive Computer Graphics Term Project
 
-Requires OpenGL and GLUT.
-GLUT can be installed by
+Requires OpenGL, GLUT, GLFW, and GLEW. Install by
 ```sh
-apt install freeglut3-dev
+apt install freeglut3-dev libglfw3 libglfw3-dev libglew-dev
 ```

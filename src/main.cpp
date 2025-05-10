@@ -1,5 +1,3 @@
-// GLFW example code
-
 #include <iostream>
 
 #include "GL/glew.h"
