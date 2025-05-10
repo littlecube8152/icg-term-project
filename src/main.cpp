@@ -3,7 +3,7 @@
 #include "GL/glew.h"
 #include "GLFW/glfw3.h"
 
-#include "camera.h"
+#include "scene.h"
 #include "shaders.h"
 
 
@@ -85,9 +85,6 @@ int main(void)
         exit(1);
     }
 
-    Camera camera;
-    camera.image_width = 640;
-    camera.image_height = 480;
 
     GLuint shader = loadShaderProgram();
     glUseProgram(shader);
@@ -95,7 +92,8 @@ int main(void)
     GLuint vao = createWindowVao(shader);
     glBindVertexArray(vao);
 
-    GLuint texture = camera.renderAsTexture();
+    Scene scene;
+    GLuint texture = scene.renderAsTexture(640u, 480u);
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, texture);
     GLint u_texture = glGetUniformLocation(shader, "u_texture");
