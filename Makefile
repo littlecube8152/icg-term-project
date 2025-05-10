@@ -1,5 +1,6 @@
 INCFLAGS   = -I /usr/include/GL
 INCFLAGS   += -I .
+INCFLAGS   += -I include
 
 LINKFLAGS  = -lGL -lGLU -lglut -lglfw -lGLEW
 
