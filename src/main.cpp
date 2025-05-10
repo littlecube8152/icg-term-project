@@ -1,6 +1,11 @@
 // GLFW example code
 
-#include <GLFW/glfw3.h>
+#include <iostream>
+
+#include "GLFW/glfw3.h"
+
+#include "camera.h"
+
 
 int main(void)
 {
@@ -21,11 +26,18 @@ int main(void)
     /* Make the window's context current */
     glfwMakeContextCurrent(window);
 
+    Camera camera;
+    camera.image_width = 640;
+    camera.image_height = 480;
+    GLuint texture = camera.renderAsTexture();
+
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window))
     {
         /* Render here */
         glClear(GL_COLOR_BUFFER_BIT);
+
+        // todo: display the texture
 
         /* Swap front and back buffers */
         glfwSwapBuffers(window);
