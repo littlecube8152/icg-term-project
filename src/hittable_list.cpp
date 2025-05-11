@@ -1,19 +1,19 @@
 #include "hittable_list.h"
 
-
 HittableList::HittableList(): hittables() {}
 
-
+// Clears the list.
 void HittableList::clear() {
     hittables.clear();
 }
 
-
+// Add an object to the list.
 void HittableList::add(std::shared_ptr<Hittable> obj) {
     hittables.emplace_back(obj);
 }
 
-
+// Test if the ray `r` hits any element in the list.
+// If true, returns `true` and store the HitRecord in `rec`.
 bool HittableList::hit(const Ray &r, const Interval &ray_t, HitRecord &rec) const {
     HitRecord tmp_rec;
     bool hit_any = false;

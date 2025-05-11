@@ -1,6 +1,7 @@
 #include "camera.h"
 
 #include <vector>
+#include <numbers>
 
 
 void Camera::setImageDimension(int width, int height) {
@@ -18,7 +19,7 @@ void Camera::initViewport() {
     aspect_ratio = (float)image_width / (float)image_height;
     sqrt_samples_per_pixel = 5;
 
-    float tan_vfov2 = tanf(vfov / 2 / 180 * acosf(-1));
+    float tan_vfov2 = tanf(vfov / 2 / 180 * std::numbers::pi_v<float>);
     viewport_lower_left = -tan_vfov2 * aspect_ratio * lookright + -tan_vfov2 * lookup + lookat;
     viewport_dx = tan_vfov2 * 2 * aspect_ratio / (float)image_width * lookright;
     viewport_dy = tan_vfov2 * 2 / (float)image_height * lookup;

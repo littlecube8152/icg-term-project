@@ -9,7 +9,9 @@ class Ray {
     
         Ray(const glm::vec3& origin, const glm::vec3& direction) : orig(origin), dir(direction) {}
     
+        // Origin of the ray.
         const glm::vec3& origin() const  { return orig; }
+        // Direction vector of the ray.
         const glm::vec3& direction() const { return dir; }
     
         glm::vec3 at(float t) const {
@@ -17,8 +19,10 @@ class Ray {
         }
   
     private:
-      glm::vec3 orig;
-      glm::vec3 dir;
+        // Origin of the ray.
+        glm::vec3 orig;
+        // Direction vector of the ray.
+        glm::vec3 dir;
   };
 
 #endif

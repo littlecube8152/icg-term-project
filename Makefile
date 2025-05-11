@@ -2,7 +2,7 @@ INCFLAGS   = -I /usr/include/GL
 INCFLAGS   += -I .
 INCFLAGS   += -I include
 
-LINKFLAGS  = -lGL -lGLU -lglut -lglfw -lGLEW
+LINKFLAGS  = -lGL -lGLU -lglfw -lGLEW
 
 CFLAGS     =  -O2 -Wall -Wextra -Wshadow -Wconversion
 CFLAGS     += -std=gnu++20
@@ -24,8 +24,6 @@ build/intermediates/%.o: src/%.cpp
 	$(CC) $(CFLAGS) $< -c -o $@ $(INCFLAGS)
 
 build/intermediates/shaders.o: src/shaders.cpp $(SHADER_HEADERS)
-	@mkdir -p $(dir $@)
-	$(CC) $(CFLAGS) $< -c -o $@ $(INCFLAGS)
 
 shaders/%.h: shaders/%
 	xxd -i $< > $@

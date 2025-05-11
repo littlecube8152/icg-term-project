@@ -1,4 +1,7 @@
 #include <iostream>
+#include <string>
+
+using namespace std::string_literals;
 
 #include "GL/glew.h"
 #include "GLFW/glfw3.h"
@@ -54,7 +57,7 @@ GLuint createWindowVao(GLuint shader) {
 
 
 void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
-    (void)window; (void)scancode; (void)mods;
+    [](...){}(window, scancode, mods); // modern way to supress unused variable warning
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
         window_should_close = true;
 }
@@ -81,8 +84,7 @@ int main(void)
 
     GLenum err = glewInit();
     if (err != GLEW_OK) {
-        std::cerr << "Error: " << glewGetErrorString(err) << std::endl;
-        exit(1);
+        throw std::runtime_error("Error: "s + (const char*)glewGetErrorString(err));
     }
 
 
