@@ -33,4 +33,4 @@ depend:
 
 clean:
 	rm -rf build
-	rm $(SHADER_HEADERS)
+	rm -f $(SHADER_HEADERS)
