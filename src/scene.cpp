@@ -6,7 +6,8 @@
 
 
 Scene::Scene(): camera(), world() {
-    world.add(std::make_shared<Sphere>(glm::vec3(0, 0, -5), 2.0f));
+    world.add(std::make_shared<Sphere>(glm::vec3(0, 0, -1), 0.5f));
+    world.add(std::make_shared<Sphere>(glm::vec3(0, -100.5, -1), 100));
 }
 
 

@@ -34,3 +34,4 @@ float Interval::clamp(float x) const {
 
 const Interval Interval::empty    = Interval(+kInfinity, -kInfinity);
 const Interval Interval::universe = Interval(-kInfinity, +kInfinity);
+const Interval Interval::positive = Interval(         0, +kInfinity);

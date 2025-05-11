@@ -36,7 +36,7 @@ Ray Camera::getRayToPixel(float x, float y) {
 
 glm::vec4 Camera::getRayColor(const Ray &ray, const Hittable &hittable) {
     HitRecord rec;
-    if (hittable.hit(ray, Interval::universe, rec)) {
+    if (hittable.hit(ray, Interval::positive, rec)) {
         glm::vec3 n = (rec.normal + glm::vec3(1, 1, 1)) / 2.0f;
         return glm::vec4(n.r, n.g, n.b, 1.0f);
     } else {

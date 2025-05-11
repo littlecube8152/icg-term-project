@@ -17,7 +17,7 @@ bool Sphere::hit(const Ray &r, const Interval &ray_t, HitRecord &rec) const {
         return false;
 
     float lenr = glm::length(r.direction());
-    float t = glm::length(proj) / lenr;
+    float t = glm::dot(proj, r.direction()) / lenr;
     float dt = sqrtf(radius * radius - glm::length2(dist)) / lenr;
     float root;
     if (ray_t.surrounds(t - dt)) {

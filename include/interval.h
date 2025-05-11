@@ -15,7 +15,7 @@ public:
     bool surrounds(float x) const;
     float clamp(float x) const;
 
-    static const Interval empty, universe;
+    static const Interval empty, universe, positive;
 };
 
 #endif
