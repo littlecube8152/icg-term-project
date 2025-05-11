@@ -72,7 +72,9 @@ int main(void)
         return -1;
 
     /* Create a windowed mode window and its OpenGL context */
-    window = glfwCreateWindow(640, 480, "Hello World", NULL, NULL);
+    GLuint window_width = 640;
+    GLuint window_height = 480;
+    window = glfwCreateWindow(window_width, window_height, "Hello World", NULL, NULL);
     if (!window)
     {
         glfwTerminate();
@@ -95,7 +97,7 @@ int main(void)
     glBindVertexArray(vao);
 
     Scene scene;
-    GLuint texture = scene.renderAsTexture(640u, 480u);
+    GLuint texture = scene.renderAsTexture(window_width, window_height);
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, texture);
     GLint u_texture = glGetUniformLocation(shader, "u_texture");
