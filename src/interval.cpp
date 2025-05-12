@@ -3,8 +3,7 @@
 #include <algorithm>
 #include <cassert>
 
-const static float kInfinity = std::numeric_limits<float>::infinity();
-const static float kEpsilon  = 1e-3f;
+#include "constants.h"
 
 
 Interval::Interval() : Interval(Interval::empty) { }; // Default interval is empty

@@ -1,9 +1,6 @@
 #ifndef INTERVAL_H_
 #define INTERVAL_H_
 
-#include <limits>
-
-
 class Interval {
 public:
     float min, max;
