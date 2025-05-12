@@ -4,6 +4,7 @@
 #include "glm/glm.hpp"
 
 #include "hittable.h"
+#include "material.h"
 
 
 class Sphere: public Hittable {
@@ -14,6 +15,7 @@ public:
 private:
     glm::vec3 center;
     float radius;
+    std::shared_ptr<Material> mat;
 };
 
 #endif

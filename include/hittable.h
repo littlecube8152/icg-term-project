@@ -1,6 +1,8 @@
 #ifndef HITTABLE_H_
 #define HITTABLE_H_
 
+#include <memory>
+
 #include "glm/glm.hpp"
 
 #include "ray.h"
@@ -11,6 +13,8 @@ class HitRecord {
 public:
     glm::vec3 p;
     glm::vec3 normal;  // assumed to be unit-length
+    glm::vec4 attenuation;
+    Ray scattered;
     float t;
     bool front_face;
 

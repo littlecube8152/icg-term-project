@@ -5,7 +5,7 @@
 
 
 Sphere::Sphere(const glm::vec3 &_center, const float &_radius)
-    : center(_center), radius(_radius) {}
+    : center(_center), radius(_radius), mat(nullptr) {}
 
 
 bool Sphere::hit(const Ray &r, const Interval &ray_t, HitRecord &rec) const {
@@ -30,6 +30,8 @@ bool Sphere::hit(const Ray &r, const Interval &ray_t, HitRecord &rec) const {
 
     rec.t = root;
     rec.p = r.at(root);
+    if (mat.get())
+        mat->scatter(r, rec);
     rec.setFaceNormal(r, (rec.p - center) / radius);
 
     return true;
