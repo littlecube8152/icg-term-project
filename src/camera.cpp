@@ -21,7 +21,8 @@ void Camera::initViewport() {
     aspect_ratio = (float)image_width / (float)image_height;
     sqrt_samples_per_pixel = 5;
     max_recursion_depth = 10;
-
+    
+    pixel_samples_scale = 1.0f / (float)(sqrt_samples_per_pixel * sqrt_samples_per_pixel);
     float tan_vfov2 = tanf(vfov / 2 / 180 * std::numbers::pi_v<float>);
     viewport_lower_left = -tan_vfov2 * aspect_ratio * lookright + -tan_vfov2 * lookup + lookat;
     viewport_dx = tan_vfov2 * 2 * aspect_ratio / (float)image_width * lookright;
@@ -63,7 +64,24 @@ glm::vec4 Camera::getPixelColor(float x, float y, const Hittable &hittable) {
             pixel_color += getRayColor(sampled_ray, hittable, 1);
         }
     }
-    return pixel_color / (float)(sqrt_samples_per_pixel * sqrt_samples_per_pixel);
+    pixel_color *= pixel_samples_scale;
+    pixel_color = linear_to_gamma(pixel_color);
+    return pixel_color;
+}
+
+
+float Camera::linear_to_gamma(float linear_component) {
+    if (linear_component > 0.0f)
+        return std::sqrt(linear_component);
+    return 0.0f;
+}
+
+
+glm::vec4 Camera::linear_to_gamma(glm::vec4 color) {
+    color.r = linear_to_gamma(color.r);
+    color.g = linear_to_gamma(color.g);
+    color.b = linear_to_gamma(color.b);
+    return color;
 }
 
 
