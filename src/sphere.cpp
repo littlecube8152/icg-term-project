@@ -30,9 +30,9 @@ bool Sphere::hit(const Ray &r, const Interval &ray_t, HitRecord &rec) const {
 
     rec.t = root;
     rec.p = r.at(root);
+    rec.setFaceNormal(r, (rec.p - center) / radius);
     if (mat.get())
         mat->scatter(r, rec);
-    rec.setFaceNormal(r, (rec.p - center) / radius);
 
     return true;
 }
