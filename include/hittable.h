@@ -10,12 +10,12 @@
 class HitRecord {
 public:
     glm::vec3 p;
-    glm::vec3 normal;
+    glm::vec3 normal;  // assumed to be unit-length
     float t;
     bool front_face;
 
     // Set the normal of the hit face.
-    // Direction will be auto corrected.
+    // Direction will be auto corrected. outward_normal assumed to be unit-length
     void setFaceNormal(const Ray &r, const glm::vec3 &outward_normal) {
         front_face = glm::dot(r.direction(), outward_normal) < 0;
         normal = front_face ? outward_normal : -outward_normal;
