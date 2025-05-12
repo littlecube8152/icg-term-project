@@ -21,7 +21,7 @@ bool Dielectric::scatter(const Ray &r_in, HitRecord &rec) const {
         float cosine = glm::dot(-r_in.direction(), rec.normal);
         float r = reflectance(glm::min(cosine, 1.0f), real_eta);
         // reflect with probability (r), refract with probability (1 - r)
-        float rand_sample = (rand_unit_box<float>() + 1) / 2.0f;
+        float rand_sample = rand_unit_positive<float>();
         if (rand_sample < r) {
             rec.scattered = Ray(rec.p, reflected);
         } else {

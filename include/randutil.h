@@ -102,4 +102,24 @@ inline glm::vec1 rand_unit_hemisphere<glm::vec1>(const glm::vec1 &normal) {
     return glm::vec1(rand_unit_hemisphere<float>(normal.x));
 }
 
+
+// Generate vectors with each component in range [0, 1]
+template<FloatVector T>
+inline T rand_unit_positive() {
+    return T(rand_unit_positive<glm::vec<T::length() - 1, typename T::value_type>>(), rand_unit_positive<float>());
+}
+
+template<>
+inline float rand_unit_positive<float>() {
+    static std::random_device rd;
+    static std::mt19937 rng(rd());
+    static std::uniform_real_distribution<float> dist(0.0, 1.0);
+    return dist(rng);
+}
+
+template<>
+inline glm::vec1 rand_unit_positive<glm::vec1>() {
+    return glm::vec1(rand_unit_positive<float>());
+}
+
 #endif
