@@ -15,6 +15,9 @@ private:
     // Refractive index relative to air
     // i.e. [n_{material} / n_{air}] or [v_{air} / v_{material}]
     float eta;
+
+    // Schlick's approximation for reflectance
+    static float reflectance(const float &cosine, const float &eta);
 };
 
 #endif
