@@ -5,6 +5,9 @@
 #include <random>
 
 #include "glm/glm.hpp"
+#include "glm/gtc/epsilon.hpp"
+
+#include "constants.h"
 
 
 // 1 to 4 dimensional vectors with float value type
@@ -62,7 +65,13 @@ inline glm::vec1 rand_unit_sphere<glm::vec1>() {
 // Generate a random vector with length 1 (on the unit sphere)
 template<FloatVector T>
 inline T rand_unit_length() {
-    return glm::normalize(rand_unit_sphere<T>());
+    T result;
+    typename T::value_type length;
+    do {
+        result = rand_unit_sphere<T>();
+        length = glm::length(result);
+    } while(glm::epsilonEqual(length, 0.0f, kEpsilon));
+    return result / length;
 }
 
 template<>
