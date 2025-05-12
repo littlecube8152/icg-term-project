@@ -21,7 +21,6 @@ private:
     glm::vec3 lookfrom;
     glm::vec3 lookat;
     glm::vec3 lookup;
-    glm::vec3 lookright;
     float aspect_ratio;
     glm::vec3 viewport_lower_left;
     glm::vec3 viewport_dx;

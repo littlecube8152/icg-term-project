@@ -3,6 +3,8 @@
 #include <vector>
 #include <numbers>
 
+#include "glm/gtx/perpendicular.hpp"
+
 #include "randutil.h"
 
 
@@ -14,19 +16,23 @@ void Camera::setImageDimension(int width, int height) {
 
 void Camera::initViewport() {
     vfov = 90;
-    lookfrom = glm::vec3(0, 0, 0);
+    lookfrom = glm::vec3(-2, 2, 1);
     lookat = glm::vec3(0, 0, -1);
     lookup = glm::vec3(0, 1, 0);
-    lookright = glm::cross(lookat, lookup);
     aspect_ratio = (float)image_width / (float)image_height;
     sqrt_samples_per_pixel = 5;
     max_recursion_depth = 10;
+
+    // unit vectors in camera's coordinate system
+    glm::vec3 uz = glm::normalize(lookfrom - lookat);
+    glm::vec3 uy = glm::normalize(glm::perp(lookup, uz));
+    glm::vec3 ux = glm::cross(uy, uz);
     
     pixel_samples_scale = 1.0f / (float)(sqrt_samples_per_pixel * sqrt_samples_per_pixel);
     float tan_vfov2 = tanf(vfov / 2 / 180 * std::numbers::pi_v<float>);
-    viewport_lower_left = -tan_vfov2 * aspect_ratio * lookright + -tan_vfov2 * lookup + lookat;
-    viewport_dx = tan_vfov2 * 2 * aspect_ratio / (float)image_width * lookright;
-    viewport_dy = tan_vfov2 * 2 / (float)image_height * lookup;
+    viewport_lower_left = lookfrom + -tan_vfov2 * aspect_ratio * ux + -tan_vfov2 * uy - uz;
+    viewport_dx = tan_vfov2 * 2 * aspect_ratio / (float)image_width * ux;
+    viewport_dy = tan_vfov2 * 2 / (float)image_height * uy;
 }
 
 
