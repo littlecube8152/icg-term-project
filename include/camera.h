@@ -10,26 +10,33 @@
 #include "hittable.h"
 
 
-class Camera {
-public:
-    GLuint renderAsTexture(GLuint texture_width, GLuint texture_height, const Hittable &world);
-
-private:
+struct CameraConfig {
     GLuint image_width;
     GLuint image_height;
     float vfov;
     glm::vec3 lookfrom;
     glm::vec3 lookat;
     glm::vec3 lookup;
+    int sqrt_samples_per_pixel;
+    int max_recursion_depth;
+};
+
+
+class Camera {
+public:
+    Camera();
+    Camera(const CameraConfig &config);
+    GLuint renderAsTexture(const Hittable &world);
+
+private:
+    CameraConfig config;
     float aspect_ratio;
     glm::vec3 viewport_lower_left;
     glm::vec3 viewport_dx;
     glm::vec3 viewport_dy;
-    int sqrt_samples_per_pixel;
     float pixel_samples_scale;
-    int max_recursion_depth;
+    float pixel_samples_delta;
 
-    void setImageDimension(int width, int height);
     void initViewport();
     Ray getRayToPixel(float x, float y);
     glm::vec4 getRayColor(const Ray &ray, const Hittable &hittable, const int &recursion_depth);

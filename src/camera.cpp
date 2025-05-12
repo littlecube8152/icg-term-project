@@ -2,51 +2,50 @@
 
 #include <vector>
 #include <numbers>
+#include <iostream>
 
 #include "glm/gtx/perpendicular.hpp"
 
 #include "randutil.h"
 
 
-void Camera::setImageDimension(int width, int height) {
-    image_width = width;
-    image_height = height;
+Camera::Camera() {}
+
+
+Camera::Camera(const CameraConfig &_config) {
+    config = _config;
+    initViewport();
 }
 
 
 void Camera::initViewport() {
-    vfov = 20;
-    lookfrom = glm::vec3(13, 2, 3);
-    lookat = glm::vec3(0, 0, 0);
-    lookup = glm::vec3(0, 1, 0);
-    aspect_ratio = (float)image_width / (float)image_height;
-    sqrt_samples_per_pixel = 5;
-    max_recursion_depth = 10;
+    aspect_ratio = (float)config.image_width / (float)config.image_height;
+    pixel_samples_delta = 1.0f / (float)config.sqrt_samples_per_pixel;
 
     // unit vectors in camera's coordinate system
-    glm::vec3 uz = glm::normalize(lookfrom - lookat);
-    glm::vec3 uy = glm::normalize(glm::perp(lookup, uz));
+    glm::vec3 uz = glm::normalize(config.lookfrom - config.lookat);
+    glm::vec3 uy = glm::normalize(glm::perp(config.lookup, uz));
     glm::vec3 ux = glm::cross(uy, uz);
     
-    pixel_samples_scale = 1.0f / (float)(sqrt_samples_per_pixel * sqrt_samples_per_pixel);
-    float tan_vfov2 = tanf(vfov / 2 / 180 * std::numbers::pi_v<float>);
-    viewport_lower_left = lookfrom + -tan_vfov2 * aspect_ratio * ux + -tan_vfov2 * uy - uz;
-    viewport_dx = tan_vfov2 * 2 * aspect_ratio / (float)image_width * ux;
-    viewport_dy = tan_vfov2 * 2 / (float)image_height * uy;
+    pixel_samples_scale = 1.0f / (float)(config.sqrt_samples_per_pixel * config.sqrt_samples_per_pixel);
+    float tan_vfov2 = tanf(config.vfov / 2 / 180 * std::numbers::pi_v<float>);
+    viewport_lower_left = config.lookfrom + -tan_vfov2 * aspect_ratio * ux + -tan_vfov2 * uy - uz;
+    viewport_dx = tan_vfov2 * 2 * aspect_ratio / (float)config.image_width * ux;
+    viewport_dy = tan_vfov2 * 2 / (float)config.image_height * uy;
 }
 
 
 Ray Camera::getRayToPixel(float x, float y) {
     glm::vec3 pixel_position = glm::vec3(viewport_lower_left + viewport_dx * x + viewport_dy * y);
     return Ray(
-        lookfrom,
-        glm::normalize(pixel_position - lookfrom)
+        config.lookfrom,
+        glm::normalize(pixel_position - config.lookfrom)
     );
 }
 
 
 glm::vec4 Camera::getRayColor(const Ray &ray, const Hittable &hittable, const int &recursion_depth) {
-    if (recursion_depth > max_recursion_depth)
+    if (recursion_depth > config.max_recursion_depth)
         return glm::vec4(0.0, 0.0, 0.0, 1.0);
     HitRecord rec;
     if (hittable.hit(ray, Interval::positive, rec)) {
@@ -62,11 +61,10 @@ glm::vec4 Camera::getRayColor(const Ray &ray, const Hittable &hittable, const in
 
 
 glm::vec4 Camera::getPixelColor(float x, float y, const Hittable &hittable) {
-    float delta = 1.0f / (float)sqrt_samples_per_pixel;
     glm::vec4 pixel_color = glm::vec4(0, 0, 0, 0);
-    for (int dx = 0; dx < sqrt_samples_per_pixel; dx++) {
-        for (int dy = 0; dy < sqrt_samples_per_pixel; dy++) {
-            Ray sampled_ray = getRayToPixel(x + delta * (0.5f + (float)dx), y + delta * (0.5f + (float)dy));
+    for (int dx = 0; dx < config.sqrt_samples_per_pixel; dx++) {
+        for (int dy = 0; dy < config.sqrt_samples_per_pixel; dy++) {
+            Ray sampled_ray = getRayToPixel(x + pixel_samples_delta * (0.5f + (float)dx), y + pixel_samples_delta * (0.5f + (float)dy));
             pixel_color += getRayColor(sampled_ray, hittable, 1);
         }
     }
@@ -91,20 +89,18 @@ glm::vec4 Camera::linear_to_gamma(glm::vec4 color) {
 }
 
 
-GLuint Camera::renderAsTexture(GLuint texture_width, GLuint texture_height, const Hittable &world) {
-    setImageDimension(texture_width, texture_height);
-    initViewport();
-
-    std::vector<GLubyte> texture_data(texture_width * texture_height * 4);
+GLuint Camera::renderAsTexture(const Hittable &world) {
+    std::vector<GLubyte> texture_data(config.image_width * config.image_height * 4);
     int data_index = 0;
-    for (GLuint y = 0; y < texture_height; y++) {
-        for (GLuint x = 0; x < texture_width; x++) {
+    for (GLuint y = 0; y < config.image_height; y++) {
+        for (GLuint x = 0; x < config.image_width; x++) {
             glm::vec4 pixel_color = getPixelColor((float)x, (float)y, world);
             texture_data[data_index++] = (GLubyte)(pixel_color.r * 255);
             texture_data[data_index++] = (GLubyte)(pixel_color.g * 255);
             texture_data[data_index++] = (GLubyte)(pixel_color.b * 255);
             texture_data[data_index++] = (GLubyte)(pixel_color.a * 255);
         }
+        std::cerr << "Render progress " << (y + 1) << " / " << config.image_height << std::endl;
     }
 
     GLuint texture;
@@ -116,7 +112,7 @@ GLuint Camera::renderAsTexture(GLuint texture_width, GLuint texture_height, cons
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, texture_width, texture_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, texture_data.data());
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, config.image_width, config.image_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, texture_data.data());
 
     return texture;
 }

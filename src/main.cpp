@@ -96,8 +96,8 @@ int main(void)
     GLuint vao = createWindowVao(shader);
     glBindVertexArray(vao);
 
-    SceneRandomBalls scene;
-    GLuint texture = scene.renderAsTexture(window_width, window_height);
+    SceneRandomBalls scene(window_width, window_height);
+    GLuint texture = scene.renderAsTexture();
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, texture);
     GLint u_texture = glGetUniformLocation(shader, "u_texture");

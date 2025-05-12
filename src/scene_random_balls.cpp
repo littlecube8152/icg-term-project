@@ -7,7 +7,18 @@
 #include "randutil.h"
 
 
-SceneRandomBalls::SceneRandomBalls(): Scene() {
+SceneRandomBalls::SceneRandomBalls(GLuint texture_width, GLuint texture_height) {
+    camera = Camera((CameraConfig) {
+        .image_width = texture_width,
+        .image_height = texture_height,
+        .vfov = 20,
+        .lookfrom = glm::vec3(13, 2, 3),
+        .lookat = glm::vec3(0, 0, 0),
+        .lookup = glm::vec3(0, 1, 0),
+        .sqrt_samples_per_pixel = 5,
+        .max_recursion_depth = 10,
+    });
+
     auto material_ground = std::make_shared<Lambertian>(glm::vec4(0.5f, 0.5f, 0.5f, 1.0f));
     world.add(std::make_shared<Sphere>(glm::vec3(0, -1000, 0), 1000, material_ground));
 

@@ -10,7 +10,7 @@
 class Scene {
 public:
     Scene(void);
-    GLuint renderAsTexture(GLuint texture_width, GLuint texture_height);
+    GLuint renderAsTexture();
 
 protected:
     Camera camera;
@@ -20,13 +20,13 @@ protected:
 
 class SceneMaterialDemo: public Scene {
 public:
-    SceneMaterialDemo(void);
+    SceneMaterialDemo(GLuint texture_width, GLuint texture_height);
 };
 
 
 class SceneRandomBalls: public Scene {
 public:
-    SceneRandomBalls(void);
+    SceneRandomBalls(GLuint texture_width, GLuint texture_height);
 };
 
 #endif

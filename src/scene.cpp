@@ -5,12 +5,12 @@
 #include <iostream>
 
 
-Scene::Scene(): camera(), world() {}
+Scene::Scene(void) {}
 
 
-GLuint Scene::renderAsTexture(GLuint texture_width, GLuint texture_height) {
+GLuint Scene::renderAsTexture() {
     const auto start = std::chrono::high_resolution_clock::now();
-    GLuint texture = camera.renderAsTexture(texture_width, texture_height, world);
+    GLuint texture = camera.renderAsTexture(world);
     const auto end = std::chrono::high_resolution_clock::now();
     const std::chrono::duration<double> elapsed = end - start;
     std::cerr << "Frame time: " << elapsed << std::endl;
