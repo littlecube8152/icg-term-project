@@ -1,0 +1,40 @@
+#include "scene.h"
+
+#include "sphere.h"
+#include "lambertian.h"
+#include "metal.h"
+#include "dielectric.h"
+#include "randutil.h"
+
+
+SceneRandomBalls::SceneRandomBalls(): Scene() {
+    auto material_ground = std::make_shared<Lambertian>(glm::vec4(0.5f, 0.5f, 0.5f, 1.0f));
+    world.add(std::make_shared<Sphere>(glm::vec3(0, -1000, 0), 1000, material_ground));
+
+    for (int a = -11; a < 11; a++) {
+        for (int b = -11; b < 11; b++) {
+            glm::vec3 center(a + 0.4 * rand_unit_box<float>(), 0.2f, b + 0.4 * rand_unit_box<float>());
+            if (glm::length(center - glm::vec3(4, 0.2, 0)) > 0.9) {
+                auto mat_sample = std::abs(rand_unit_box<float>());
+                std::shared_ptr<Material> material_sphere;
+                if (mat_sample < 0.6) {
+                    auto albedo = glm::vec4(rand_unit_positive<glm::vec3>(), 1.0f) * glm::vec4(rand_unit_positive<glm::vec3>(), 1.0f);
+                    material_sphere = std::make_shared<Lambertian>(albedo);
+                } else if (mat_sample < 0.95) {
+                    auto albedo = glm::vec4(rand_unit_positive<glm::vec3>() / 2.0f + 0.5f, 1.0f);
+                    auto fuzz = rand_unit_positive<float>() / 2.0f;
+                    material_sphere = std::make_shared<Metal>(albedo, fuzz);
+                } else {
+                    material_sphere = std::make_shared<Dielectric>(1.50f);
+                }
+                world.add(std::make_shared<Sphere>(center, 0.2, material_sphere));
+            }
+        }
+    }
+    auto material1 = std::make_shared<Dielectric>(1.5);
+    world.add(std::make_shared<Sphere>(glm::vec4( 0.0f, 1.0f, 0.0f, 1.0f), 1.0f, material1));
+    auto material2 = std::make_shared<Lambertian>(glm::vec4(0.4f, 0.2f, 0.1f, 1.0f));
+    world.add(std::make_shared<Sphere>(glm::vec4(-4.0f, 1.0f, 0.0f, 1.0f), 1.0f, material2));
+    auto material3 = std::make_shared<Metal>(glm::vec4(0.7f, 0.6f, 0.5f, 1.0f), 0.0f);
+    world.add(std::make_shared<Sphere>(glm::vec4( 4.0f, 1.0f, 0.0f, 1.0f), 1.0f, material3));
+}

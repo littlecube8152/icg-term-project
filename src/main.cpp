@@ -72,8 +72,8 @@ int main(void)
         return -1;
 
     /* Create a windowed mode window and its OpenGL context */
-    GLuint window_width = 640;
-    GLuint window_height = 480;
+    GLuint window_width = 960;
+    GLuint window_height = 540;
     window = glfwCreateWindow(window_width, window_height, "Hello World", NULL, NULL);
     if (!window)
     {
@@ -96,7 +96,7 @@ int main(void)
     GLuint vao = createWindowVao(shader);
     glBindVertexArray(vao);
 
-    Scene scene;
+    SceneRandomBalls scene;
     GLuint texture = scene.renderAsTexture(window_width, window_height);
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, texture);

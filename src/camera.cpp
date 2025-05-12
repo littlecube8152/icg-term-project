@@ -15,9 +15,9 @@ void Camera::setImageDimension(int width, int height) {
 
 
 void Camera::initViewport() {
-    vfov = 90;
-    lookfrom = glm::vec3(-2, 2, 1);
-    lookat = glm::vec3(0, 0, -1);
+    vfov = 20;
+    lookfrom = glm::vec3(13, 2, 3);
+    lookat = glm::vec3(0, 0, 0);
     lookup = glm::vec3(0, 1, 0);
     aspect_ratio = (float)image_width / (float)image_height;
     sqrt_samples_per_pixel = 5;

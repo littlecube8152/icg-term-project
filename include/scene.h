@@ -12,9 +12,21 @@ public:
     Scene(void);
     GLuint renderAsTexture(GLuint texture_width, GLuint texture_height);
 
-private:
+protected:
     Camera camera;
     HittableList world;
+};
+
+
+class SceneMaterialDemo: public Scene {
+public:
+    SceneMaterialDemo(void);
+};
+
+
+class SceneRandomBalls: public Scene {
+public:
+    SceneRandomBalls(void);
 };
 
 #endif
