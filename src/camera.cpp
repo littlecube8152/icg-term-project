@@ -3,6 +3,8 @@
 #include <vector>
 #include <numbers>
 
+#include "randutil.h"
+
 
 void Camera::setImageDimension(int width, int height) {
     image_width = width;
@@ -18,6 +20,7 @@ void Camera::initViewport() {
     lookright = glm::cross(lookat, lookup);
     aspect_ratio = (float)image_width / (float)image_height;
     sqrt_samples_per_pixel = 5;
+    max_recursion_depth = 10;
 
     float tan_vfov2 = tanf(vfov / 2 / 180 * std::numbers::pi_v<float>);
     viewport_lower_left = -tan_vfov2 * aspect_ratio * lookright + -tan_vfov2 * lookup + lookat;
@@ -35,11 +38,14 @@ Ray Camera::getRayToPixel(float x, float y) {
 }
 
 
-glm::vec4 Camera::getRayColor(const Ray &ray, const Hittable &hittable) {
+glm::vec4 Camera::getRayColor(const Ray &ray, const Hittable &hittable, const int &recursion_depth) {
+    if (recursion_depth > max_recursion_depth)
+        return glm::vec4(0.0, 0.0, 0.0, 1.0);
     HitRecord rec;
     if (hittable.hit(ray, Interval::positive, rec)) {
-        glm::vec3 n = (rec.normal + glm::vec3(1, 1, 1)) / 2.0f;
-        return glm::vec4(n.r, n.g, n.b, 1.0f);
+        // Lambertian reflection
+        glm::vec3 new_dir = glm::normalize(rec.normal + rand_unit_length<glm::vec3>());
+        return 0.5f * getRayColor(Ray(rec.p, new_dir), hittable, recursion_depth + 1);
     } else {
         float dotval = glm::dot(glm::normalize(ray.direction()), glm::vec3(0, 1, 0));
         float ratio = (dotval + 1) / 2.0f;
@@ -54,7 +60,7 @@ glm::vec4 Camera::getPixelColor(float x, float y, const Hittable &hittable) {
     for (int dx = 0; dx < sqrt_samples_per_pixel; dx++) {
         for (int dy = 0; dy < sqrt_samples_per_pixel; dy++) {
             Ray sampled_ray = getRayToPixel(x + delta * (0.5f + (float)dx), y + delta * (0.5f + (float)dy));
-            pixel_color += getRayColor(sampled_ray, hittable);
+            pixel_color += getRayColor(sampled_ray, hittable, 1);
         }
     }
     return pixel_color / (float)(sqrt_samples_per_pixel * sqrt_samples_per_pixel);

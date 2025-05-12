@@ -27,11 +27,12 @@ private:
     glm::vec3 viewport_dx;
     glm::vec3 viewport_dy;
     int sqrt_samples_per_pixel;
+    int max_recursion_depth;
 
     void setImageDimension(int width, int height);
     void initViewport();
     Ray getRayToPixel(float x, float y);
-    glm::vec4 getRayColor(const Ray &ray, const Hittable &hittable);
+    glm::vec4 getRayColor(const Ray &ray, const Hittable &hittable, const int &recursion_depth);
     glm::vec4 getPixelColor(float x, float y, const Hittable &hittable);
 };
 

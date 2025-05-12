@@ -4,6 +4,7 @@
 #include <cassert>
 
 const static float kInfinity = std::numeric_limits<float>::infinity();
+const static float kEpsilon  = 1e-3;
 
 
 Interval::Interval() : Interval(Interval::empty) { }; // Default interval is empty
@@ -35,4 +36,4 @@ float Interval::clamp(float x) const {
 
 const Interval Interval::empty    = Interval(+kInfinity, -kInfinity);
 const Interval Interval::universe = Interval(-kInfinity, +kInfinity);
-const Interval Interval::positive = Interval(         0, +kInfinity);
+const Interval Interval::positive = Interval(+kEpsilon , +kInfinity);
