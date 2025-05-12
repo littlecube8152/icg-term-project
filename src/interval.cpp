@@ -4,7 +4,7 @@
 #include <cassert>
 
 const static float kInfinity = std::numeric_limits<float>::infinity();
-const static float kEpsilon  = 1e-3;
+const static float kEpsilon  = 1e-3f;
 
 
 Interval::Interval() : Interval(Interval::empty) { }; // Default interval is empty
