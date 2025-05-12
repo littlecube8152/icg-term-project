@@ -4,8 +4,8 @@
 #include "glm/gtx/norm.hpp"
 
 
-Sphere::Sphere(const glm::vec3 &_center, const float &_radius)
-    : center(_center), radius(_radius), mat(nullptr) {}
+Sphere::Sphere(const glm::vec3 &_center, const float &_radius, std::shared_ptr<Material> _mat)
+    : center(_center), radius(_radius), mat(_mat) {}
 
 
 bool Sphere::hit(const Ray &r, const Interval &ray_t, HitRecord &rec) const {
@@ -31,8 +31,7 @@ bool Sphere::hit(const Ray &r, const Interval &ray_t, HitRecord &rec) const {
     rec.t = root;
     rec.p = r.at(root);
     rec.setFaceNormal(r, (rec.p - center) / radius);
-    if (mat.get())
-        mat->scatter(r, rec);
+    rec.has_scattered = mat.get() ? mat->scatter(r, rec) : false;
 
     return true;
 }

@@ -13,10 +13,13 @@ class HitRecord {
 public:
     glm::vec3 p;
     glm::vec3 normal;  // assumed to be unit-length
-    glm::vec4 attenuation;
-    Ray scattered;
     float t;
     bool front_face;
+
+    // Is the ray bounced off the meterial?
+    bool has_scattered = false;
+    glm::vec4 attenuation;
+    Ray scattered;
 
     // Set the normal of the hit face.
     // Direction will be auto corrected. outward_normal assumed to be unit-length

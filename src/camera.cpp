@@ -44,9 +44,9 @@ glm::vec4 Camera::getRayColor(const Ray &ray, const Hittable &hittable, const in
         return glm::vec4(0.0, 0.0, 0.0, 1.0);
     HitRecord rec;
     if (hittable.hit(ray, Interval::positive, rec)) {
-        // Lambertian reflection
-        glm::vec3 new_dir = glm::normalize(rec.normal + rand_unit_length<glm::vec3>());
-        return 0.5f * getRayColor(Ray(rec.p, new_dir), hittable, recursion_depth + 1);
+        if (rec.has_scattered)
+            return rec.attenuation * getRayColor(rec.scattered, hittable, recursion_depth + 1);
+        return glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
     } else {
         float dotval = glm::dot(glm::normalize(ray.direction()), glm::vec3(0, 1, 0));
         float ratio = (dotval + 1) / 2.0f;
