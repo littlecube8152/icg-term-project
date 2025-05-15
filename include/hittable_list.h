@@ -13,7 +13,7 @@ public:
 
     void clear();
     void add(std::shared_ptr<Hittable> obj);
-    bool hit(const Ray &ray, const InertialFrame &frame, const Interval &valid_interval, HitRecord &record) const override;
+    bool hit(Ray &ray, const InertialFrame &frame, HitRecord &record) const override;
 
 private:
     std::vector<std::shared_ptr<Hittable>> hittables;

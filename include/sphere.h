@@ -10,7 +10,7 @@
 class Sphere: public Hittable {
 public:
     Sphere(const glm::vec3 &center, const float &radius, std::shared_ptr<Material> mat);
-    bool hit(const Ray &ray, const InertialFrame &frame, const Interval &valid_interval, HitRecord &record) const override;
+    bool hit(Ray &ray, const InertialFrame &frame, HitRecord &record) const override;
 
 private:
     glm::vec3 center;

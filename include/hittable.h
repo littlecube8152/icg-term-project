@@ -2,6 +2,7 @@
 #define HITTABLE_H_
 
 #include <memory>
+#include <iostream>
 
 #include "glm/glm.hpp"
 
@@ -15,7 +16,7 @@ class HitRecord {
 public:
     glm::vec3 p;
     glm::vec3 normal;  // assumed to be unit-length
-    float t;
+    float alpha;
     bool front_face;
 
     // Is the ray bounced off the meterial?
@@ -26,8 +27,9 @@ public:
     // Set the normal of the hit face.
     // Direction will be auto corrected. outward_normal assumed to be unit-length
     void setFaceNormal(const Ray &r, const glm::vec3 &outward_normal) {
-        front_face = glm::dot(r.velocity(), outward_normal) < 0;
+        front_face = glm::dot((glm::vec3)r.velocity(), outward_normal) < 0;
         normal = front_face ? outward_normal : -outward_normal;
+        normal = glm::normalize(normal);
     }
 };
 
@@ -35,8 +37,8 @@ public:
 class Hittable {
 public:
     virtual ~Hittable() = default;
-    // Ray is not transformed into the object frame
-    virtual bool hit(const Ray&, const InertialFrame&, const Interval&, HitRecord&) const = 0;
+    
+    virtual bool hit(Ray&, const InertialFrame&, HitRecord&) const = 0;
 };
 
 #endif

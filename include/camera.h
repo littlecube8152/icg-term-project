@@ -2,6 +2,7 @@
 #define CAMERA_H_
 
 #include <vector>
+#include <memory>
 
 #include "GL/gl.h"
 #include "glm/glm.hpp"
@@ -19,7 +20,7 @@ struct CameraConfig {
     glm::vec3 lookup;
     int sqrt_samples_per_pixel;
     int max_recursion_depth;
-    InertialFrame inertial_frame;
+    std::shared_ptr<InertialFrame> inertial_frame;
 };
 
 
@@ -40,7 +41,7 @@ private:
 
     void initViewport();
     Ray getRayToPixel(float x, float y);
-    glm::vec4 getRayColor(const Ray &ray, const Hittable &hittable, const int &recursion_depth);
+    glm::vec4 getRayColor(Ray &ray, const Hittable &hittable, const int &recursion_depth);
     glm::vec4 getPixelColor(float x, float y, const Hittable &hittable);
 
     // gamma 2 correction
