@@ -65,18 +65,18 @@ inline glm::vec1 rand_unit_sphere<glm::vec1>() {
 // Generate a random vector with length 1 (on the unit sphere)
 template<FloatVector T>
 inline T rand_unit_length() {
-    T result;
-    typename T::value_type length;
-    do {
-        result = rand_unit_sphere<T>();
-        length = glm::length(result);
-    } while(glm::epsilonEqual(length, 0.0f, kEpsilon));
-    return result / length;
+    T vec;
+    for (decltype(T::length()) i = 0; i < T::length(); i++)
+        vec[i] = rand_unit_length<typename T::value_type>();
+    return glm::normalize(vec);
 }
 
 template<>
 inline float rand_unit_length<float>() {
-    return rand_unit_box<float>() > 0.0f ? 1.0f : -1.0f;
+    static std::random_device rd;
+    static std::mt19937 rng(rd());
+    static std::normal_distribution<float> dist;
+    return dist(rng);
 }
 
 template<>
