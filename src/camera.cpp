@@ -48,12 +48,12 @@ glm::vec4 Camera::getRayColor(const Ray &ray, const Hittable &hittable, const in
     if (recursion_depth > config.max_recursion_depth)
         return glm::vec4(0.0, 0.0, 0.0, 1.0);
     HitRecord rec;
-    if (hittable.hit(ray, Interval::positive, rec)) {
+    if (hittable.hit(ray, config.inertial_frame, Interval::positive, rec)) {
         if (rec.has_scattered)
             return rec.attenuation * getRayColor(rec.scattered, hittable, recursion_depth + 1);
         return glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
     } else {
-        float dotval = glm::dot(glm::normalize(ray.direction()), glm::vec3(0, 1, 0));
+        float dotval = glm::dot(glm::normalize(ray.velocity()), glm::vec3(0, 1, 0));
         float ratio = (dotval + 1) / 2.0f;
         return (1.0f - ratio) * glm::vec4(1, 1, 1, 1) + ratio * glm::vec4(0.5, 0.7, 1.0, 1.0);
     }

@@ -8,7 +8,7 @@
 
 #include "ray.h"
 #include "hittable.h"
-
+#include "inertial.h"
 
 struct CameraConfig {
     GLuint image_width;
@@ -19,6 +19,7 @@ struct CameraConfig {
     glm::vec3 lookup;
     int sqrt_samples_per_pixel;
     int max_recursion_depth;
+    InertialFrame inertial_frame;
 };
 
 

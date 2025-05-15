@@ -12,18 +12,18 @@ void HittableList::add(std::shared_ptr<Hittable> obj) {
     hittables.emplace_back(obj);
 }
 
-// Test if the ray `r` hits any element in the list.
-// If true, returns `true` and store the HitRecord in `rec`.
-bool HittableList::hit(const Ray &r, const Interval &ray_t, HitRecord &rec) const {
-    HitRecord tmp_rec;
+// Test if the ray `ray` hits any element in the list.
+// If true, returns `true` and store the HitRecord in `record`.
+bool HittableList::hit(const Ray &ray, const InertialFrame &frame, const Interval &valid_interval, HitRecord &record) const {
+    HitRecord hit_result;
     bool hit_any = false;
-    Interval hit_t = ray_t;
+    Interval remaining_interval = valid_interval;
     
     for (const auto &obj : hittables) {
-        if (obj->hit(r, hit_t, tmp_rec)) {
+        if (obj->hit(ray, frame, remaining_interval, hit_result)) {
             hit_any = true;
-            hit_t.max = tmp_rec.t;
-            rec = tmp_rec;
+            remaining_interval.max = hit_result.t;
+            record = hit_result;
         }
     }
 

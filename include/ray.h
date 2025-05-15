@@ -2,28 +2,29 @@
 #define RAY_H_
 
 #include "glm/glm.hpp"
+#include "inertial.h"
 
 class Ray {
     public:
         Ray() {}
     
-        // direction assumed to be unit-length
-        Ray(const glm::vec3& origin, const glm::vec3& direction) : orig(origin), dir(direction) {}
+        // Velocity measured in light speed.
+        Ray(const glm::vec3& origin, const glm::vec3& direction) : _origin(origin), _velocity(direction) {}
     
         // Origin of the ray.
-        const glm::vec3& origin() const  { return orig; }
-        // Direction vector of the ray. assumed to be unit-length
-        const glm::vec3& direction() const { return dir; }
+        const glm::vec3& origin() const  { return _origin; }
+        // Velocity vector of the ray; measured in light speed.
+        const glm::vec3& velocity() const { return _velocity; }
     
         glm::vec3 at(float t) const {
-            return orig + t * dir;
+            return _origin + t * _velocity;
         }
-  
+        
     private:
         // Origin of the ray.
-        glm::vec3 orig;
-        // Direction vector of the ray. assumed to be unit-length
-        glm::vec3 dir;
+        glm::vec3 _origin;
+        // Velocity vector of the ray; measured in light speed.
+        glm::vec3 _velocity;
   };
 
 #endif

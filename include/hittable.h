@@ -7,8 +7,10 @@
 
 #include "ray.h"
 #include "interval.h"
+#include "inertial.h"
 
 
+// Always store the result in the camera's inertial frame
 class HitRecord {
 public:
     glm::vec3 p;
@@ -24,7 +26,7 @@ public:
     // Set the normal of the hit face.
     // Direction will be auto corrected. outward_normal assumed to be unit-length
     void setFaceNormal(const Ray &r, const glm::vec3 &outward_normal) {
-        front_face = glm::dot(r.direction(), outward_normal) < 0;
+        front_face = glm::dot(r.velocity(), outward_normal) < 0;
         normal = front_face ? outward_normal : -outward_normal;
     }
 };
@@ -33,7 +35,8 @@ public:
 class Hittable {
 public:
     virtual ~Hittable() = default;
-    virtual bool hit(const Ray &r, const Interval &ray_t, HitRecord &rec) const = 0;
+    // Ray is not transformed into the object frame
+    virtual bool hit(const Ray&, const InertialFrame&, const Interval&, HitRecord&) const = 0;
 };
 
 #endif

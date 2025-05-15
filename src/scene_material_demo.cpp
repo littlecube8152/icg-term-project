@@ -14,8 +14,9 @@ SceneMaterialDemo::SceneMaterialDemo(GLuint texture_width, GLuint texture_height
         .lookfrom = glm::vec3(0, 0, 0),
         .lookat = glm::vec3(0, 0, -1),
         .lookup = glm::vec3(0, 1, 0),
-        .sqrt_samples_per_pixel = 5,
+        .sqrt_samples_per_pixel = 4,
         .max_recursion_depth = 10,
+        .inertial_frame = InertialFrame(glm::vec3(0.8, 0.0, 0.0))
     });
 
     auto material_ground = std::make_shared<Lambertian>(glm::vec4(0.8f, 0.8f, 0.0f, 1.0f));
