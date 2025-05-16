@@ -8,7 +8,6 @@
 
 #include "ray.h"
 #include "interval.h"
-#include "inertial.h"
 
 
 // Always store the result in the camera's inertial frame
@@ -38,7 +37,7 @@ class Hittable {
 public:
     virtual ~Hittable() = default;
     
-    virtual bool hit(Ray&, const InertialFrame&, HitRecord&) const = 0;
+    virtual bool hit(Ray&, HitRecord&) const = 0;
 };
 
 #endif

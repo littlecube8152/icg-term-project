@@ -1,6 +1,6 @@
 #include "scene.h"
 
-#include "sphere.h"
+#include "objects.h"
 #include "lambertian.h"
 #include "metal.h"
 #include "dielectric.h"
@@ -11,12 +11,12 @@ SceneMaterialDemo::SceneMaterialDemo(GLuint texture_width, GLuint texture_height
         .image_width = texture_width,
         .image_height = texture_height,
         .vfov = 90,
-        .lookfrom = glm::vec3(0, 0, 5),
+        .lookfrom = glm::vec3(0, 0, 1),
         .lookat = glm::vec3(0, 0, 0),
         .lookup = glm::vec3(0, 1, 0),
         .sqrt_samples_per_pixel = 4,
         .max_recursion_depth = 10,
-        .inertial_frame = std::make_shared<InertialFrame>(glm::vec3(-0.5, 0.0, 0.0))
+        .inertial_frame = std::make_shared<InertialFrame>(glm::vec3(0.0, 0.0, 0.0))
     });
 
     auto material_ground = std::make_shared<Lambertian>(glm::vec4(0.8f, 0.8f, 0.0f, 1.0f));

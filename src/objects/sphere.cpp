@@ -1,4 +1,4 @@
-#include "sphere.h"
+#include "objects.h"
 #include "constants.h"
 
 #include "glm/gtx/projection.hpp"
@@ -10,7 +10,7 @@
 Sphere::Sphere(const glm::vec3 &_center, const float &_radius, std::shared_ptr<Material> _mat)
     : center(_center), radius(_radius), mat(_mat) {}
 
-bool Sphere::hit(Ray &ray, const InertialFrame &frame, HitRecord &record) const
+bool Sphere::hit(Ray &ray, HitRecord &record) const
 {
 
     // The closest point to the sphere on the ray
@@ -39,7 +39,7 @@ bool Sphere::hit(Ray &ray, const InertialFrame &frame, HitRecord &record) const
     record.alpha = hit;
     record.p = object_hit_space_time;
 
-    record.setFaceNormal(ray, frame.transformNormalFrom(object_space_frame, ((glm::vec3)ray.at(hit) - center) / radius));
+    record.setFaceNormal(ray, ((glm::vec3)ray.at(hit) - center) / radius);
     record.has_scattered = mat.get() ? mat->scatter(ray, record) : false;
 
     return true;

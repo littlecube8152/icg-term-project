@@ -29,4 +29,9 @@ public:
     SceneRandomBalls(GLuint texture_width, GLuint texture_height);
 };
 
+class SceneRelativityTest: public Scene {
+public:
+    SceneRelativityTest(GLuint texture_width, GLuint texture_height);
+};
+
 #endif

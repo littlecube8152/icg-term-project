@@ -49,7 +49,7 @@ glm::vec4 Camera::getRayColor(Ray &ray, const Hittable &hittable, const int &rec
     if (recursion_depth > config.max_recursion_depth)
         return glm::vec4(0.0, 0.0, 0.0, 1.0);
     HitRecord rec;
-    if (hittable.hit(ray, *config.inertial_frame, rec)) {
+    if (hittable.hit(ray, rec)) {
         if (rec.has_scattered)
             return rec.attenuation * getRayColor(rec.scattered, hittable, recursion_depth + 1);
         return glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);

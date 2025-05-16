@@ -1,6 +1,6 @@
 #include "scene.h"
 
-#include "sphere.h"
+#include "objects.h"
 #include "lambertian.h"
 #include "metal.h"
 #include "dielectric.h"
@@ -15,9 +15,9 @@ SceneRandomBalls::SceneRandomBalls(GLuint texture_width, GLuint texture_height) 
         .lookfrom = glm::vec3(13, 2, 3),
         .lookat = glm::vec3(0, 0, 0),
         .lookup = glm::vec3(0, 1, 0),
-        .sqrt_samples_per_pixel = 1,
-        .max_recursion_depth = 3,
-        .inertial_frame = std::make_shared<InertialFrame>(glm::vec3(0.2, 0.0, 0.0))
+        .sqrt_samples_per_pixel = 4,
+        .max_recursion_depth = 10,
+        .inertial_frame = std::make_shared<InertialFrame>(glm::vec3(0.0, 0.0, 0.0))
     });
 
     auto material_ground = std::make_shared<Lambertian>(glm::vec4(0.5f, 0.5f, 0.5f, 1.0f));

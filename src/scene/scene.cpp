@@ -5,7 +5,7 @@
 #include <iostream>
 
 
-Scene::Scene(void) {}
+Scene::Scene(void) : world(std::make_shared<InertialFrame>(object_space_frame)) {}
 
 
 GLuint Scene::renderAsTexture() {
