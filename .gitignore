@@ -4,3 +4,6 @@ shaders/*.h
 
 # editor stuff
 .vscode/
+
+# output images
+outputs/

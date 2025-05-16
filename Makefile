@@ -3,9 +3,11 @@ INCFLAGS   += -I .
 INCFLAGS   += -I include
 
 LINKFLAGS  = -lGL -lGLU -lglfw -lGLEW
+LINKFLAGS  += -lavcodec -lavformat -lavutil
 
 CFLAGS     =  -O2 -Wall -Wextra -Wshadow -Wconversion
 CFLAGS     += -std=gnu++20
+
 CC         = g++
 SRCS       = $(shell find src -name '*.cpp')
 OBJS       = $(SRCS:src/%.cpp=build/intermediates/%.o)
