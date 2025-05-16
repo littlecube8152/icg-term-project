@@ -54,7 +54,7 @@ glm::vec4 Camera::getRayColor(Ray &ray, const Hittable &hittable, const int &rec
             return rec.attenuation * getRayColor(rec.scattered, hittable, recursion_depth + 1);
         return glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
     } else {
-        float dotval = glm::dot(glm::normalize((glm::vec3)ray.velocity()), glm::vec3(0, 1, 0));
+        float dotval = glm::dot(ray.direction(), glm::vec3(0, 1, 0));
         float ratio = (dotval + 1) / 2.0f;
         return (1.0f - ratio) * glm::vec4(1, 1, 1, 1) + ratio * glm::vec4(0.5, 0.7, 1.0, 1.0);
     }

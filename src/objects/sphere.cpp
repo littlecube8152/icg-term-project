@@ -16,15 +16,15 @@ bool Sphere::hit(Ray &ray, HitRecord &record) const
     // The closest point to the sphere on the ray
     // Cast to vec3 extracts the first three component: xyz
     glm::vec3 origin_to_center = center - (glm::vec3)ray.origin();
-    glm::vec3 proj = glm::proj(origin_to_center, glm::normalize((glm::vec3)ray.velocity()));
+    glm::vec3 proj = glm::proj(origin_to_center, ray.direction());
     glm::vec3 closest = origin_to_center - proj;
 
     if (glm::length2(closest) > radius * radius)
         return false;
 
-    float ray_speed = glm::length((glm::vec3)ray.velocity());
+    float ray_speed = 1.0f; // glm::length(ray.direction()); but it is unit length
 
-    float alpha = glm::dot(proj, glm::normalize((glm::vec3)ray.velocity())) / ray_speed;
+    float alpha = glm::dot(proj, ray.direction()) / ray_speed;
     float d_alpha = sqrtf(radius * radius - glm::length2(closest)) / ray_speed;
 
     float hit;

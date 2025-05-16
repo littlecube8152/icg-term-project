@@ -26,7 +26,7 @@ public:
     // Set the normal of the hit face.
     // Direction will be auto corrected. outward_normal assumed to be unit-length
     void setFaceNormal(const Ray &r, const glm::vec3 &outward_normal) {
-        front_face = glm::dot((glm::vec3)r.velocity(), outward_normal) < 0;
+        front_face = glm::dot(r.direction(), outward_normal) < 0;
         normal = front_face ? outward_normal : -outward_normal;
         normal = glm::normalize(normal);
     }

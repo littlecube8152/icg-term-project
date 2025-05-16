@@ -26,7 +26,7 @@ bool Cube::hit(Ray &ray, HitRecord &record) const
         glm::vec3 normal = glm::normalize(glm::cross(vec_u, vec_v));
         float surface_level = glm::dot(surface_corner, normal);
         float origin_level = glm::dot((glm::vec3)ray.origin(), normal);
-        float alpha_level = glm::dot((glm::vec3)ray.velocity(), normal);
+        float alpha_level = glm::dot(ray.direction(), normal);
 
         if (fabs(alpha_level) < kEpsilon)
         {

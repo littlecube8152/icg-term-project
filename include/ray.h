@@ -14,8 +14,8 @@ class Ray
 private:
     // Origin of the ray.
     glm::vec4 ray_origin;
-    // Velocity vector of the ray; xyz are measured in light speed.
-    glm::vec4 ray_velocity;
+    // Direction vector of the ray. 
+    glm::vec3 ray_direction;
     // Inertial frame of the ray.
     std::shared_ptr<InertialFrame> ray_reference_frame;
 
@@ -25,14 +25,14 @@ public:
 
     Ray() {}
 
-    // Velocity measured in light speed.
-    Ray(const glm::vec3 &origin, const glm::vec3 &velocity, std::shared_ptr<InertialFrame> reference_frame)
-        : ray_origin(origin, 0.0f), ray_velocity(velocity, 1.0f), ray_reference_frame(reference_frame), interval(Interval::positive) {}
+    // Velocity measured in light speed (so it should be a unit vector).
+    Ray(const glm::vec3 &origin, const glm::vec3 &direction, std::shared_ptr<InertialFrame> reference_frame)
+        : ray_origin(origin, 0.0f), ray_direction(direction), ray_reference_frame(reference_frame), interval(Interval::positive) {}
 
     // Origin of the ray.
     const glm::vec4 &origin() const;
-    // Velocity vector of the ray; measured in light speed.
-    const glm::vec4 &velocity() const;
+    // Direction vector of the ray. Always an unit. That is, it is velocity measured in light speed.
+    const glm::vec3 &direction() const;
     // Inertial frame of the ray.
     const InertialFrame &referenceFrame() const;
     // Get shared_ptr of the Inertial frame of the ray.
