@@ -3,7 +3,8 @@
 
 using namespace std::string_literals;
 
-#include "GL/glew.h"
+#define GL_GLEXT_PROTOTYPES
+#include "GL/gl.h"
 #include "GLFW/glfw3.h"
 
 #include "scene.h"
@@ -83,12 +84,6 @@ int main(void)
 
     /* Make the window's context current */
     glfwMakeContextCurrent(window);
-
-    GLenum err = glewInit();
-    if (err != GLEW_OK) {
-        throw std::runtime_error("Error: "s + (const char*)glewGetErrorString(err));
-    }
-
 
     GLuint shader = loadShaderProgram();
     glUseProgram(shader);
