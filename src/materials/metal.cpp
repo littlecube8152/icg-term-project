@@ -1,4 +1,4 @@
-#include "metal.h"
+#include "materials.h"
 
 #include "randutil.h"
 #include "vecutil.h"

@@ -1,9 +1,7 @@
 #include "scene.h"
 
 #include "objects.h"
-#include "lambertian.h"
-#include "metal.h"
-#include "dielectric.h"
+#include "materials.h"
 
 
 SceneMaterialDemo::SceneMaterialDemo(GLuint texture_width, GLuint texture_height) {

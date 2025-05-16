@@ -1,4 +1,4 @@
-#include "lambertian.h"
+#include "materials.h"
 
 #include "glm/gtc/epsilon.hpp"
 

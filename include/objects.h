@@ -4,7 +4,7 @@
 #include "glm/glm.hpp"
 
 #include "hittable.h"
-#include "material.h"
+#include "materials.h"
 
 
 class Sphere: public Hittable {
