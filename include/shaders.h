@@ -1,7 +1,9 @@
 #ifndef SHADERS_H_
 #define SHADERS_H_
 
-#include "GL/glew.h"
+#define GL_GLEXT_PROTOTYPES
+#include "GL/gl.h"
+
 
 GLuint loadShaderProgram(void);
 

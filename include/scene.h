@@ -1,8 +1,6 @@
 #ifndef SCENE_H_
 #define SCENE_H_
 
-#include "GL/glew.h"
-
 #include "camera.h"
 #include "hittable_list.h"
 
