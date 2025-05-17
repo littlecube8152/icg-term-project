@@ -6,12 +6,14 @@
 #include <string>
 #include <memory>
 #include <exception>
+#include <initializer_list>
 
 #include "shaders/fragment.frag.h"
 #include "shaders/vertex.vert.h"
+#include "shaders/compute/main.comp.h"
 
 
-GLuint compileShader(GLuint type, const char* source, const int &source_length) {
+static GLuint compileShader(GLuint type, const char* source, const int &source_length) {
     GLuint shader = glCreateShader(type);
     glShaderSource(shader, 1, &source, &source_length);
     glCompileShader(shader);
@@ -31,13 +33,10 @@ GLuint compileShader(GLuint type, const char* source, const int &source_length) 
 }
 
 
-GLuint loadShaderProgram(void) {
+static GLuint createLinkedProgram(const std::initializer_list<GLuint> &shaders) {
     GLuint program = glCreateProgram();
-    GLuint vert_shader = compileShader(GL_VERTEX_SHADER, (const char*)shaders_vertex_vert, shaders_vertex_vert_len);
-    GLuint frag_shader = compileShader(GL_FRAGMENT_SHADER, (const char*)shaders_fragment_frag, shaders_fragment_frag_len);
-
-    glAttachShader(program, vert_shader);
-    glAttachShader(program, frag_shader);
+    for (auto &shader:shaders)
+        glAttachShader(program, shader);
     glLinkProgram(program);
 
     GLint link_status;
@@ -53,9 +52,23 @@ GLuint loadShaderProgram(void) {
     }
 
     glValidateProgram(program);
+    return program;
+}
 
+
+GLuint loadShaderProgram(void) {
+    GLuint vert_shader = compileShader(GL_VERTEX_SHADER, (const char*)shaders_vertex_vert, shaders_vertex_vert_len);
+    GLuint frag_shader = compileShader(GL_FRAGMENT_SHADER, (const char*)shaders_fragment_frag, shaders_fragment_frag_len);
+    GLuint program = createLinkedProgram({vert_shader, frag_shader});
     glDeleteShader(vert_shader);
     glDeleteShader(frag_shader);
+    return program;
+}
 
+
+GLuint loadPathTracerProgram(void) {
+    GLuint compute_shader = compileShader(GL_COMPUTE_SHADER, (const char*)shaders_compute_main_comp, shaders_compute_main_comp_len);
+    GLuint program = createLinkedProgram({compute_shader});
+    glDeleteShader(compute_shader);
     return program;
 }

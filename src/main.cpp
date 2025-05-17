@@ -85,21 +85,32 @@ int main(void)
     /* Make the window's context current */
     glfwMakeContextCurrent(window);
 
+    // render the scene into a texture with compute shaders
+    GLuint path_tracer = loadPathTracerProgram();
+    GLuint texture, texture_slot = 0;
+    glGenTextures(1, &texture);
+    glActiveTexture(GL_TEXTURE0 + texture_slot);
+    glBindTexture(GL_TEXTURE_2D, texture);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, window_width, window_height, 0, GL_RGBA, GL_FLOAT, nullptr);
+    glBindImageTexture(texture_slot, texture, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA32F);
+    glUseProgram(path_tracer);
+    glDispatchCompute(window_width, window_height, 1);
+    glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+
+    // setup shaders and triangles to be rendered
     GLuint shader = loadShaderProgram();
     glUseProgram(shader);
-
     GLuint vao = createWindowVao(shader);
     glBindVertexArray(vao);
+    glUniform1i(glGetUniformLocation(shader, "u_texture"), texture_slot);
 
     // SceneRandomBalls scene(window_width, window_height);
     // SceneMaterialDemo scene(window_width, window_height);
-    SceneRelativityTest scene(window_width, window_height);
-
-    GLuint texture = scene.renderAsTexture();
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, texture);
-    GLint u_texture = glGetUniformLocation(shader, "u_texture");
-    glUniform1i(u_texture, 0);
+    // SceneRelativityTest scene(window_width, window_height);
 
     glfwSetKeyCallback(window, keyCallback);
 

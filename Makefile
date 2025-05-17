@@ -10,7 +10,7 @@ CC         = g++
 SRCS       = $(shell find src -name '*.cpp')
 OBJS       = $(SRCS:src/%.cpp=build/intermediates/%.o)
 PROG       = build/bin/main
-SHADER_SRCS = shaders/vertex.vert shaders/fragment.frag
+SHADER_SRCS = shaders/vertex.vert shaders/fragment.frag shaders/compute/main.comp
 SHADER_HEADERS = $(SHADER_SRCS:%=%.h)
 
 all: $(SRCS) $(PROG)

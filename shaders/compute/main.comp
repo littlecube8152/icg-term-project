@@ -1,0 +1,15 @@
+#version 460 core
+
+layout (local_size_x = 1, local_size_y = 1, local_size_z = 1) in;
+layout (rgba32f) uniform image2D u_img_output;
+
+void main() {
+    vec4 color = vec4(0.0, 0.0, 0.0, 1.0);
+    ivec2 pixel_coord = ivec2(gl_GlobalInvocationID.xy);
+
+    color.r = float(pixel_coord.x) / gl_NumWorkGroups.x;
+    color.g = float(pixel_coord.y) / gl_NumWorkGroups.y;
+    color.b = float(gl_NumWorkGroups.x + gl_NumWorkGroups.y - pixel_coord.x - pixel_coord.y) / (gl_NumWorkGroups.x + gl_NumWorkGroups.y);
+
+    imageStore(u_img_output, pixel_coord, color);
+}
