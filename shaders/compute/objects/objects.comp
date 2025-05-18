@@ -1,0 +1,12 @@
+#include "compute/objects/sphere.comp"
+
+
+struct Object {
+    int object_type;
+    Sphere sphere;
+};
+
+
+bool Object_hit(Object object, Ray ray, out HitRecord record) {
+    return Sphere_hit(object.sphere, ray, record);
+}

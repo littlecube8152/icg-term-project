@@ -1,0 +1,46 @@
+#include "compute/constants.comp"
+#include "compute/globals.comp"
+#include "compute/vecutil.comp"
+#include "compute/interval.comp"
+#include "compute/ray.comp"
+#include "compute/hit_record.comp"
+
+
+void Camera_initViewport() {
+    camera.aspect_ratio = float(config.image_width) / float(config.image_height);
+    camera.pixel_samples_delta = 1.0f / float(config.sqrt_samples_per_pixel);
+
+    vec3 uz = normalize(config.lookfrom - config.lookat);
+    vec3 uy = normalize(perp_unit(config.lookup, uz));
+    vec3 ux = cross(uy, uz);
+
+    camera.pixel_samples_scale = 1.0f / float(config.sqrt_samples_per_pixel * config.sqrt_samples_per_pixel);
+    float tan_vfov2 = tan(config.vfov / 2 / 180 * kPi);
+    camera.viewport_lower_left = config.lookfrom + -tan_vfov2 * camera.aspect_ratio * ux + -tan_vfov2 * uy - uz;
+    camera.viewport_dx = tan_vfov2 * 2 * camera.aspect_ratio / float(config.image_width) * ux;
+    camera.viewport_dy = tan_vfov2 * 2 / float(config.image_height) * uy;
+}
+
+Ray Camera_getRayToPixel(float x, float y) {
+    vec3 pixel_position = vec3(camera.viewport_lower_left + camera.viewport_dx * x + camera.viewport_dy * y);
+    return Ray(
+        vec4(config.lookfrom, 0.0),
+        normalize(pixel_position - config.lookfrom),
+        Interval_positive
+    );
+}
+
+vec4 Camera_getRayColor(Ray ray) {
+    HitRecord record;
+    if (Object_hit(objects[0], ray, record)) {
+        return vec4(1, 0, 0, 1);
+    } else {
+        float dotval = dot(ray.direction, vec3(0, 1, 0));
+        float ratio = (dotval + 1) / 2.0f;
+        return (1.0f - ratio) * vec4(1, 1, 1, 1) + ratio * vec4(0.5, 0.7, 1.0, 1.0);
+    }
+}
+
+vec4 Camera_getPixelColor(ivec2 pixel_coord) {
+    return Camera_getRayColor(Camera_getRayToPixel(pixel_coord.x, pixel_coord.y));
+}
