@@ -25,7 +25,7 @@ struct HitRecord {
 
 struct Metal {
     vec4 albedo;
-    // float fuzz;
+    float fuzz;
 };
 
 struct Material {
