@@ -9,3 +9,5 @@ const float kPi = 3.1415926535897932384626433832795;
 
 
 const int kMaxObjects = 100;
+
+const int kMaxMaterials = 100;

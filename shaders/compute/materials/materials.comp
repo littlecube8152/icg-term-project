@@ -1,0 +1,7 @@
+#include "compute/ray.comp"
+#include "compute/materials/metal.comp"
+
+
+bool Material_scatter(int material_id, Ray ray, inout HitRecord record) {
+    return Metal_scatter(materials[material_id].metal, ray, record);
+}

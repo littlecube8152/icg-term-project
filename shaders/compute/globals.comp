@@ -1,5 +1,5 @@
+#include "compute/defs.comp"
 #include "compute/constants.comp"
-#include "compute/objects/objects.comp"
 
 
 struct CameraConfig {
@@ -25,3 +25,5 @@ struct Camera {
 
 int n_objects;
 Object objects[kMaxObjects];
+
+Material materials[kMaxMaterials];
