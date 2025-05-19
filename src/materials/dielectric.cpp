@@ -4,6 +4,7 @@
 
 #include "constants.h"
 #include "randutil.h"
+#include "shaders/compute/materials/material_types.h"
 
 
 Dielectric::Dielectric(const float &_eta): eta(_eta) {}
@@ -36,4 +37,14 @@ float Dielectric::reflectance(const float &cosine, const float &eta) {
     float r0 = (1 - eta) / (1 + eta);
     r0 = r0 * r0;
     return r0 + (1 - r0) * std::powf((1 - cosine), 5);
+}
+
+
+MaterialUniform Dielectric::toUniform() const {
+    MaterialUniform uniform;
+    uniform.material_type = MATERIAL_TYPE_DIELECTRIC;
+    uniform.dielectric = (DielectricUniform) {
+        .eta = eta,
+    };
+    return uniform;
 }

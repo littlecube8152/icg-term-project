@@ -1,0 +1,7 @@
+#ifndef SHADERS_COMPUTE_MACROS_H_
+#define SHADERS_COMPUTE_MACROS_H_
+
+#define MAX_OBJECTS   100
+#define MAX_MATERIALS 100
+
+#endif

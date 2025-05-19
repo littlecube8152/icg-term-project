@@ -6,8 +6,3 @@ const float kEpsilon  = 1e-3f;
 const float kSpeedOfLight = 299792458.0f;
 
 const float kPi = 3.1415926535897932384626433832795;
-
-
-const int kMaxObjects = 100;
-
-const int kMaxMaterials = 100;

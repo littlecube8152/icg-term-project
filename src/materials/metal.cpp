@@ -2,6 +2,7 @@
 
 #include "randutil.h"
 #include "vecutil.h"
+#include "shaders/compute/materials/material_types.h"
 
 
 Metal::Metal(const glm::vec4 &_albedo, const float &_fuzz): albedo(_albedo), fuzz(_fuzz) {}
@@ -13,4 +14,15 @@ bool Metal::scatter(const Ray &r_in, HitRecord &rec) const {
     rec.scattered = Ray(rec.p, reflected, r_in.referenceFramePtr());
     rec.attenuation = albedo;
     return glm::dot(reflected, rec.normal) > 0.0f;
+}
+
+
+MaterialUniform Metal::toUniform() const {
+    MaterialUniform uniform;
+    uniform.material_type = MATERIAL_TYPE_METAL;
+    uniform.metal = (MetalUniform) {
+        .albedo = albedo,
+        .fuzz = fuzz,
+    };
+    return uniform;
 }
