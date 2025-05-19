@@ -36,7 +36,7 @@ bool Camera_hitAllObjects(Ray ray, out HitRecord record) {
     HitRecord hit_result;
     bool hit_any = false;
     for (int i = 0; i < n_objects; i++) {
-        if (Object_hit(objects[i], ray, hit_result)) {
+        if (Object_hit(i, ray, hit_result)) {
             hit_any = true;
             ray.interval.max = hit_result.alpha;
             record = hit_result;

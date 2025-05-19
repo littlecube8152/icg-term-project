@@ -1,4 +1,6 @@
 #include "compute/ray.comp"
+#include "compute/globals.comp"
+#include "compute/materials/material_types.h"
 #include "compute/materials/metal.comp"
 #include "compute/materials/lambertian.comp"
 #include "compute/materials/dielectric.comp"
@@ -6,11 +8,11 @@
 
 bool Material_scatter(int material_id, Ray ray, inout HitRecord record) {
     switch (materials[material_id].material_type) {
-        case 1:
+        case MATERIAL_TYPE_METAL:
             return Metal_scatter(materials[material_id].metal, ray, record);
-        case 2:
+        case MATERIAL_TYPE_LAMBERTIAN:
             return Lambertian_scatter(materials[material_id].lambertian, ray, record);
-        case 3:
+        case MATERIAL_TYPE_DIELECTRIC:
             return Dielectric_scatter(materials[material_id].dielectric, ray, record);
         default:
             return false;

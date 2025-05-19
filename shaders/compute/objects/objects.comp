@@ -1,6 +1,14 @@
+#include "compute/ray.comp"
+#include "compute/globals.comp"
+#include "compute/objects/object_types.h"
 #include "compute/objects/sphere.comp"
 
 
-bool Object_hit(Object object, Ray ray, out HitRecord record) {
-    return Sphere_hit(object.sphere, ray, record);
+bool Object_hit(int object_id, Ray ray, out HitRecord record) {
+    switch (objects[object_id].object_type) {
+        case OBJECT_TYPE_SPHERE:
+            return Sphere_hit(objects[object_id].sphere, ray, record);
+        default:
+            return false;
+    }
 }
