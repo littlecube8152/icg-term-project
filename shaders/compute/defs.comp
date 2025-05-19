@@ -32,10 +32,15 @@ struct Lambertian {
     vec4 albedo;
 };
 
+struct Dielectric {
+    float eta;
+};
+
 struct Material {
     int material_type;
     Metal metal;
     Lambertian lambertian;
+    Dielectric dielectric;
 };
 
 

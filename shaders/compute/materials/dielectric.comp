@@ -1,0 +1,31 @@
+#include "compute/constants.comp"
+#include "compute/ray.comp"
+#include "compute/interval.comp"
+#include "compute/random.comp"
+
+
+float Dielectric_reflectance(float cosine, float eta) {
+    float r0 = (1 - eta) / (1 + eta);
+    r0 = r0 * r0;
+    return r0 + (1 - r0) * pow((1 - cosine), 5);
+}
+
+bool Dielectric_scatter(Dielectric dielectric, Ray ray, inout HitRecord record) {
+    record.attenuation = vec4(1, 1, 1, 1);
+    float real_eta = record.front_face ? (1.0f / dielectric.eta) : dielectric.eta;
+    vec3 refracted = refract(ray.direction, record.normal, real_eta);
+    vec3 reflected = reflect(ray.direction, record.normal);
+    if (abs(length(refracted)) < kEpsilon) {
+        record.scattered_ray = Ray(vec4(record.coord, 0.0f), reflected, Interval_positive);
+    } else {
+        float cosine = dot(-ray.direction, record.normal);
+        float r = Dielectric_reflectance(min(cosine, 1.0f), real_eta);
+        float rand_sample = Random_float_unitPositive();
+        if (rand_sample < r) {
+            record.scattered_ray = Ray(vec4(record.coord, 0.0f), reflected, Interval_positive);
+        } else {
+            record.scattered_ray = Ray(vec4(record.coord, 0.0f), refracted, Interval_positive);
+        }
+    }
+    return true;
+}
