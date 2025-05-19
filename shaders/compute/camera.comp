@@ -21,8 +21,8 @@ void Camera_initViewport() {
     camera.viewport_dy = tan_vfov2 * 2 / float(config.image_height) * uy;
 }
 
-Ray Camera_getRayToPixel(float x, float y) {
-    vec3 pixel_position = vec3(camera.viewport_lower_left + camera.viewport_dx * x + camera.viewport_dy * y);
+Ray Camera_getRayToPixel(vec2 pixel_coord) {
+    vec3 pixel_position = vec3(camera.viewport_lower_left + camera.viewport_dx * pixel_coord.x + camera.viewport_dy * pixel_coord.y);
     return Ray(
         vec4(config.lookfrom, 0.0),
         normalize(pixel_position - config.lookfrom),
@@ -30,17 +30,50 @@ Ray Camera_getRayToPixel(float x, float y) {
     );
 }
 
-vec4 Camera_getRayColor(Ray ray) {
-    HitRecord record;
-    if (Object_hit(objects[0], ray, record)) {
-        return vec4(1, 0, 0, 1);
-    } else {
-        float dotval = dot(ray.direction, vec3(0, 1, 0));
-        float ratio = (dotval + 1) / 2.0f;
-        return (1.0f - ratio) * vec4(1, 1, 1, 1) + ratio * vec4(0.5, 0.7, 1.0, 1.0);
+bool Camera_hitAllObjects(Ray ray, out HitRecord record) {
+    // TODO: relativistic transformation on ray
+    HitRecord hit_result;
+    bool hit_any = false;
+    for (int i = 0; i < n_objects; i++) {
+        if (Object_hit(objects[i], ray, hit_result)) {
+            hit_any = true;
+            ray.interval.max = hit_result.alpha;
+            record = hit_result;
+        }
     }
+    return hit_any;
+}
+
+vec4 Camera_getRayColor(Ray ray) {
+    vec4 accum_attenuation = vec4(1, 1, 1, 1);
+    HitRecord record;
+    for (int depth = 0; depth < config.max_recursion_depth; depth++) {
+        if (!Camera_hitAllObjects(ray, record)) {
+            float dotval = dot(ray.direction, vec3(0, 1, 0));
+            float ratio = (dotval + 1) / 2.0f;
+            vec4 sky_color = (1.0f - ratio) * vec4(1, 1, 1, 1) + ratio * vec4(0.5, 0.7, 1.0, 1.0);
+            return accum_attenuation * sky_color;
+        }
+        if (!record.has_scattered) {
+            return vec4(0, 0, 0, 1);
+        }
+        accum_attenuation *= record.attenuation;
+        ray = record.scattered_ray;
+    }
+    return vec4(0, 0, 0, 1);
 }
 
 vec4 Camera_getPixelColor(ivec2 pixel_coord) {
-    return Camera_getRayColor(Camera_getRayToPixel(pixel_coord.x, pixel_coord.y));
+    vec4 pixel_color = vec4(0, 0, 0, 0);
+    for (int dx = 0; dx < config.sqrt_samples_per_pixel; dx++) {
+        for (int dy = 0; dy < config.sqrt_samples_per_pixel; dy++) {
+            Ray sampled_ray = Camera_getRayToPixel(
+                vec2(pixel_coord) + camera.pixel_samples_delta * vec2(dx, dy)
+            );
+            pixel_color += Camera_getRayColor(sampled_ray);
+        }
+    }
+    pixel_color *= camera.pixel_samples_scale;
+    pixel_color = sqrt(pixel_color);
+    return pixel_color;
 }
