@@ -24,11 +24,7 @@ void Camera_initViewport() {
 
 Ray Camera_getRayToPixel(vec2 pixel_coord) {
     vec3 pixel_position = vec3(camera.viewport_lower_left + camera.viewport_dx * pixel_coord.x + camera.viewport_dy * pixel_coord.y);
-    return Ray(
-        vec4(config.lookfrom, 0.0),
-        normalize(pixel_position - config.lookfrom),
-        Interval_positive
-    );
+    return Ray_new(config.lookfrom, normalize(pixel_position - config.lookfrom));
 }
 
 bool Camera_hitAllObjects(Ray ray, out HitRecord record) {

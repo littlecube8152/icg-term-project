@@ -2,6 +2,14 @@
 #include "compute/inertial_frame.comp"
 
 
+Ray Ray_new(vec3 origin, vec3 direction) {
+    return Ray(
+        vec4(origin, 0.0f),
+        direction,
+        Interval_positive
+    );
+}
+
 vec4 Ray_at(Ray ray, float alpha) {
     return ray.origin + vec4(alpha * ray.direction, alpha);
 }

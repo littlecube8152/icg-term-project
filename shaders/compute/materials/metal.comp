@@ -6,7 +6,7 @@
 bool Metal_scatter(Metal metal, Ray ray, inout HitRecord record) {
     vec3 reflected = reflect(ray.direction, record.normal);
     reflected = normalize(reflected + metal.fuzz * Random_vec3_unitLength());
-    record.scattered_ray = Ray(vec4(record.coord, 0.0), reflected, Interval_positive);
+    record.scattered_ray = Ray_new(record.coord, reflected);
     record.attenuation = metal.albedo;
     return dot(reflected, record.normal) > 0.0f;
 }

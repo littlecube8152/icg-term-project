@@ -5,7 +5,7 @@
 
 bool Lambertian_scatter(Lambertian lambertian, Ray ray, inout HitRecord record) {
     vec3 scatter_dir = normalize(record.normal + Random_vec3_unitLength());
-    record.scattered_ray = Ray(vec4(record.coord, 0.0f), scatter_dir, Interval_positive);
+    record.scattered_ray = Ray_new(record.coord, scatter_dir);
     record.attenuation = lambertian.albedo;
     return true;
 }
