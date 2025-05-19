@@ -2,13 +2,7 @@
 #include "compute/hit_record.comp"
 #include "compute/interval.comp"
 #include "compute/vecutil.comp"
-
-
-struct Sphere {
-    vec3 center;
-    float radius;
-    // TODO: int mat_id;
-};
+#include "compute/materials/materials.comp"
 
 
 bool Sphere_hit(Sphere sphere, Ray ray, out HitRecord record) {
@@ -34,7 +28,11 @@ bool Sphere_hit(Sphere sphere, Ray ray, out HitRecord record) {
     record.alpha = hit;
     record.coord = coord.xyz;
     HitRecord_setFaceNormal(record, ray, (coord.xyz - sphere.center) / sphere.radius);
-    record.has_scattered = false;
+    if (sphere.material_id >= 0) {
+        record.has_scattered = Material_scatter(sphere.material_id, ray, record);
+    } else {
+        record.has_scattered = false;
+    }
 
     return true;
 }

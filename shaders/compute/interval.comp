@@ -1,11 +1,6 @@
 #include "compute/constants.comp"
 
 
-struct Interval {
-    float min, max;
-};
-
-
 const Interval Interval_empty    = {+kInfinity, -kInfinity};
 const Interval Interval_universe = {-kInfinity, +kInfinity};
 const Interval Interval_positive = {+kEpsilon , +kInfinity};

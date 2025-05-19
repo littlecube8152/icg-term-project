@@ -1,0 +1,46 @@
+struct Interval {
+    float min, max;
+};
+
+
+struct Ray {
+    vec4 origin;
+    vec3 direction;
+    // TODO: vec3 iframe_velocity;
+    Interval interval;
+};
+
+
+struct HitRecord {
+    vec3 coord;
+    vec3 normal;
+    float alpha;
+    bool front_face;
+
+    bool has_scattered;
+    vec4 attenuation;
+    Ray scattered_ray;
+};
+
+
+struct Metal {
+    vec4 albedo;
+    // float fuzz;
+};
+
+struct Material {
+    int material_type;
+    Metal metal;
+};
+
+
+struct Sphere {
+    vec3 center;
+    float radius;
+    int material_id;
+};
+
+struct Object {
+    int object_type;
+    Sphere sphere;
+};

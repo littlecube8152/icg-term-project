@@ -4,6 +4,7 @@
 #include "compute/interval.comp"
 #include "compute/ray.comp"
 #include "compute/hit_record.comp"
+#include "compute/objects/objects.comp"
 
 
 void Camera_initViewport() {

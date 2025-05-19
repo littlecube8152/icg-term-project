@@ -2,14 +2,6 @@
 #include "compute/inertial_frame.comp"
 
 
-struct Ray {
-    vec4 origin;
-    vec3 direction;
-    // TODO: vec3 iframe_velocity;
-    Interval interval;
-};
-
-
 vec4 Ray_at(Ray ray, float alpha) {
     return ray.origin + vec4(alpha * ray.direction, alpha);
 }
