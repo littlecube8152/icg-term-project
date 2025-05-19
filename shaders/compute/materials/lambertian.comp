@@ -1,0 +1,11 @@
+#include "compute/ray.comp"
+#include "compute/interval.comp"
+#include "compute/random.comp"
+
+
+bool Lambertian_scatter(Lambertian lambertian, Ray ray, inout HitRecord record) {
+    vec3 scatter_dir = normalize(record.normal + Random_vec3_unitLength());
+    record.scattered_ray = Ray(vec4(record.coord, 0.0f), scatter_dir, Interval_positive);
+    record.attenuation = lambertian.albedo;
+    return true;
+}

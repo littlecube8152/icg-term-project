@@ -28,9 +28,14 @@ struct Metal {
     float fuzz;
 };
 
+struct Lambertian {
+    vec4 albedo;
+};
+
 struct Material {
     int material_type;
     Metal metal;
+    Lambertian lambertian;
 };
 
 
