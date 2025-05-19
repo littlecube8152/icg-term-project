@@ -1,12 +1,14 @@
 #include "compute/interval.comp"
 #include "compute/inertial_frame.comp"
+#include "compute/constants.comp"
 
 
-Ray Ray_new(vec3 origin, vec3 direction) {
+Ray Ray_new(vec3 origin, vec3 direction, vec3 iframe) {
     return Ray(
         vec4(origin, 0.0f),
         direction,
-        Interval_positive
+        Interval_positive,
+        iframe
     );
 }
 
@@ -14,4 +16,10 @@ vec4 Ray_at(Ray ray, float alpha) {
     return ray.origin + vec4(alpha * ray.direction, alpha);
 }
 
-// TODO: void Ray_transformFrame(inout Ray ray, vec3 to_iframe_velocity)
+void Ray_transformFrame(inout Ray ray, vec3 to_iframe) {
+    vec4 new_origin = IFrame_transformCoordinateFrom(to_iframe, ray.iframe, ray.origin.w, ray.origin.xyz);
+    vec3 new_velocity = IFrame_transformVelocityFrom(to_iframe, ray.iframe, ray.direction.xyz * kSpeedOfLight);
+    ray.origin = vec4(new_origin.yzw, new_origin.x);
+    ray.direction = new_velocity / kSpeedOfLight;
+    ray.iframe = to_iframe;
+}

@@ -14,7 +14,7 @@ Material Lambertian_new(vec4 albedo) {
 
 bool Lambertian_scatter(Lambertian lambertian, Ray ray, inout HitRecord record) {
     vec3 scatter_dir = normalize(record.normal + Random_vec3_unitLength());
-    record.scattered_ray = Ray_new(record.coord, scatter_dir);
+    record.scattered_ray = Ray_new(record.coord, scatter_dir, ray.iframe);
     record.attenuation = lambertian.albedo;
     return true;
 }

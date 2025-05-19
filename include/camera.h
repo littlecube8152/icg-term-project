@@ -12,15 +12,18 @@
 #include "inertial.h"
 
 
+// NOTE:
+// vec3 members intentionally placed at the end of struct for alignment issues
 struct alignas(16) CameraConfigUniform {
     alignas(4)  glm::uint image_width;
     alignas(4)  glm::uint image_height;
     alignas(4)  float vfov;
+    alignas(4)  int sqrt_samples_per_pixel;
+    alignas(4)  int max_recursion_depth;
     alignas(16) glm::vec3 lookfrom;
     alignas(16) glm::vec3 lookat;
     alignas(16) glm::vec3 lookup;
-    alignas(4)  int sqrt_samples_per_pixel;
-    alignas(4)  int max_recursion_depth;
+    alignas(16) glm::vec3 iframe;
 };
 
 class CameraConfig {

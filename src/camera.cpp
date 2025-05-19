@@ -14,11 +14,12 @@ CameraConfigUniform CameraConfig::toUniform() const {
         .image_width = image_width,
         .image_height = image_height,
         .vfov = vfov,
+        .sqrt_samples_per_pixel = sqrt_samples_per_pixel,
+        .max_recursion_depth = max_recursion_depth,
         .lookfrom = lookfrom,
         .lookat = lookat,
         .lookup = lookup,
-        .sqrt_samples_per_pixel = sqrt_samples_per_pixel,
-        .max_recursion_depth = max_recursion_depth,
+        .iframe = inertial_frame->frame_velocity,
     };
 }
 

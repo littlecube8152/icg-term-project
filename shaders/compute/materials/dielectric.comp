@@ -25,15 +25,15 @@ bool Dielectric_scatter(Dielectric dielectric, Ray ray, inout HitRecord record) 
     vec3 refracted = refract(ray.direction, record.normal, real_eta);
     vec3 reflected = reflect(ray.direction, record.normal);
     if (abs(length(refracted)) < kEpsilon) {
-        record.scattered_ray = Ray_new(record.coord, reflected);
+        record.scattered_ray = Ray_new(record.coord, reflected, ray.iframe);
     } else {
         float cosine = dot(-ray.direction, record.normal);
         float r = Dielectric_reflectance(min(cosine, 1.0f), real_eta);
         float rand_sample = Random_float_unitPositive();
         if (rand_sample < r) {
-            record.scattered_ray = Ray_new(record.coord, reflected);
+            record.scattered_ray = Ray_new(record.coord, reflected, ray.iframe);
         } else {
-            record.scattered_ray = Ray_new(record.coord, refracted);
+            record.scattered_ray = Ray_new(record.coord, refracted, ray.iframe);
         }
     }
     return true;

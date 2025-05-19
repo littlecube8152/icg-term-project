@@ -6,8 +6,8 @@ struct Interval {
 struct Ray {
     vec4 origin;
     vec3 direction;
-    // TODO: vec3 iframe_velocity;
     Interval interval;
+    vec3 iframe;
 };
 
 
@@ -60,12 +60,12 @@ struct CameraConfig {
     uint image_width;
     uint image_height;
     float vfov;
+    int sqrt_samples_per_pixel;
+    int max_recursion_depth;
     vec3 lookfrom;
     vec3 lookat;
     vec3 lookup;
-    int sqrt_samples_per_pixel;
-    int max_recursion_depth;
-    // TODO: std::shared_ptr<InertialFrame> inertial_frame;
+    vec3 iframe;
 };
 
 struct Camera {

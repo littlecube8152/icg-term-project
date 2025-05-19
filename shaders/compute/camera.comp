@@ -7,30 +7,13 @@
 #include "compute/objects/objects.comp"
 
 
-/*
-void Camera_initViewport() {
-    camera.aspect_ratio = float(config.image_width) / float(config.image_height);
-    camera.pixel_samples_delta = 1.0f / float(config.sqrt_samples_per_pixel);
-
-    vec3 uz = normalize(config.lookfrom - config.lookat);
-    vec3 uy = normalize(perp_unit(config.lookup, uz));
-    vec3 ux = cross(uy, uz);
-
-    camera.pixel_samples_scale = 1.0f / float(config.sqrt_samples_per_pixel * config.sqrt_samples_per_pixel);
-    float tan_vfov2 = tan(config.vfov / 2 / 180 * kPi);
-    camera.viewport_lower_left = config.lookfrom + -tan_vfov2 * camera.aspect_ratio * ux + -tan_vfov2 * uy - uz;
-    camera.viewport_dx = tan_vfov2 * 2 * camera.aspect_ratio / float(config.image_width) * ux;
-    camera.viewport_dy = tan_vfov2 * 2 / float(config.image_height) * uy;
-}
-*/
-
 Ray Camera_getRayToPixel(vec2 pixel_coord) {
     vec3 pixel_position = vec3(camera.viewport_lower_left + camera.viewport_dx * pixel_coord.x + camera.viewport_dy * pixel_coord.y);
-    return Ray_new(config.lookfrom, normalize(pixel_position - config.lookfrom));
+    return Ray_new(config.lookfrom, normalize(pixel_position - config.lookfrom), config.iframe);
 }
 
 bool Camera_hitAllObjects(Ray ray, out HitRecord record) {
-    // TODO: relativistic transformation on ray
+    Ray_transformFrame(ray, world_iframe);
     HitRecord hit_result;
     bool hit_any = false;
     for (int i = 0; i < n_objects; i++) {

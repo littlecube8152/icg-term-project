@@ -14,3 +14,4 @@ layout (std140) uniform SceneUniform {
 int n_objects;
 Object objects[MAX_OBJECTS];
 Material materials[MAX_MATERIALS];
+vec3 world_iframe;

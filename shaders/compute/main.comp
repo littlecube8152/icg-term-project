@@ -8,6 +8,7 @@ precision highp float;
 #include "compute/camera.comp"
 
 void initScene() {
+    world_iframe = vec3(0, 0, 0);
     materials[0] = Lambertian_new(vec4(0.8, 0.7, 0.2, 1.0));
     materials[1] = Lambertian_new(vec4(0.2, 0.7, 0.8, 1.0));
     n_objects = 2;
