@@ -6,7 +6,6 @@
 
 
 struct alignas(16) SceneUniform {
-    alignas(16) CameraConfigUniform camera_config_uniform;
     alignas(16) CameraUniform camera_uniform;
 };
 

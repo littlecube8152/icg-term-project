@@ -19,7 +19,6 @@ GLuint Scene::renderAsTexture() {
 
 SceneUniform Scene::toUniform() const {
     return (SceneUniform) {
-        .camera_config_uniform = camera.getConfig().toUniform(),
         .camera_uniform = camera.toUniform(),
     };
 }

@@ -56,23 +56,14 @@ struct Object {
 };
 
 
-struct CameraConfig {
-    uint image_width;
-    uint image_height;
-    float vfov;
+struct Camera {
     int sqrt_samples_per_pixel;
     int max_recursion_depth;
-    vec3 lookfrom;
-    vec3 lookat;
-    vec3 lookup;
-    vec3 iframe;
-};
-
-struct Camera {
-    float aspect_ratio;
-    vec3 viewport_lower_left;
-    vec3 viewport_dx;
-    vec3 viewport_dy;
     float pixel_samples_scale;
     float pixel_samples_delta;
+    vec4 lookfrom;
+    vec4 iframe;
+    vec4 viewport_lower_left;
+    vec4 viewport_dx;
+    vec4 viewport_dy;
 };

@@ -9,19 +9,14 @@
 #include "randutil.h"
 
 
-CameraConfigUniform CameraConfig::toUniform() const {
-    return (CameraConfigUniform) {
-        .image_width = image_width,
-        .image_height = image_height,
-        .vfov = vfov,
-        .sqrt_samples_per_pixel = sqrt_samples_per_pixel,
-        .max_recursion_depth = max_recursion_depth,
-        .lookfrom = lookfrom,
-        .lookat = lookat,
-        .lookup = lookup,
-        .iframe = inertial_frame->frame_velocity,
-    };
-}
+// CameraConfigUniform CameraConfig::toUniform() const {
+//     return (CameraConfigUniform) {
+//         .sqrt_samples_per_pixel = sqrt_samples_per_pixel,
+//         .max_recursion_depth = max_recursion_depth,
+//         .lookfrom = glm::vec4(lookfrom, 0),
+//         .iframe = glm::vec4(inertial_frame->frame_velocity, 0),
+//     };
+// }
 
 
 Camera::Camera() {}
@@ -136,16 +131,14 @@ GLuint Camera::renderAsTexture(const Hittable &world) const {
 
 CameraUniform Camera::toUniform() const {
     return (CameraUniform) {
-        .aspect_ratio = aspect_ratio,
-        .viewport_lower_left = viewport_lower_left,
-        .viewport_dx = viewport_dx,
-        .viewport_dy = viewport_dy,
+        .sqrt_samples_per_pixel = config.sqrt_samples_per_pixel,
+        .max_recursion_depth = config.max_recursion_depth,
         .pixel_samples_scale = pixel_samples_scale,
         .pixel_samples_delta = pixel_samples_delta,
+        .lookfrom = glm::vec4(config.lookfrom, 0),
+        .iframe = glm::vec4(config.inertial_frame->frame_velocity, 0),
+        .viewport_lower_left = glm::vec4(viewport_lower_left, 0),
+        .viewport_dx = glm::vec4(viewport_dx, 0),
+        .viewport_dy = glm::vec4(viewport_dy, 0),
     };
-}
-
-
-const CameraConfig& Camera::getConfig() const {
-    return config;
 }

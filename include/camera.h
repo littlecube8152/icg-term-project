@@ -12,22 +12,7 @@
 #include "inertial.h"
 
 
-// NOTE:
-// vec3 members intentionally placed at the end of struct for alignment issues
-struct alignas(16) CameraConfigUniform {
-    alignas(4)  glm::uint image_width;
-    alignas(4)  glm::uint image_height;
-    alignas(4)  float vfov;
-    alignas(4)  int sqrt_samples_per_pixel;
-    alignas(4)  int max_recursion_depth;
-    alignas(16) glm::vec3 lookfrom;
-    alignas(16) glm::vec3 lookat;
-    alignas(16) glm::vec3 lookup;
-    alignas(16) glm::vec3 iframe;
-};
-
-class CameraConfig {
-public:
+struct CameraConfig {
     GLuint image_width;
     GLuint image_height;
     float vfov;
@@ -37,19 +22,25 @@ public:
     int sqrt_samples_per_pixel;
     int max_recursion_depth;
     std::shared_ptr<InertialFrame> inertial_frame;
-
-    CameraConfigUniform toUniform() const;
 };
 
+
+// NOTE:
+// vec3 intentionally replaced with vec4 to avoid alignment issues
+// https://stackoverflow.com/questions/38172696/should-i-ever-use-a-vec3-inside-of-a-uniform-buffer-or-shader-storage-buffer-o
 
 struct alignas(16) CameraUniform {
-    alignas(4)  float aspect_ratio;
-    alignas(16) glm::vec3 viewport_lower_left;
-    alignas(16) glm::vec3 viewport_dx;
-    alignas(16) glm::vec3 viewport_dy;
+    alignas(4)  int sqrt_samples_per_pixel;
+    alignas(4)  int max_recursion_depth;
     alignas(4)  float pixel_samples_scale;
     alignas(4)  float pixel_samples_delta;
+    alignas(16) glm::vec4 lookfrom;
+    alignas(16) glm::vec4 iframe;
+    alignas(16) glm::vec4 viewport_lower_left;
+    alignas(16) glm::vec4 viewport_dx;
+    alignas(16) glm::vec4 viewport_dy;
 };
+
 
 class Camera {
 public:
@@ -57,7 +48,6 @@ public:
     Camera(const CameraConfig &config);
     GLuint renderAsTexture(const Hittable &world) const;
     CameraUniform toUniform() const;
-    const CameraConfig& getConfig() const;
 
 private:
     CameraConfig config;

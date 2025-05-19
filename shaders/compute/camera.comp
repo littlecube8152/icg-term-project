@@ -8,8 +8,8 @@
 
 
 Ray Camera_getRayToPixel(vec2 pixel_coord) {
-    vec3 pixel_position = vec3(camera.viewport_lower_left + camera.viewport_dx * pixel_coord.x + camera.viewport_dy * pixel_coord.y);
-    return Ray_new(config.lookfrom, normalize(pixel_position - config.lookfrom), config.iframe);
+    vec3 pixel_position = (camera.viewport_lower_left + camera.viewport_dx * pixel_coord.x + camera.viewport_dy * pixel_coord.y).xyz;
+    return Ray_new(camera.lookfrom.xyz, normalize(pixel_position - camera.lookfrom.xyz), camera.iframe.xyz);
 }
 
 bool Camera_hitAllObjects(Ray ray, out HitRecord record) {
@@ -29,7 +29,7 @@ bool Camera_hitAllObjects(Ray ray, out HitRecord record) {
 vec4 Camera_getRayColor(Ray ray) {
     vec4 accum_attenuation = vec4(1, 1, 1, 1);
     HitRecord record;
-    for (int depth = 0; depth < config.max_recursion_depth; depth++) {
+    for (int depth = 0; depth < camera.max_recursion_depth; depth++) {
         if (!Camera_hitAllObjects(ray, record)) {
             float dotval = dot(ray.direction, vec3(0, 1, 0));
             float ratio = (dotval + 1) / 2.0f;
@@ -47,8 +47,8 @@ vec4 Camera_getRayColor(Ray ray) {
 
 vec4 Camera_getPixelColor(ivec2 pixel_coord) {
     vec4 pixel_color = vec4(0, 0, 0, 0);
-    for (int dx = 0; dx < config.sqrt_samples_per_pixel; dx++) {
-        for (int dy = 0; dy < config.sqrt_samples_per_pixel; dy++) {
+    for (int dx = 0; dx < camera.sqrt_samples_per_pixel; dx++) {
+        for (int dy = 0; dy < camera.sqrt_samples_per_pixel; dy++) {
             Ray sampled_ray = Camera_getRayToPixel(
                 vec2(pixel_coord) + camera.pixel_samples_delta * vec2(dx, dy)
             );
