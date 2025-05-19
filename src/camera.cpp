@@ -9,6 +9,20 @@
 #include "randutil.h"
 
 
+CameraConfigUniform CameraConfig::toUniform() const {
+    return (CameraConfigUniform) {
+        .image_width = image_width,
+        .image_height = image_height,
+        .vfov = vfov,
+        .lookfrom = lookfrom,
+        .lookat = lookat,
+        .lookup = lookup,
+        .sqrt_samples_per_pixel = sqrt_samples_per_pixel,
+        .max_recursion_depth = max_recursion_depth,
+    };
+}
+
+
 Camera::Camera() {}
 
 
@@ -35,7 +49,7 @@ void Camera::initViewport() {
 }
 
 
-Ray Camera::getRayToPixel(float x, float y) {
+Ray Camera::getRayToPixel(float x, float y) const {
     glm::vec3 pixel_position = glm::vec3(viewport_lower_left + viewport_dx * x + viewport_dy * y);
     return Ray(
         config.lookfrom,
@@ -45,7 +59,7 @@ Ray Camera::getRayToPixel(float x, float y) {
 }
 
 
-glm::vec4 Camera::getRayColor(Ray &ray, const Hittable &hittable, const int &recursion_depth) {
+glm::vec4 Camera::getRayColor(Ray &ray, const Hittable &hittable, const int &recursion_depth) const {
     if (recursion_depth > config.max_recursion_depth)
         return glm::vec4(0.0, 0.0, 0.0, 1.0);
     HitRecord rec;
@@ -61,7 +75,7 @@ glm::vec4 Camera::getRayColor(Ray &ray, const Hittable &hittable, const int &rec
 }
 
 
-glm::vec4 Camera::getPixelColor(float x, float y, const Hittable &hittable) {
+glm::vec4 Camera::getPixelColor(float x, float y, const Hittable &hittable) const {
     glm::vec4 pixel_color = glm::vec4(0, 0, 0, 0);
     for (int dx = 0; dx < config.sqrt_samples_per_pixel; dx++) {
         for (int dy = 0; dy < config.sqrt_samples_per_pixel; dy++) {
@@ -75,14 +89,14 @@ glm::vec4 Camera::getPixelColor(float x, float y, const Hittable &hittable) {
 }
 
 
-float Camera::linear_to_gamma(float linear_component) {
+float Camera::linear_to_gamma(float linear_component) const {
     if (linear_component > 0.0f)
         return std::sqrt(linear_component);
     return 0.0f;
 }
 
 
-glm::vec4 Camera::linear_to_gamma(glm::vec4 color) {
+glm::vec4 Camera::linear_to_gamma(glm::vec4 color) const {
     color.r = linear_to_gamma(color.r);
     color.g = linear_to_gamma(color.g);
     color.b = linear_to_gamma(color.b);
@@ -90,7 +104,7 @@ glm::vec4 Camera::linear_to_gamma(glm::vec4 color) {
 }
 
 
-GLuint Camera::renderAsTexture(const Hittable &world) {
+GLuint Camera::renderAsTexture(const Hittable &world) const {
     std::vector<GLubyte> texture_data(config.image_width * config.image_height * 4);
     int data_index = 0;
     for (GLuint y = 0; y < config.image_height; y++) {
@@ -116,4 +130,21 @@ GLuint Camera::renderAsTexture(const Hittable &world) {
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, config.image_width, config.image_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, texture_data.data());
 
     return texture;
+}
+
+
+CameraUniform Camera::toUniform() const {
+    return (CameraUniform) {
+        .aspect_ratio = aspect_ratio,
+        .viewport_lower_left = viewport_lower_left,
+        .viewport_dx = viewport_dx,
+        .viewport_dy = viewport_dy,
+        .pixel_samples_scale = pixel_samples_scale,
+        .pixel_samples_delta = pixel_samples_delta,
+    };
+}
+
+
+const CameraConfig& Camera::getConfig() const {
+    return config;
 }

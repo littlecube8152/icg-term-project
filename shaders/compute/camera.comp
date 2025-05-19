@@ -1,5 +1,5 @@
 #include "compute/constants.comp"
-#include "compute/globals.comp"
+#include "compute/uniforms.comp"
 #include "compute/vecutil.comp"
 #include "compute/interval.comp"
 #include "compute/ray.comp"
@@ -7,6 +7,7 @@
 #include "compute/objects/objects.comp"
 
 
+/*
 void Camera_initViewport() {
     camera.aspect_ratio = float(config.image_width) / float(config.image_height);
     camera.pixel_samples_delta = 1.0f / float(config.sqrt_samples_per_pixel);
@@ -21,6 +22,7 @@ void Camera_initViewport() {
     camera.viewport_dx = tan_vfov2 * 2 * camera.aspect_ratio / float(config.image_width) * ux;
     camera.viewport_dy = tan_vfov2 * 2 / float(config.image_height) * uy;
 }
+*/
 
 Ray Camera_getRayToPixel(vec2 pixel_coord) {
     vec3 pixel_position = vec3(camera.viewport_lower_left + camera.viewport_dx * pixel_coord.x + camera.viewport_dy * pixel_coord.y);

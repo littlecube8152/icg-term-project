@@ -8,6 +8,7 @@
 
 #include "constants.h"
 #include "renderer.h"
+#include "scene.h"
 
 
 bool window_should_close = false;
@@ -34,16 +35,26 @@ int main(void)
     glfwMakeContextCurrent(window);
     glfwSetKeyCallback(window, keyCallback);
 
+    std::cerr << "Generating scene" << std::endl;
+    SceneRandomBalls scene(kWindowWidth, kWindowHeight);
+
+    std::cerr << "Rendering" << std::endl;
+    int frame_count = 0;
     // render the frame and record time usage
+    std::chrono::_V2::system_clock::time_point start, end;
+    start = std::chrono::high_resolution_clock::now();
     Renderer renderer(kWindowWidth, kWindowHeight);
-    const auto start = std::chrono::high_resolution_clock::now();
-    renderer.renderFrame();
-    const auto end = std::chrono::high_resolution_clock::now();
-    const std::chrono::duration<double> elapsed = end - start;
-    std::cerr << "Frame time: " << elapsed << std::endl;
+    renderer.renderFrame(scene);
 
     // main loop
     while (!window_should_close && !glfwWindowShouldClose(window)) {
+        frame_count++;
+        if (frame_count == 2) {
+            end = std::chrono::high_resolution_clock::now();
+            const std::chrono::duration<double> elapsed = end - start;
+            std::cerr << "Frame time: " << elapsed << std::endl;
+        }
+
         glClear(GL_COLOR_BUFFER_BIT);
         renderer.drawFrame();
         glfwSwapBuffers(window);

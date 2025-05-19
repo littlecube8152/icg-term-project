@@ -1,0 +1,15 @@
+#include "compute/defs.comp"
+#include "compute/constants.comp"
+
+
+layout (local_size_x = 1, local_size_y = 1, local_size_z = 1) in;
+layout (rgba32f) uniform image2D u_img_output;
+
+layout (std140) uniform SceneUniform {
+    CameraConfig config;
+    Camera camera;
+};
+
+int n_objects;
+Object objects[kMaxObjects];
+Material materials[kMaxMaterials];

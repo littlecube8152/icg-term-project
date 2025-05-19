@@ -4,6 +4,8 @@
 #define GL_GLEXT_PROTOTYPES
 #include "GL/gl.h"
 
+#include "scene.h"
+
 
 class Renderer {
 
@@ -15,7 +17,7 @@ public:
 
     // render the scene into a texture with compute shaders
     // TODO: render the actual scene
-    void renderFrame(void);
+    void renderFrame(const Scene &scene);
 
     // draw the texture onto the screen
     void drawFrame(void);

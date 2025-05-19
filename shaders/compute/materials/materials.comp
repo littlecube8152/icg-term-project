@@ -1,5 +1,5 @@
 #include "compute/ray.comp"
-#include "compute/globals.comp"
+#include "compute/uniforms.comp"
 #include "compute/materials/material_types.h"
 #include "compute/materials/metal.comp"
 #include "compute/materials/lambertian.comp"

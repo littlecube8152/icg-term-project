@@ -1,6 +1,7 @@
 #include "renderer.h"
 
 #include "shaders.h"
+#include "scene.h"
 
 
 static GLuint createTexture(GLuint texture_unit, GLuint width, GLuint height) {
@@ -71,10 +72,22 @@ Renderer::Renderer(GLuint _window_width, GLuint _window_height)
 }
 
 
-void Renderer::renderFrame(void) {
+void Renderer::renderFrame(const Scene &scene) {
     glUseProgram(path_tracer);
+
+    SceneUniform uniform = scene.toUniform();
+    GLuint ubo;
+    glGenBuffers(1, &ubo);
+    glBindBuffer(GL_UNIFORM_BUFFER, ubo);
+    glBufferData(GL_UNIFORM_BUFFER, sizeof(SceneUniform), &uniform, GL_STATIC_DRAW);
+    glBindBufferBase(GL_UNIFORM_BUFFER, 0, ubo);
+    GLuint uniform_block_index = glGetUniformBlockIndex(path_tracer, "SceneUniform");
+    glUniformBlockBinding(path_tracer, uniform_block_index, 0);
+
     glDispatchCompute(window_width, window_height, 1);
     glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+
+    glDeleteBuffers(1, &ubo);
 }
 
 

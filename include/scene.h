@@ -5,10 +5,16 @@
 #include "hittable_list.h"
 
 
+struct alignas(16) SceneUniform {
+    alignas(16) CameraConfigUniform camera_config_uniform;
+    alignas(16) CameraUniform camera_uniform;
+};
+
 class Scene {
 public:
     Scene(void);
     GLuint renderAsTexture();
+    SceneUniform toUniform() const;
 
 protected:
     Camera camera;

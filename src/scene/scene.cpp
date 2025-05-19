@@ -16,3 +16,10 @@ GLuint Scene::renderAsTexture() {
     std::cerr << "Frame time: " << elapsed << std::endl;
     return texture;
 }
+
+SceneUniform Scene::toUniform() const {
+    return (SceneUniform) {
+        .camera_config_uniform = camera.getConfig().toUniform(),
+        .camera_uniform = camera.toUniform(),
+    };
+}
