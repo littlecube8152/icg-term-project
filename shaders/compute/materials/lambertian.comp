@@ -1,7 +1,16 @@
+#include "compute/defs.comp"
+#include "compute/materials/material_types.h"
 #include "compute/ray.comp"
 #include "compute/interval.comp"
 #include "compute/random.comp"
 
+
+Material Lambertian_new(vec4 albedo) {
+    Material material;
+    material.material_type = MATERIAL_TYPE_LAMBERTIAN;
+    material.lambertian = Lambertian(albedo);
+    return material;
+}
 
 bool Lambertian_scatter(Lambertian lambertian, Ray ray, inout HitRecord record) {
     vec3 scatter_dir = normalize(record.normal + Random_vec3_unitLength());

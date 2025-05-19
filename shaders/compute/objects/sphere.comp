@@ -1,9 +1,18 @@
+#include "compute/defs.comp"
+#include "compute/objects/object_types.h"
 #include "compute/ray.comp"
 #include "compute/hit_record.comp"
 #include "compute/interval.comp"
 #include "compute/vecutil.comp"
 #include "compute/materials/materials.comp"
 
+
+Object Sphere_new(vec3 center, float radius, int material_id) {
+    Object object;
+    object.object_type = OBJECT_TYPE_SPHERE;
+    object.sphere = Sphere(center, radius, material_id);
+    return object;
+}
 
 bool Sphere_hit(Sphere sphere, Ray ray, out HitRecord record) {
     vec3 origin_to_center = sphere.center - ray.origin.xyz;
