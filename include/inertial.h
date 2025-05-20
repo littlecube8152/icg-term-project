@@ -14,6 +14,11 @@ struct InertialFrame
 
     static glm::vec3 transformVelocityFrom(glm::vec3 measured_relative_velocity, glm::vec3 target_velocity);
 
+    glm::vec3 getBeta(const InertialFrame &from_frame) const;
+    float getBetaScalar(const InertialFrame &from_frame) const;
+    float getBetaSquare(const InertialFrame &from_frame) const;
+    float getGamma(const InertialFrame &from_frame) const;
+
     glm::vec3 relativeFrameVelocityFrom(const InertialFrame &from_frame) const;
     std::pair<float, glm::vec3> transformCoordinateFrom(const InertialFrame &from_frame, float time, glm::vec3 space) const;
     glm::vec3 transformVelocityFrom(const InertialFrame &from_frame, glm::vec3 velocity) const;

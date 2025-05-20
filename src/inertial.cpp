@@ -9,6 +9,8 @@
 InertialFrame::InertialFrame(glm::vec3 velocity) { this->frame_velocity = velocity * speedOfLight; };
 InertialFrame::InertialFrame() { this->frame_velocity = glm::vec3(0.0f); };
 
+
+
 // Transforms velocity between two frames, given the measured velocity from the original frame S to the desired frame S'
 glm::vec3 InertialFrame::transformVelocityFrom(glm::vec3 measured_relative_velocity, glm::vec3 velocity_to_transform)
 {
@@ -47,10 +49,30 @@ glm::vec3 InertialFrame::transformVelocityFrom(const InertialFrame &from_frame, 
     return transformVelocityFrom(relativeFrameVelocityFrom(from_frame), velocity);
 }
 
+
+glm::vec3 InertialFrame::getBeta(const InertialFrame &from_frame) const
+{
+    return relativeFrameVelocityFrom(from_frame) / speedOfLight;
+}
+float InertialFrame::getBetaScalar(const InertialFrame &from_frame) const
+{
+    return glm::length(getBeta(from_frame));
+}
+float InertialFrame::getBetaSquare(const InertialFrame &from_frame) const
+{
+    glm::vec3 beta = getBeta(from_frame);
+    return glm::dot(beta, beta);
+}
+float InertialFrame::getGamma(const InertialFrame &from_frame) const
+{
+    return 1.0f / sqrtf(1.0f - getBetaSquare(from_frame));
+}
+
+
 // Transforms time and space coordinate from the `from_frame` to the current frame.
 std::pair<float, glm::vec3> InertialFrame::transformCoordinateFrom(const InertialFrame &from_frame, float time, glm::vec3 space) const
 {
-    glm::vec3 beta = relativeFrameVelocityFrom(from_frame) / speedOfLight;
+    glm::vec3 beta = getBeta(from_frame);
     float beta_square = glm::dot(beta, beta);
     float gamma = 1.0f / sqrtf(1.0f - beta_square);
     // (gamma - 1) / beta^2, numerically more stable
@@ -75,7 +97,7 @@ std::pair<float, glm::vec3> InertialFrame::transformCoordinateFrom(const Inertia
 // Transforms normal vector  from the `from_frame` to the current frame.
 glm::vec3 InertialFrame::transformNormalFrom(const InertialFrame &from_frame, glm::vec3 normal) const
 {
-    glm::vec3 beta = relativeFrameVelocityFrom(from_frame) / speedOfLight;
+    glm::vec3 beta = getBeta(from_frame);
     float beta_square = glm::dot(beta, beta);
     float gamma = 1.0f / sqrtf(1.0f - beta_square);
     // (gamma - 1) / beta^2, numerically more stable

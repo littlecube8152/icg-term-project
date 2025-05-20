@@ -28,6 +28,8 @@ public:
     // Velocity measured in light speed (so it should be a unit vector).
     Ray(const glm::vec3 &origin, const glm::vec3 &direction, std::shared_ptr<InertialFrame> reference_frame)
         : ray_origin(origin, 0.0f), ray_direction(direction), ray_reference_frame(reference_frame), interval(Interval::positive) {}
+    Ray(const glm::vec4 &origin, const glm::vec3 &direction, std::shared_ptr<InertialFrame> reference_frame)
+        : ray_origin(origin), ray_direction(direction), ray_reference_frame(reference_frame), interval(Interval::positive) {}
 
     // Origin of the ray.
     const glm::vec4 &origin() const;

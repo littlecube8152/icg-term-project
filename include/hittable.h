@@ -13,7 +13,7 @@
 // Always store the result in the camera's inertial frame
 class HitRecord {
 public:
-    glm::vec3 p;
+    glm::vec4 p;
     glm::vec3 normal;  // assumed to be unit-length
     float alpha;
     bool front_face;

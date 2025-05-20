@@ -6,7 +6,9 @@
 
 #include "glm/gtx/perpendicular.hpp"
 
+#include "color.h"
 #include "randutil.h"
+#include "vecutil.h"
 
 
 Camera::Camera() {}
@@ -45,15 +47,39 @@ Ray Camera::getRayToPixel(float x, float y) {
 }
 
 
-glm::vec4 Camera::getRayColor(Ray &ray, const Hittable &hittable, const int &recursion_depth) {
+glm::vec4 Camera::getRayColor(Ray &ray, const Hittable &hittable, const int &recursion_depth) 
+{
     if (recursion_depth > config.max_recursion_depth)
         return glm::vec4(0.0, 0.0, 0.0, 1.0);
     HitRecord rec;
-    if (hittable.hit(ray, rec)) {
+
+    if (hittable.hit(ray, rec)) 
+    {
+        // hit
         if (rec.has_scattered)
-            return rec.attenuation * getRayColor(rec.scattered, hittable, recursion_depth + 1);
+        {    
+            glm::vec4 object_space_color = rec.attenuation * getRayColor(rec.scattered, hittable, recursion_depth + 1);
+            glm::vec4 shifted_color = object_space_color;
+            if (recursion_depth == 1) // the reflected light will back to camera, time to shift inertial frame
+            {
+                glm::vec3 rgb_color(object_space_color);
+                glm::vec3 velocity = config.inertial_frame->transformVelocityFrom(object_space_frame, glm::vec3(0, 0, 0));
+                glm::vec3 line_of_sight = config.inertial_frame->transformCoordinateFrom(object_space_frame, rec.p.w / speedOfLight, glm::vec3(rec.p)).second - config.lookfrom;
+                float cosine = glm::dot(default_normalize(velocity, velocity), glm::normalize(line_of_sight));
+
+                // float scale = 1.0f / config.inertial_frame->getGamma(object_space_frame)
+                //                    / (1.0f + config.inertial_frame->getBetaScalar(object_space_frame) * cosine);
+                float scale = std::sqrtf((1.0f + config.inertial_frame->getBetaScalar(object_space_frame) * cosine)
+                                             / (1.0f - config.inertial_frame->getBetaScalar(object_space_frame) * cosine));
+                shifted_color = glm::vec4(lightWavelengthShift(rgb_color, scale), shifted_color.a);
+            }
+            return shifted_color;
+        }
         return glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
-    } else {
+    } 
+    else 
+    {
+        // skybox
         float dotval = glm::dot(ray.direction(), glm::vec3(0, 1, 0));
         float ratio = (dotval + 1) / 2.0f;
         return (1.0f - ratio) * glm::vec4(1, 1, 1, 1) + ratio * glm::vec4(0.5, 0.7, 1.0, 1.0);

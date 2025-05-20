@@ -36,8 +36,8 @@ bool Cube::hit(Ray &ray, HitRecord &record) const
         float alpha = (surface_level - origin_level) / alpha_level;
         if (!ray.interval.surrounds(alpha))
             return false;
-        glm::vec3 hit_point = ray.at(alpha);
-        glm::vec3 surface_hit_vector = hit_point - surface_corner;
+        glm::vec4 hit_point = ray.at(alpha);
+        glm::vec3 surface_hit_vector = glm::vec3(hit_point) - surface_corner;
         if (glm::dot(glm::cross(vec_u, surface_hit_vector), normal) >= 0.0f &&
             glm::dot(glm::cross(vec_v, surface_hit_vector), normal) <= 0.0f &&
             glm::dot(glm::cross(vec_u, surface_hit_vector - vec_v), normal) <= 0.0f &&

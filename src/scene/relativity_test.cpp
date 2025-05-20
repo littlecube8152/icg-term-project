@@ -13,8 +13,8 @@ SceneRelativityTest::SceneRelativityTest(GLuint texture_width, GLuint texture_he
         .lookat = glm::vec3(-0.2, 0, 0),
         .lookup = glm::vec3(0, 1, 0),
         .sqrt_samples_per_pixel = 4,
-        .max_recursion_depth = 20,
-        .inertial_frame = std::make_shared<InertialFrame>(glm::vec3(0.9, 0.0, 0.0))});
+        .max_recursion_depth = 30,
+        .inertial_frame = std::make_shared<InertialFrame>(glm::vec3(0.2, 0.0, 0.0))});
 
     auto material_ground = std::make_shared<Lambertian>(glm::vec4(0.8f, 0.8f, 0.0f, 1.0f));
     auto material_center = std::make_shared<Lambertian>(glm::vec4(0.1f, 0.2f, 0.5f, 1.0f));
