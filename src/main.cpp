@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <filesystem>
 
 using namespace std::string_literals;
 
@@ -8,7 +9,7 @@ using namespace std::string_literals;
 
 #include "scene.h"
 #include "shaders.h"
-
+#include "writer.h"
 
 bool window_should_close = false;
 
@@ -32,7 +33,7 @@ GLuint createWindowVao(GLuint shader) {
     glBufferData(GL_ARRAY_BUFFER, sizeof(position_data), position_data, GL_STATIC_DRAW);
     GLint a_position = glGetAttribLocation(shader, "a_position");
     glEnableVertexAttribArray(a_position);
-    glVertexAttribPointer(a_position, 2, GL_FLOAT,  GL_FALSE, sizeof(GLfloat) * 2, 0);
+    glVertexAttribPointer(a_position, 2, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 2, 0);
 
     GLfloat texcoord_data[] = {
         0.0f, 0.0f,
@@ -48,7 +49,7 @@ GLuint createWindowVao(GLuint shader) {
     glBufferData(GL_ARRAY_BUFFER, sizeof(texcoord_data), texcoord_data, GL_STATIC_DRAW);
     GLint a_texcoord = glGetAttribLocation(shader, "a_texcoord");
     glEnableVertexAttribArray(a_texcoord);
-    glVertexAttribPointer(a_texcoord, 2, GL_FLOAT,  GL_FALSE, sizeof(GLfloat) * 2, 0);
+    glVertexAttribPointer(a_texcoord, 2, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 2, 0);
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
@@ -62,10 +63,9 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
         window_should_close = true;
 }
 
-
 int main(void)
 {
-    GLFWwindow* window;
+    GLFWwindow *window;
 
     /* Initialize the library */
     if (!glfwInit())
@@ -89,7 +89,6 @@ int main(void)
         throw std::runtime_error("Error: "s + (const char*)glewGetErrorString(err));
     }
 
-
     GLuint shader = loadShaderProgram();
     glUseProgram(shader);
 
@@ -108,6 +107,7 @@ int main(void)
 
     glfwSetKeyCallback(window, keyCallback);
 
+    bool saved = false;
     /* Loop until the user closes the window */
     while (!window_should_close && !glfwWindowShouldClose(window))
     {
@@ -115,6 +115,13 @@ int main(void)
         glClear(GL_COLOR_BUFFER_BIT);
 
         glDrawArrays(GL_TRIANGLES, 0, 6);
+
+        if (!saved)
+        {
+            std::filesystem::create_directory("outputs");
+            saveToPNG("outputs/screen.png", window_width, window_height);
+            saved = true;
+        }
 
         /* Swap front and back buffers */
         glfwSwapBuffers(window);
