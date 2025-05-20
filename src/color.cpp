@@ -412,6 +412,7 @@ constexpr int wavelength_end = 700;
 constexpr int wavelength_ir_threshold = 900;
 constexpr int wavelength_size = wavelength_end - wavelength_start;
 constexpr int hue_range = 360;
+constexpr int hue_split = 300;
 
 constexpr std::array<float, wavelength_size> getArrayWavelengthToHue()
 {
@@ -435,11 +436,10 @@ constexpr std::array<float, hue_range> getArrayHueToWavelength()
 {
     // apparently, there is no light corresponding to "pink" with a single wavelength
     // this is an issue of the current color model
-    int split = 300;
     std::array<float, hue_range> wavelength{};
-    for (int i = 0; i < split; i++)
+    for (int i = 0; i < hue_split; i++)
         wavelength[i] = wavelength_start;
-    for (int i = split; i < hue_range; i++)
+    for (int i = hue_split; i < hue_range; i++)
         wavelength[i] = wavelength_end;
 
     for (int i = 0; i + 1 < wavelength_size; i++)
@@ -474,8 +474,11 @@ constexpr float interpolateWavelengthToHue(float wavelength)
     wavelength = std::clamp(wavelength, static_cast<float>(wavelength_start), static_cast<float>(wavelength_end - 1.0f) - kEpsilon);
     int wavelength_int = static_cast<int>(wavelength);
     float wavelength_frac = wavelength - (float)wavelength_int;
-    return (1.0f - wavelength_frac) * table_wavelength_to_hue[wavelength_int - wavelength_start] +
-           wavelength_frac * table_wavelength_to_hue[wavelength_int - wavelength_start + 1];
+
+    int index = wavelength_int - wavelength_start;
+    if (table_wavelength_to_hue[index] < table_wavelength_to_hue[index + 1]) // pink color border
+        return table_wavelength_to_hue[index];
+    return (1.0f - wavelength_frac) * table_wavelength_to_hue[index] + wavelength_frac * table_wavelength_to_hue[index + 1];
 }
 
 #include <iostream>
