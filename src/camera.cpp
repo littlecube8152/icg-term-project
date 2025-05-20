@@ -69,8 +69,8 @@ glm::vec4 Camera::getRayColor(Ray &ray, const Hittable &hittable, const int &rec
 
                 // float scale = 1.0f / config.inertial_frame->getGamma(object_space_frame)
                 //                    / (1.0f + config.inertial_frame->getBetaScalar(object_space_frame) * cosine);
-                float scale = std::sqrtf((1.0f + config.inertial_frame->getBetaScalar(object_space_frame) * cosine)
-                                             / (1.0f - config.inertial_frame->getBetaScalar(object_space_frame) * cosine));
+                float scale = std::sqrtf((1.0f - config.inertial_frame->getBetaScalar(object_space_frame) * cosine)
+                                             / (1.0f + config.inertial_frame->getBetaScalar(object_space_frame) * cosine));
                 shifted_color = glm::vec4(lightWavelengthShift(rgb_color, scale), shifted_color.a);
             }
             return shifted_color;
@@ -96,23 +96,9 @@ glm::vec4 Camera::getPixelColor(float x, float y, const Hittable &hittable) {
         }
     }
     pixel_color *= pixel_samples_scale;
-    pixel_color = linear_to_gamma(pixel_color);
+    pixel_color = gammaCorrection(pixel_color);
+    
     return pixel_color;
-}
-
-
-float Camera::linear_to_gamma(float linear_component) {
-    if (linear_component > 0.0f)
-        return std::sqrt(linear_component);
-    return 0.0f;
-}
-
-
-glm::vec4 Camera::linear_to_gamma(glm::vec4 color) {
-    color.r = linear_to_gamma(color.r);
-    color.g = linear_to_gamma(color.g);
-    color.b = linear_to_gamma(color.b);
-    return color;
 }
 
 

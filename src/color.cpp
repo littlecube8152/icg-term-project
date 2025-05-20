@@ -406,10 +406,8 @@ constexpr glm::vec3 hclTosRGB(glm::vec3 hcl_color)
     return {0.0f, 0.0f, 0.0f};
 }
 
-constexpr int wavelength_uv_threshold = 200;
 constexpr int wavelength_start = 360;
 constexpr int wavelength_end = 700;
-constexpr int wavelength_ir_threshold = 900;
 constexpr int wavelength_size = wavelength_end - wavelength_start;
 constexpr int hue_range = 360;
 constexpr int hue_split = 300;
@@ -481,26 +479,37 @@ constexpr float interpolateWavelengthToHue(float wavelength)
     return (1.0f - wavelength_frac) * table_wavelength_to_hue[index] + wavelength_frac * table_wavelength_to_hue[index + 1];
 }
 
-#include <iostream>
 const glm::vec3 lightWavelengthShift(glm::vec3 sRGBcolor, float scale)
 {
     glm::vec3 hclColor = sRGBToHCL(sRGBcolor);
     float wavelength = interpolateHueToWavelength(hclColor[0]);
     wavelength *= scale;
 
-    if (wavelength < wavelength_uv_threshold || wavelength > wavelength_ir_threshold)
-        return glm::vec3(0.0f, 0.0f, 0.0f);
-
     float decay = 1.0f;
-    // effect: exponential decay
-    if (wavelength_uv_threshold <= wavelength && wavelength < wavelength_start)
-        decay = expf(wavelength_uv_threshold - wavelength);
-    if (wavelength_end < wavelength && wavelength <= wavelength_ir_threshold)
-        decay = expf(wavelength - wavelength_ir_threshold);
+
+    if (wavelength < wavelength_start)
+        decay = expf(0.02f * (wavelength - wavelength_start));
+    if (wavelength_end < wavelength && wavelength)
+        decay = expf(0.02f * (wavelength_end - wavelength));
 
     hclColor[0] = interpolateWavelengthToHue(wavelength);
     hclColor[1] *= decay;
     hclColor[2] *= decay;
 
     return hclTosRGB(hclColor);
+}
+
+float gammaCorrection(float linear_component)
+{
+    if (linear_component > 0.0f)
+        return std::sqrt(linear_component);
+    return 0.0f;
+}
+
+const glm::vec4 gammaCorrection(glm::vec4 color)
+{
+    color.r = gammaCorrection(color.r);
+    color.g = gammaCorrection(color.g);
+    color.b = gammaCorrection(color.b);
+    return color;
 }
