@@ -2,7 +2,7 @@ INCFLAGS   = -I /usr/include/GL
 INCFLAGS   += -I .
 INCFLAGS   += -I include
 
-LINKFLAGS  = -lGL -lGLU -lglfw -lGLEW
+LINKFLAGS  = -lGL -lGLU -lglfw
 LINKFLAGS  += -lavcodec -lavformat -lavutil
 
 CFLAGS     =  -O2 -Wall -Wextra -Wshadow -Wconversion
