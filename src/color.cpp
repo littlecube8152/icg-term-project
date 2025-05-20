@@ -481,16 +481,10 @@ constexpr float interpolateWavelengthToHue(float wavelength)
 #include <iostream>
 const glm::vec3 lightWavelengthShift(glm::vec3 sRGBcolor, float scale)
 {
-    // std::cerr << scale << '\n';
-    // std::cerr << sRGBcolor[0] << ' ' << sRGBcolor[1] << ' ' << sRGBcolor[2] << '\n';
-
     glm::vec3 hclColor = sRGBToHCL(sRGBcolor);
-    // std::cerr << hclColor[0] << ' ' << hclColor[1] << ' ' << hclColor[2] << '\n';
-    // std::cerr << hclTosRGB(hclColor)[0] << ' ' << hclTosRGB(hclColor)[1] << ' ' << hclTosRGB(hclColor)[2] << '\n';
     float wavelength = interpolateHueToWavelength(hclColor[0]);
     wavelength *= scale;
 
-    // std::cerr << wavelength << '\n';
     if (wavelength < wavelength_uv_threshold || wavelength > wavelength_ir_threshold)
         return glm::vec3(0.0f, 0.0f, 0.0f);
 
@@ -504,19 +498,6 @@ const glm::vec3 lightWavelengthShift(glm::vec3 sRGBcolor, float scale)
     hclColor[0] = interpolateWavelengthToHue(wavelength);
     hclColor[1] *= decay;
     hclColor[2] *= decay;
-    // std::cerr << hclColor[0] << '\n';
 
-    // std::cerr << hclTosRGB(hclColor)[0] << ' ' << hclTosRGB(hclColor)[1] << ' ' << hclTosRGB(hclColor)[2] << '\n';
-    // std::cerr << '\n';
     return hclTosRGB(hclColor);
 }
-
-// int main()
-// {
-//     // for (auto hue : table_wavelength_to_hue)
-//     //     std::cerr << hue << ' ';
-//     // std::cerr << std::endl;
-//     for (auto wavelength : table_wavelength_to_hue)
-//         std::cerr << wavelength << ' ';
-//     std::cerr << std::endl;
-// }
