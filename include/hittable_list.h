@@ -16,6 +16,7 @@ public:
     void clear();
     void add(std::shared_ptr<Object> obj);
     bool hit(Ray &ray, HitRecord &record) const;
+    const std::vector<std::shared_ptr<Object>>& getObjects() const;
 
 private:
     std::shared_ptr<InertialFrame> frame;

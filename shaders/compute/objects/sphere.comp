@@ -10,12 +10,12 @@
 Object Sphere_new(vec3 center, float radius, int material_id) {
     Object object;
     object.object_type = OBJECT_TYPE_SPHERE;
-    object.sphere = Sphere(center, radius, material_id);
+    object.sphere = Sphere(vec4(center, 0), radius, material_id);
     return object;
 }
 
 bool Sphere_hit(Sphere sphere, Ray ray, out HitRecord record) {
-    vec3 origin_to_center = sphere.center - ray.origin.xyz;
+    vec3 origin_to_center = sphere.center.xyz - ray.origin.xyz;
     vec3 proj = proj_unit(origin_to_center, ray.direction);
     vec3 closest = origin_to_center - proj;
 
@@ -36,12 +36,8 @@ bool Sphere_hit(Sphere sphere, Ray ray, out HitRecord record) {
     vec4 coord = Ray_at(ray, hit);
     record.alpha = hit;
     record.coord = coord.xyz;
-    HitRecord_setFaceNormal(record, ray, (coord.xyz - sphere.center) / sphere.radius);
-    if (sphere.material_id >= 0) {
-        record.has_scattered = Material_scatter(sphere.material_id, ray, record);
-    } else {
-        record.has_scattered = false;
-    }
+    HitRecord_setFaceNormal(record, ray, (coord.xyz - sphere.center.xyz) / sphere.radius);
+    record.has_scattered = Material_scatter(sphere.material_id, ray, record);
 
     return true;
 }

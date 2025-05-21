@@ -45,13 +45,13 @@ struct Material {
 
 
 struct Sphere {
-    vec3 center;
+    vec4 center;
     float radius;
     int material_id;
 };
 
 struct Cube {
-    vec3 center;
+    vec4 center;
     float side_length;
     int material_id;
 };

@@ -18,7 +18,25 @@ GLuint Scene::renderAsTexture() {
 }
 
 SceneUniform Scene::toUniform() const {
-    return (SceneUniform) {
-        .camera_uniform = camera.toUniform(),
-    };
+    auto objects = world.getObjects();
+    int n_objects = (int)objects.size();
+    assert(n_objects <= MAX_OBJECTS);
+
+    SceneUniform uniform;
+    uniform.n_objects = n_objects;
+    uniform.world_iframe = glm::vec4(object_space_frame.frame_velocity, 0);
+    uniform.camera_uniform = camera.toUniform();
+
+    for (int obj_id = 0; obj_id < uniform.n_objects; obj_id++) {
+        const auto &obj = objects[obj_id];
+        uniform.objects[obj_id] = obj->toUniform();
+        const auto &mat = obj->getMaterial();
+        if (mat.get()) {
+            int mat_id = mat->getId();
+            assert(0 <= mat_id && mat_id < MAX_MATERIALS);
+            uniform.materials[mat_id] = mat->toUniform();
+        }
+    }
+    
+    return uniform;
 }

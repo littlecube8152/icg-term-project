@@ -31,3 +31,7 @@ bool HittableList::hit(Ray &ray, HitRecord &record) const {
 
     return hit_any;
 }
+
+const std::vector<std::shared_ptr<Object>>& HittableList::getObjects() const {
+    return hittables;
+}

@@ -13,7 +13,7 @@ Ray Camera_getRayToPixel(vec2 pixel_coord) {
 }
 
 bool Camera_hitAllObjects(Ray ray, out HitRecord record) {
-    Ray_transformFrame(ray, world_iframe);
+    Ray_transformFrame(ray, world_iframe.xyz);
     HitRecord hit_result;
     bool hit_any = false;
     for (int i = 0; i < n_objects; i++) {

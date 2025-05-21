@@ -7,6 +7,9 @@
 
 
 bool Material_scatter(int material_id, Ray ray, inout HitRecord record) {
+    if (material_id < 0) {
+        return false;
+    }
     switch (materials[material_id].material_type) {
         case MATERIAL_TYPE_METAL:
             return Metal_scatter(materials[material_id].metal, ray, record);
