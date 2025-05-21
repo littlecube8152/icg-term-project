@@ -40,11 +40,9 @@ float Dielectric::reflectance(const float &cosine, const float &eta) {
 }
 
 
-MaterialUniform Dielectric::toUniform() const {
-    MaterialUniform uniform;
-    uniform.material_type = MATERIAL_TYPE_DIELECTRIC;
-    uniform.dielectric = (DielectricUniform) {
+void Dielectric::toUniform(MaterialUniform &material_uniform) const {
+    material_uniform.material_type = MATERIAL_TYPE_DIELECTRIC;
+    material_uniform.dielectric = (DielectricUniform) {
         .eta = eta,
     };
-    return uniform;
 }

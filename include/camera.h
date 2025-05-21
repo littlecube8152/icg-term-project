@@ -49,7 +49,7 @@ public:
     Camera();
     Camera(const CameraConfig &config);
     GLuint renderAsTexture(const HittableList &world) const;
-    CameraUniform toUniform() const;
+    void toUniform(CameraUniform &camera_uniform) const;
 
 private:
     CameraConfig config;

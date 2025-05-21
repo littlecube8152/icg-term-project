@@ -32,7 +32,7 @@ public:
     std::shared_ptr<Material> getMaterial() const { return mat; }
     
     virtual bool hit(Ray&, HitRecord&) const = 0;
-    virtual ObjectUniform toUniform() const = 0;
+    virtual void toUniform(ObjectUniform &object_uniform) const = 0;
 
 protected:
     std::shared_ptr<Material> mat;
@@ -43,7 +43,7 @@ class Sphere: public Object {
 public:
     Sphere(const glm::vec3 &center, const float &radius, std::shared_ptr<Material> mat);
     bool hit(Ray &ray, HitRecord &record) const override;
-    ObjectUniform toUniform() const override;
+    void toUniform(ObjectUniform &object_uniform) const override;
 
 private:
     glm::vec3 center;
@@ -55,7 +55,7 @@ class Cube: public Object {
 public:
     Cube(const glm::vec3 &corner, const float &side_length, std::shared_ptr<Material> mat);
     bool hit(Ray &ray, HitRecord &record) const override;
-    ObjectUniform toUniform() const override;
+    void toUniform(ObjectUniform &object_uniform) const override;
 
 private:
     glm::vec3 corner, x_axis, y_axis, z_axis;

@@ -14,11 +14,12 @@ struct alignas(16) SceneUniform {
     alignas(16) MaterialUniform materials[MAX_MATERIALS];
 };
 
+
 class Scene {
 public:
     Scene(void);
     GLuint renderAsTexture();
-    SceneUniform toUniform() const;
+    void toUniform(SceneUniform &scene_uniform) const;
 
 protected:
     Camera camera;

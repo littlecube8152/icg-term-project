@@ -21,11 +21,9 @@ bool Lambertian::scatter(const Ray &r_in, HitRecord &rec) const {
 }
 
 
-MaterialUniform Lambertian::toUniform() const {
-    MaterialUniform uniform;
-    uniform.material_type = MATERIAL_TYPE_LAMBERTIAN;
-    uniform.lambertian = (LambertianUniform) {
+void Lambertian::toUniform(MaterialUniform &material_uniform) const {
+    material_uniform.material_type = MATERIAL_TYPE_LAMBERTIAN;
+    material_uniform.lambertian = (LambertianUniform) {
         .albedo = albedo,
     };
-    return uniform;
 }

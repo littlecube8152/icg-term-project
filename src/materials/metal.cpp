@@ -17,12 +17,10 @@ bool Metal::scatter(const Ray &r_in, HitRecord &rec) const {
 }
 
 
-MaterialUniform Metal::toUniform() const {
-    MaterialUniform uniform;
-    uniform.material_type = MATERIAL_TYPE_METAL;
-    uniform.metal = (MetalUniform) {
+void Metal::toUniform(MaterialUniform &material_uniform) const {
+    material_uniform.material_type = MATERIAL_TYPE_METAL;
+    material_uniform.metal = (MetalUniform) {
         .albedo = albedo,
         .fuzz = fuzz,
     };
-    return uniform;
 }

@@ -33,7 +33,7 @@ public:
     Material();
     const int& getId() const;
 
-    virtual MaterialUniform toUniform() const = 0;
+    virtual void toUniform(MaterialUniform &material_uniform) const = 0;
     virtual bool scatter(const Ray &r_in, HitRecord &rec) const = 0;
 
 private:
@@ -43,7 +43,7 @@ private:
 class Metal: public Material {
 public:
     Metal(const glm::vec4 &albedo, const float &fuzz);
-    MaterialUniform toUniform() const override;
+    void toUniform(MaterialUniform &material_uniform) const override;
     bool scatter(const Ray &r_in, HitRecord &rec) const override;
 
 private:
@@ -54,7 +54,7 @@ private:
 class Dielectric: public Material {
 public:
     Dielectric(const float &eta);
-    MaterialUniform toUniform() const override;
+    void toUniform(MaterialUniform &material_uniform) const override;
     bool scatter(const Ray &r_in, HitRecord &rec) const override;
 
 private:
@@ -69,7 +69,7 @@ private:
 class Lambertian: public Material {
 public:
     Lambertian(const glm::vec4 &albedo);
-    MaterialUniform toUniform() const override;
+    void toUniform(MaterialUniform &material_uniform) const override;
     bool scatter(const Ray &r_in, HitRecord &rec) const override;
 
 private:

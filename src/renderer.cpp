@@ -1,5 +1,7 @@
 #include "renderer.h"
 
+#include <memory>
+
 #include "shaders.h"
 #include "scene.h"
 
@@ -75,11 +77,12 @@ Renderer::Renderer(GLuint _window_width, GLuint _window_height)
 void Renderer::renderFrame(const Scene &scene) {
     glUseProgram(path_tracer);
 
-    SceneUniform uniform = scene.toUniform();
+    std::unique_ptr<SceneUniform> uniform = std::make_unique<SceneUniform>();
+    scene.toUniform(*uniform);
     GLuint ubo;
     glGenBuffers(1, &ubo);
     glBindBuffer(GL_UNIFORM_BUFFER, ubo);
-    glBufferData(GL_UNIFORM_BUFFER, sizeof(SceneUniform), &uniform, GL_STATIC_DRAW);
+    glBufferData(GL_UNIFORM_BUFFER, sizeof(SceneUniform), uniform.get(), GL_STATIC_DRAW);
     glBindBufferBase(GL_UNIFORM_BUFFER, 0, ubo);
     GLuint uniform_block_index = glGetUniformBlockIndex(path_tracer, "SceneUniform");
     glUniformBlockBinding(path_tracer, uniform_block_index, 0);

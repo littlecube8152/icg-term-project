@@ -46,13 +46,11 @@ bool Sphere::hit(Ray &ray, HitRecord &record) const
     return true;
 }
 
-ObjectUniform Sphere::toUniform() const {
-    ObjectUniform uniform;
-    uniform.object_type = OBJECT_TYPE_SPHERE;
-    uniform.sphere = (SphereUniform) {
+void Sphere::toUniform(ObjectUniform &object_uniform) const {
+    object_uniform.object_type = OBJECT_TYPE_SPHERE;
+    object_uniform.sphere = (SphereUniform) {
         .center = glm::vec4(center, 0),
         .radius = radius,
         .material_id = mat.get() ? mat->getId() : -1,
     };
-    return uniform;
 }

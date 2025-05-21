@@ -17,26 +17,23 @@ GLuint Scene::renderAsTexture() {
     return texture;
 }
 
-SceneUniform Scene::toUniform() const {
+void Scene::toUniform(SceneUniform &scene_uniform) const {
     auto objects = world.getObjects();
     int n_objects = (int)objects.size();
     assert(n_objects <= MAX_OBJECTS);
 
-    SceneUniform uniform;
-    uniform.n_objects = n_objects;
-    uniform.world_iframe = glm::vec4(object_space_frame.frame_velocity, 0);
-    uniform.camera_uniform = camera.toUniform();
+    scene_uniform.n_objects = n_objects;
+    scene_uniform.world_iframe = glm::vec4(object_space_frame.frame_velocity, 0);
+    camera.toUniform(scene_uniform.camera_uniform);
 
-    for (int obj_id = 0; obj_id < uniform.n_objects; obj_id++) {
+    for (int obj_id = 0; obj_id < scene_uniform.n_objects; obj_id++) {
         const auto &obj = objects[obj_id];
-        uniform.objects[obj_id] = obj->toUniform();
+        obj->toUniform(scene_uniform.objects[obj_id]);
         const auto &mat = obj->getMaterial();
         if (mat.get()) {
             int mat_id = mat->getId();
             assert(0 <= mat_id && mat_id < MAX_MATERIALS);
-            uniform.materials[mat_id] = mat->toUniform();
+            mat->toUniform(scene_uniform.materials[mat_id]);
         }
     }
-    
-    return uniform;
 }
