@@ -2,5 +2,6 @@
 #define SHADERS_COMPUTE_OBJECT_TYPES_H_
 
 #define OBJECT_TYPE_SPHERE 1
+#define OBJECT_TYPE_CUBE   2
 
 #endif

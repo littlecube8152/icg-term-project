@@ -50,9 +50,16 @@ struct Sphere {
     int material_id;
 };
 
+struct Cube {
+    vec3 center;
+    float side_length;
+    int material_id;
+};
+
 struct Object {
     int object_type;
     Sphere sphere;
+    Cube cube;
 };
 
 
