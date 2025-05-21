@@ -8,7 +8,9 @@
 #include "glm/glm.hpp"
 
 #include "ray.h"
-#include "hittable.h"
+#include "hit_record.h"
+#include "objects.h"
+#include "hittable_list.h"
 #include "inertial.h"
 
 
@@ -46,7 +48,7 @@ class Camera {
 public:
     Camera();
     Camera(const CameraConfig &config);
-    GLuint renderAsTexture(const Hittable &world) const;
+    GLuint renderAsTexture(const HittableList &world) const;
     CameraUniform toUniform() const;
 
 private:
@@ -60,8 +62,8 @@ private:
 
     void initViewport();
     Ray getRayToPixel(float x, float y) const;
-    glm::vec4 getRayColor(Ray &ray, const Hittable &hittable, const int &recursion_depth) const;
-    glm::vec4 getPixelColor(float x, float y, const Hittable &hittable) const;
+    glm::vec4 getRayColor(Ray &ray, const HittableList &world, const int &recursion_depth) const;
+    glm::vec4 getPixelColor(float x, float y, const HittableList &world) const;
 
     // gamma 2 correction
     float linear_to_gamma(float linear_component) const;

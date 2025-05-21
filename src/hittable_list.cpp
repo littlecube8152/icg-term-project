@@ -8,7 +8,7 @@ void HittableList::clear() {
 }
 
 // Add an object to the list.
-void HittableList::add(std::shared_ptr<Hittable> obj) {
+void HittableList::add(std::shared_ptr<Object> obj) {
     hittables.emplace_back(obj);
 }
 

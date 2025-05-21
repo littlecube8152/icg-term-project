@@ -3,11 +3,17 @@
 
 #include "glm/glm.hpp"
 
-#include "hittable.h"
+#include "hit_record.h"
 #include "materials.h"
 
 
-class Sphere: public Hittable {
+class Object {
+public:
+    virtual bool hit(Ray&, HitRecord&) const = 0;
+};
+
+
+class Sphere: public Object {
 public:
     Sphere(const glm::vec3 &center, const float &radius, std::shared_ptr<Material> mat);
     bool hit(Ray &ray, HitRecord &record) const override;
@@ -19,7 +25,7 @@ private:
 };
 
 
-class Cube: public Hittable {
+class Cube: public Object {
 public:
     Cube(const glm::vec3 &corner, const float &side_length, std::shared_ptr<Material> mat);
     bool hit(Ray &ray, HitRecord &record) const override;

@@ -33,11 +33,4 @@ public:
 };
 
 
-class Hittable {
-public:
-    virtual ~Hittable() = default;
-    
-    virtual bool hit(Ray&, HitRecord&) const = 0;
-};
-
 #endif

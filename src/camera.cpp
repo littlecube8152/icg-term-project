@@ -55,13 +55,13 @@ Ray Camera::getRayToPixel(float x, float y) const {
 }
 
 
-glm::vec4 Camera::getRayColor(Ray &ray, const Hittable &hittable, const int &recursion_depth) const {
+glm::vec4 Camera::getRayColor(Ray &ray, const HittableList &world, const int &recursion_depth) const {
     if (recursion_depth > config.max_recursion_depth)
         return glm::vec4(0.0, 0.0, 0.0, 1.0);
     HitRecord rec;
-    if (hittable.hit(ray, rec)) {
+    if (world.hit(ray, rec)) {
         if (rec.has_scattered)
-            return rec.attenuation * getRayColor(rec.scattered, hittable, recursion_depth + 1);
+            return rec.attenuation * getRayColor(rec.scattered, world, recursion_depth + 1);
         return glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
     } else {
         float dotval = glm::dot(ray.direction(), glm::vec3(0, 1, 0));
@@ -71,12 +71,12 @@ glm::vec4 Camera::getRayColor(Ray &ray, const Hittable &hittable, const int &rec
 }
 
 
-glm::vec4 Camera::getPixelColor(float x, float y, const Hittable &hittable) const {
+glm::vec4 Camera::getPixelColor(float x, float y, const HittableList &world) const {
     glm::vec4 pixel_color = glm::vec4(0, 0, 0, 0);
     for (int dx = 0; dx < config.sqrt_samples_per_pixel; dx++) {
         for (int dy = 0; dy < config.sqrt_samples_per_pixel; dy++) {
             Ray sampled_ray = getRayToPixel(x + pixel_samples_delta * (0.5f + (float)dx), y + pixel_samples_delta * (0.5f + (float)dy));
-            pixel_color += getRayColor(sampled_ray, hittable, 1);
+            pixel_color += getRayColor(sampled_ray, world, 1);
         }
     }
     pixel_color *= pixel_samples_scale;
@@ -100,7 +100,7 @@ glm::vec4 Camera::linear_to_gamma(glm::vec4 color) const {
 }
 
 
-GLuint Camera::renderAsTexture(const Hittable &world) const {
+GLuint Camera::renderAsTexture(const HittableList &world) const {
     std::vector<GLubyte> texture_data(config.image_width * config.image_height * 4);
     int data_index = 0;
     for (GLuint y = 0; y < config.image_height; y++) {

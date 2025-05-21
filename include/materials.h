@@ -3,7 +3,7 @@
 
 #include "glm/glm.hpp"
 
-#include "hittable.h"
+#include "hit_record.h"
 #include "ray.h"
 
 

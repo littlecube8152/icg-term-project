@@ -4,21 +4,22 @@
 #include <vector>
 #include <memory>
 
-#include "hittable.h"
+#include "hit_record.h"
+#include "objects.h"
 #include "inertial.h"
 
 
-class HittableList: public Hittable {
+class HittableList {
 public:
     HittableList(std::shared_ptr<InertialFrame> frame);
 
     void clear();
-    void add(std::shared_ptr<Hittable> obj);
-    bool hit(Ray &ray, HitRecord &record) const override;
+    void add(std::shared_ptr<Object> obj);
+    bool hit(Ray &ray, HitRecord &record) const;
 
 private:
     std::shared_ptr<InertialFrame> frame;
-    std::vector<std::shared_ptr<Hittable>> hittables;
+    std::vector<std::shared_ptr<Object>> hittables;
 };
 
 #endif
