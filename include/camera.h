@@ -39,7 +39,6 @@ struct CameraConfig {
 
 struct alignas(16) CameraUniform {
     alignas(4)  int sqrt_samples_per_pixel;
-    alignas(4)  int max_recursion_depth;
     alignas(4)  float pixel_samples_scale;
     alignas(4)  float pixel_samples_delta;
     alignas(16) glm::vec4 lookfrom;

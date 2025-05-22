@@ -4,4 +4,8 @@
 #define MAX_OBJECTS   256
 #define MAX_MATERIALS 256
 
+#ifndef MAX_RECURSION_DEPTH
+#define MAX_RECURSION_DEPTH 32
+#endif
+
 #endif

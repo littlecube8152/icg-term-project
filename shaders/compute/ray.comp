@@ -26,9 +26,9 @@ vec4 Ray_at(Ray ray, float alpha) {
 }
 
 void Ray_transformFrame(inout Ray ray, vec3 to_iframe) {
-    vec4 new_origin = IFrame_transformCoordinateFrom(to_iframe, ray.iframe, ray.origin.w, ray.origin.xyz);
+    vec4 transform_result = IFrame_transformCoordinateFrom(to_iframe, ray.iframe, ray.origin.w, ray.origin.xyz);
     vec3 new_velocity = IFrame_transformVelocityFrom(to_iframe, ray.iframe, ray.direction.xyz * kSpeedOfLight);
-    ray.origin = vec4(new_origin.yzw, new_origin.x);
+    ray.origin = vec4(transform_result.yzw, transform_result.x);
     ray.direction = new_velocity / kSpeedOfLight;
     ray.iframe = to_iframe;
 }

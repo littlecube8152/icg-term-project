@@ -30,23 +30,23 @@ protected:
 
 class SceneMaterialDemo: public Scene {
 public:
-    SceneMaterialDemo(GLuint texture_width, GLuint texture_height, float time_scale, AVRational time_base);
+    SceneMaterialDemo(GLuint texture_width, GLuint texture_height, float time_scale, AVRational time_base, int max_recursion_depth);
 };
 
 
 class SceneRandomBalls: public Scene {
 public:
-    SceneRandomBalls(GLuint texture_width, GLuint texture_height, float time_scale, AVRational time_base);
+    SceneRandomBalls(GLuint texture_width, GLuint texture_height, float time_scale, AVRational time_base, int max_recursion_depth);
 };
 
 class SceneRelativityTest: public Scene {
 public:
-    SceneRelativityTest(GLuint texture_width, GLuint texture_height, float time_scale, AVRational time_base);
+    SceneRelativityTest(GLuint texture_width, GLuint texture_height, float time_scale, AVRational time_base, int max_recursion_depth);
 };
 
 class SceneRelativisticMovementTest: public Scene {
 public:
-    SceneRelativisticMovementTest(GLuint texture_width, GLuint texture_height, float time_scale, AVRational time_base);
+    SceneRelativisticMovementTest(GLuint texture_width, GLuint texture_height, float time_scale, AVRational time_base, int max_recursion_depth);
 };
 
 

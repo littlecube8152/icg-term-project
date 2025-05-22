@@ -38,12 +38,14 @@ int main(void)
     glfwMakeContextCurrent(window);
     glfwSetKeyCallback(window, keyCallback);
 
+    int max_recursion_depth = 32;
+
     std::cerr << "Generating scene" << std::endl;
-    SceneRelativisticMovementTest scene(kWindowWidth, kWindowHeight, 1e-7f, AVRational{1, 30});
+    SceneRelativisticMovementTest scene(kWindowWidth, kWindowHeight, 1e-7f, AVRational{1, 30}, max_recursion_depth);
 
     // render the frame
     std::cerr << "Rendering" << std::endl;
-    Renderer renderer(kWindowWidth, kWindowHeight);
+    Renderer renderer(kWindowWidth, kWindowHeight, max_recursion_depth);
     renderer.renderFrame(scene, 0);
 
     bool saved = false;

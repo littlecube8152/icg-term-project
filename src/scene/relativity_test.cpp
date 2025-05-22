@@ -3,7 +3,7 @@
 #include "objects.h"
 #include "materials.h"
 
-SceneRelativityTest::SceneRelativityTest(GLuint texture_width, GLuint texture_height, float time_scale, AVRational time_base)
+SceneRelativityTest::SceneRelativityTest(GLuint texture_width, GLuint texture_height, float time_scale, AVRational time_base, int max_recursion_depth)
 {
     camera = Camera((CameraConfig){
         .image_width = texture_width,
@@ -13,7 +13,7 @@ SceneRelativityTest::SceneRelativityTest(GLuint texture_width, GLuint texture_he
         .lookat = glm::vec3(0.2, 0, 0),
         .lookup = glm::vec3(0, 1, 0),
         .sqrt_samples_per_pixel = 4,
-        .max_recursion_depth = 30,
+        .max_recursion_depth = max_recursion_depth,
         .inertial_frame = std::make_shared<InertialFrame>(glm::vec3(0.5, 0.0, 0.0)),
         .time_scale = time_scale,
         .time_base = time_base});

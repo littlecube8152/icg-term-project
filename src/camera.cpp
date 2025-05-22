@@ -168,7 +168,6 @@ GLuint Camera::renderAsTexture(const HittableList &world, int frame_number) cons
 void Camera::toUniform(CameraUniform &camera_uniform) const {
     camera_uniform = (CameraUniform) {
         .sqrt_samples_per_pixel = config.sqrt_samples_per_pixel,
-        .max_recursion_depth = config.max_recursion_depth,
         .pixel_samples_scale = pixel_samples_scale,
         .pixel_samples_delta = pixel_samples_delta,
         .lookfrom = glm::vec4(config.lookfrom, 0),

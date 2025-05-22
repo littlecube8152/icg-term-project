@@ -24,9 +24,6 @@ unsigned char vertex_shader_source[] = {};
 #include <fstream>
 #include <stdexcept>
 #include <memory>
-#include <regex>
-#include <ranges>
-#include <string_view>
 
 static GLuint compileShader(GLuint type, const std::string shader_source) {
     const char* shader_source_ptr = shader_source.c_str();
@@ -83,7 +80,9 @@ GLuint loadShaderProgram(void) {
 }
 
 
-GLuint loadPathTracerProgram(void) {
+GLuint loadPathTracerProgram(int max_recursion_depth) {
+    std::string raw_source(reinterpret_cast<char*>(compute_shader_source));
+    raw_source = std::format("#define MAX_RECURSION_DEPTH {}\n", max_recursion_depth) + raw_source;
     GLuint compute_shader = compileShader(GL_COMPUTE_SHADER, reinterpret_cast<char*>(compute_shader_source));
     GLuint program = createLinkedProgram({compute_shader});
     glDeleteShader(compute_shader);

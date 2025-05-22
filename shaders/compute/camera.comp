@@ -6,6 +6,7 @@
 #include "compute/hit_record.comp"
 #include "compute/objects/objects.comp"
 #include "compute/color.comp"
+#include "compute/macros.h"
 
 
 Ray Camera_getRayToPixel(vec2 pixel_coord, float time) {
@@ -33,26 +34,23 @@ bool Camera_hitAllObjects(Ray ray, out HitRecord record) {
 }
 
 
-vec4 Camera_getRayColor(Ray ray) {
+vec4 Camera_getRayColor(vec3 camera_iframe, Ray ray) {
     vec4 accum_attenuation = vec4(1, 1, 1, 1);
     vec4 object_space_color = vec4(0, 0, 0, 1);
-    // record the first hit for doppler effect of light
-    bool first_hit = false;
-    HitRecord first_record;
     
     HitRecord record;
-    for (int depth = 0; depth < camera.max_recursion_depth; depth++) {
+    float scales[MAX_RECURSION_DEPTH];
+    vec4 attenuations[MAX_RECURSION_DEPTH];
+    
+    int depth = 0;
+    for (; depth < MAX_RECURSION_DEPTH; depth++) {
         if (!Camera_hitAllObjects(ray, record)) {
             // sky box
-            float dotval = dot(ray.direction, vec3(0, 1, 0));
+            float dotval = dot(IFrame_transformVelocityFrom(camera_iframe.xyz, ray.iframe, ray.direction), vec3(0, 1, 0));
             float ratio = (dotval + 1) / 2.0f;
             vec4 sky_color = (1.0f - ratio) * vec4(1, 1, 1, 1) + ratio * vec4(0.2, 0.2, 1.0, 1.0);
             object_space_color = accum_attenuation * sky_color;
             break;
-        }
-        if (!first_hit) {
-            first_hit = true;
-            first_record = record;
         }
         if (!record.has_scattered) {
             // light absorbed by the object
@@ -60,22 +58,28 @@ vec4 Camera_getRayColor(Ray ray) {
             break;
         }
         accum_attenuation *= record.attenuation;
+        attenuations[depth] = accum_attenuation;
+
+        // doppler effect of light
+        vec3 velocity = IFrame_transformVelocityFrom(ray.iframe.xyz, record.ray.iframe.xyz, vec3(0, 0, 0));
+        vec3 line_of_sight = IFrame_transformCoordinateFrom(ray.iframe.xyz, record.ray.iframe.xyz, record.ray.origin.w / kSpeedOfLight, record.ray.origin.xyz).yzw - ray.origin.xyz;
+        float cosine = dot(default_normalize(velocity, velocity), normalize(line_of_sight));
+        float beta = IFrame_getBetaScalar(ray.iframe.xyz, record.ray.iframe.xyz);
+        scales[depth] = sqrt((1.0f - beta * cosine) / (1.0f + beta * cosine));
+        
         ray = record.scattered_ray;
     }
+    depth--;
+    for (; depth >= 0; depth--)
+    {
+        object_space_color *= attenuations[depth];
+        object_space_color = vec4(Color_lightWavelengthShift(object_space_color.rgb, scales[depth]), object_space_color.a);
+    }
 
-    // doppler effect of light
-    // if (first_hit) {
-    //     vec3 velocity = IFrame_transformVelocityFrom(camera.iframe.xyz, world_iframe.xyz, vec3(0, 0, 0));
-    //     vec3 line_of_sight = IFrame_transformCoordinateFrom(camera.iframe.xyz, world_iframe.xyz, first_record.ray.origin.w / kSpeedOfLight, first_record.ray.origin.xyz).yzw - camera.lookfrom.xyz;
-    //     float cosine = dot(default_normalize(velocity, velocity), normalize(line_of_sight));
-    //     float beta = IFrame_getBetaScalar(camera.iframe.xyz, world_iframe.xyz);
-    //     float scale = sqrt((1.0f - beta * cosine) / (1.0f + beta * cosine));
-    //     object_space_color = vec4(Color_lightWavelengthShift(object_space_color.rgb, scale), object_space_color.a);
-    // }
     return object_space_color;
 }
 
-vec4 Camera_getPixelColor(ivec2 pixel_coord, float time) {
+vec4 Camera_getPixelColor(vec3 camera_iframe, ivec2 pixel_coord, float time) {
     vec4 pixel_color = vec4(0, 0, 0, 0);
     for (int dx = 0; dx < camera.sqrt_samples_per_pixel; dx++) {
         for (int dy = 0; dy < camera.sqrt_samples_per_pixel; dy++) {
@@ -83,7 +87,7 @@ vec4 Camera_getPixelColor(ivec2 pixel_coord, float time) {
                 vec2(pixel_coord) + camera.pixel_samples_delta * vec2(dx, dy),
                 time
             );
-            pixel_color += Camera_getRayColor(sampled_ray);
+            pixel_color += Camera_getRayColor(camera_iframe, sampled_ray);
         }
     }
     pixel_color *= camera.pixel_samples_scale;
@@ -91,6 +95,6 @@ vec4 Camera_getPixelColor(ivec2 pixel_coord, float time) {
     return pixel_color;
 }
 
-vec4 Camera_getPixelColor(ivec2 pixel_coord) {
-    return Camera_getPixelColor(pixel_coord, 0.0f);
+vec4 Camera_getPixelColor(vec3 camera_iframe, ivec2 pixel_coord) {
+    return Camera_getPixelColor(camera_iframe, pixel_coord, 0.0f);
 }

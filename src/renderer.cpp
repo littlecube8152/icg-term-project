@@ -77,9 +77,9 @@ static GLuint sendUniform(GLuint program, void* data, GLuint size, GLuint bind_p
 }
 
 
-Renderer::Renderer(GLuint _window_width, GLuint _window_height)
+Renderer::Renderer(GLuint _window_width, GLuint _window_height, int max_recursion_depth)
     : window_width(_window_width), window_height(_window_height) {
-    path_tracer = loadPathTracerProgram();
+    path_tracer = loadPathTracerProgram(max_recursion_depth);
     texture_unit = 0;
     texture = createTexture(texture_unit, window_width, window_height);
     shader = loadShaderProgram();

@@ -13,7 +13,7 @@ public:
     
     Renderer() = delete;
     Renderer(const Renderer &renderer) = delete;
-    Renderer(GLuint window_width, GLuint window_height);
+    Renderer(GLuint window_width, GLuint window_height, int max_recursion_depth);
 
     // render the scene into a texture with compute shaders
     // TODO: render the actual scene

@@ -15,7 +15,7 @@ void main() {
 
     // random seed can't be zero, so we add an arbitrary constant
     Random_setSeed(global_invocation_id + 48763);
-    color = Camera_getPixelColor(pixel_coord, scene_time);
+    color = Camera_getPixelColor(camera.iframe.xyz, pixel_coord, scene_time);
 
     imageStore(u_img_output, pixel_coord, color);
 }

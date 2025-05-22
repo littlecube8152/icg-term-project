@@ -6,6 +6,6 @@
 
 
 GLuint loadShaderProgram(void);
-GLuint loadPathTracerProgram(void);
+GLuint loadPathTracerProgram(int max_recursion_depth);
 
 #endif

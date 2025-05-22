@@ -9,7 +9,8 @@
 
 
 Object Cube_new(vec3 center, float side_length, int material_id, vec4 frame) {
-    vec4 actual_center = IFrame_transformCoordinateFrom(frame.xyz, vec3(0.0f, 0.0f, 0.0f), 0.0f, center);
+    vec4 transform_result = IFrame_transformCoordinateFrom(frame.xyz, vec3(0.0f, 0.0f, 0.0f), 0.0f, center);
+    vec4 actual_center = vec4(transform_result.yzw, transform_result.x);
 
     Object object;
     object.object_type = OBJECT_TYPE_CUBE;
