@@ -33,6 +33,16 @@ bool Camera_hitAllObjects(Ray ray, out HitRecord record) {
     return hit_any;
 }
 
+uint Camera_compressColor(vec4 color)
+{
+    color *= 255.0f;
+    return (uint(color[3]) << 24) | (uint(color[2]) << 16) | (uint(color[1]) << 8) | uint(color[0]);
+}
+
+vec4 Camera_decompressColor(uint color)
+{
+    return vec4(color & 255, (color >> 8) & 255, (color >> 16) & 255, (color >> 24) & 255) / 255.0f;
+}
 
 vec4 Camera_getRayColor(vec3 camera_iframe, Ray ray) {
     vec4 accum_attenuation = vec4(1, 1, 1, 1);
@@ -40,7 +50,7 @@ vec4 Camera_getRayColor(vec3 camera_iframe, Ray ray) {
     
     HitRecord record;
     float scales[MAX_RECURSION_DEPTH];
-    vec4 attenuations[MAX_RECURSION_DEPTH];
+    uint attenuations[MAX_RECURSION_DEPTH];
     
     int depth = 0;
     for (; depth < MAX_RECURSION_DEPTH; depth++) {
@@ -58,7 +68,7 @@ vec4 Camera_getRayColor(vec3 camera_iframe, Ray ray) {
             break;
         }
         accum_attenuation *= record.attenuation;
-        attenuations[depth] = accum_attenuation;
+        attenuations[depth] = Camera_compressColor(accum_attenuation);
 
         // doppler effect of light
         vec3 velocity = IFrame_transformVelocityFrom(ray.iframe.xyz, record.ray.iframe.xyz, vec3(0, 0, 0));
@@ -72,7 +82,7 @@ vec4 Camera_getRayColor(vec3 camera_iframe, Ray ray) {
     depth--;
     for (; depth >= 0; depth--)
     {
-        object_space_color *= attenuations[depth];
+        object_space_color *= Camera_decompressColor(attenuations[depth]);
         object_space_color = vec4(Color_lightWavelengthShift(object_space_color.rgb, scales[depth]), object_space_color.a);
     }
 
