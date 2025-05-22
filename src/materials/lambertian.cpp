@@ -11,11 +11,10 @@
 Lambertian::Lambertian(const glm::vec4 &_albedo): albedo(_albedo) {}
 
 
-bool Lambertian::scatter(const Ray &r_in, HitRecord &rec) const {
-    [](...){}(r_in);
+bool Lambertian::scatter(HitRecord &rec) const {
     auto scatter_dir = rec.normal + rand_unit_length<glm::vec3>();
     scatter_dir = default_normalize(scatter_dir, rec.normal);
-    rec.scattered = Ray(rec.p, scatter_dir, r_in.referenceFramePtr());
+    rec.scattered = Ray(rec.ray.origin(), scatter_dir, rec.ray.referenceFramePtr());
     rec.attenuation = albedo;
     return true;
 }

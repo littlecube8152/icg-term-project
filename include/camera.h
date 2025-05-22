@@ -6,6 +6,10 @@
 
 #include "GL/gl.h"
 #include "glm/glm.hpp"
+extern "C"
+{
+#include "libavcodec/avcodec.h"
+}
 
 #include "ray.h"
 #include "hit_record.h"
@@ -24,6 +28,8 @@ struct CameraConfig {
     int sqrt_samples_per_pixel;
     int max_recursion_depth;
     std::shared_ptr<InertialFrame> inertial_frame;
+    float time_scale;
+    AVRational time_base;
 };
 
 
@@ -48,7 +54,7 @@ class Camera {
 public:
     Camera();
     Camera(const CameraConfig &config);
-    GLuint renderAsTexture(const HittableList &world) const;
+    GLuint renderAsTexture(const HittableList &world, int frame_number) const;
     void toUniform(CameraUniform &camera_uniform) const;
 
 private:
@@ -59,11 +65,14 @@ private:
     glm::vec3 viewport_dy;
     float pixel_samples_scale;
     float pixel_samples_delta;
+    float dt;
 
     void initViewport();
     Ray getRayToPixel(float x, float y) const;
-    glm::vec4 getRayColor(Ray &ray, const HittableList &world, const int &recursion_depth) const;
-    glm::vec4 getPixelColor(float x, float y, const HittableList &world) const;
+    Ray getRayToPixel(float x, float y, float t) const;
+    glm::vec4 getRayColor(Ray &ray, const HittableList &hittable, const int &recursion_depth) const;
+    glm::vec4 getPixelColor(float x, float y, const HittableList &hittable) const;
+    glm::vec4 getPixelColor(float x, float y, float t, const HittableList &hittable) const;
 };
 
 #endif

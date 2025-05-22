@@ -8,9 +8,15 @@
 #include "compute/color.comp"
 
 
-Ray Camera_getRayToPixel(vec2 pixel_coord) {
+Ray Camera_getRayToPixel(vec2 pixel_coord, float time) {
     vec3 pixel_position = (camera.viewport_lower_left + camera.viewport_dx * pixel_coord.x + camera.viewport_dy * pixel_coord.y).xyz;
-    return Ray_new(camera.lookfrom.xyz, normalize(pixel_position - camera.lookfrom.xyz), camera.iframe.xyz);
+    return Ray_new(vec4(camera.lookfrom.xyz, time), 
+                   normalize(pixel_position - camera.lookfrom.xyz), 
+                   camera.iframe.xyz);
+}
+
+Ray Camera_getRayToPixel(vec2 pixel_coord) {
+    return Camera_getRayToPixel(pixel_coord, 0.0f);
 }
 
 bool Camera_hitAllObjects(Ray ray, out HitRecord record) {
@@ -27,6 +33,8 @@ bool Camera_hitAllObjects(Ray ray, out HitRecord record) {
     return hit_any;
 }
 
+
+// TODO
 vec4 Camera_getRayColor(Ray ray) {
     vec4 accum_attenuation = vec4(1, 1, 1, 1);
     vec4 object_space_color = vec4(0, 0, 0, 1);
@@ -69,12 +77,13 @@ vec4 Camera_getRayColor(Ray ray) {
     return object_space_color;
 }
 
-vec4 Camera_getPixelColor(ivec2 pixel_coord) {
+vec4 Camera_getPixelColor(ivec2 pixel_coord, float time) {
     vec4 pixel_color = vec4(0, 0, 0, 0);
     for (int dx = 0; dx < camera.sqrt_samples_per_pixel; dx++) {
         for (int dy = 0; dy < camera.sqrt_samples_per_pixel; dy++) {
             Ray sampled_ray = Camera_getRayToPixel(
-                vec2(pixel_coord) + camera.pixel_samples_delta * vec2(dx, dy)
+                vec2(pixel_coord) + camera.pixel_samples_delta * vec2(dx, dy),
+                time
             );
             pixel_color += Camera_getRayColor(sampled_ray);
         }
@@ -82,4 +91,8 @@ vec4 Camera_getPixelColor(ivec2 pixel_coord) {
     pixel_color *= camera.pixel_samples_scale;
     pixel_color = Color_gammaCorrection(pixel_color);
     return pixel_color;
+}
+
+vec4 Camera_getPixelColor(ivec2 pixel_coord) {
+    return Camera_getPixelColor(pixel_coord, 0.0f);
 }

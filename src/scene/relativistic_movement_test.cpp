@@ -3,7 +3,7 @@
 #include "objects.h"
 #include "materials.h"
 
-SceneRelativityTest::SceneRelativityTest(GLuint texture_width, GLuint texture_height, float time_scale, AVRational time_base)
+SceneRelativisticMovementTest::SceneRelativisticMovementTest(GLuint texture_width, GLuint texture_height, float time_scale, AVRational time_base)
 {
     camera = Camera((CameraConfig){
         .image_width = texture_width,
@@ -23,9 +23,14 @@ SceneRelativityTest::SceneRelativityTest(GLuint texture_width, GLuint texture_he
     auto material_left = std::make_shared<Dielectric>(1.50f);
     auto material_bubble = std::make_shared<Dielectric>(1.00f / 1.50f);
     auto material_right = std::make_shared<Metal>(glm::vec4(0.8f, 0.6f, 0.2f, 1.0f), 1.0f);
+    InertialFrame frame(glm::vec3(0.2, 0.0, 0.0));
+    world.add(std::make_shared<Cube>(glm::vec3(-1.0f, 0.0f, 1.0f), 0.8f, material_right));
     world.add(std::make_shared<Cube>(glm::vec3(0.0f, -1000.5f, 1.0f), 2000.0f, material_ground));
     world.add(std::make_shared<Cube>(glm::vec3(0.0f, 0.0f, 1.0f), 0.8f, material_center));
     world.add(std::make_shared<Cube>(glm::vec3(1.0f, 0.0f, 1.0f), 0.8f, material_left));
     world.add(std::make_shared<Cube>(glm::vec3(1.0f, 0.0f, 1.0f), 0.6f, material_bubble));
-    world.add(std::make_shared<Cube>(glm::vec3(-1.0f, 0.0f, 1.0f), 0.8f, material_right));
+    world.add(std::make_shared<Cube>(glm::vec3(2.0f, 0.0f, 1.0f), 0.8f, material_left, frame));
+    world.add(std::make_shared<Cube>(glm::vec3(2.0f, 0.0f, 1.0f), 0.6f, material_bubble, frame));
+    world.add(std::make_shared<Cube>(glm::vec3(3.0f, 0.0f, 1.0f), 0.8f, material_right, frame));
+    world.add(std::make_shared<Cube>(glm::vec3(3.0f, 0.0f, 1.0f), 0.8f, material_left, InertialFrame(glm::vec3(0.8, 0.0, 0.0))));
 }
