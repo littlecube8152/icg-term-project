@@ -6,6 +6,10 @@
 
 #include "GL/gl.h"
 #include "glm/glm.hpp"
+extern "C"
+{
+#include "libavcodec/avcodec.h"
+}
 
 #include "ray.h"
 #include "hittable.h"
@@ -21,6 +25,8 @@ struct CameraConfig {
     int sqrt_samples_per_pixel;
     int max_recursion_depth;
     std::shared_ptr<InertialFrame> inertial_frame;
+    float time_scale;
+    AVRational time_base;
 };
 
 
@@ -28,7 +34,7 @@ class Camera {
 public:
     Camera();
     Camera(const CameraConfig &config);
-    GLuint renderAsTexture(const Hittable &world);
+    GLuint renderAsTexture(const Hittable &world, int frame_number);
 
 private:
     CameraConfig config;
@@ -38,11 +44,14 @@ private:
     glm::vec3 viewport_dy;
     float pixel_samples_scale;
     float pixel_samples_delta;
+    float dt;
 
     void initViewport();
     Ray getRayToPixel(float x, float y);
+    Ray getRayToPixel(float x, float y, float t);
     glm::vec4 getRayColor(Ray &ray, const Hittable &hittable, const int &recursion_depth);
     glm::vec4 getPixelColor(float x, float y, const Hittable &hittable);
+    glm::vec4 getPixelColor(float x, float y, float t, const Hittable &hittable);
 
     // gamma 2 correction
     float linear_to_gamma(float linear_component);

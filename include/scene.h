@@ -8,7 +8,7 @@
 class Scene {
 public:
     Scene(void);
-    GLuint renderAsTexture();
+    GLuint renderAsTexture(int frame_number);
 
 protected:
     Camera camera;
@@ -18,23 +18,23 @@ protected:
 
 class SceneMaterialDemo: public Scene {
 public:
-    SceneMaterialDemo(GLuint texture_width, GLuint texture_height);
+    SceneMaterialDemo(GLuint texture_width, GLuint texture_height, float time_scale, AVRational time_base);
 };
 
 
 class SceneRandomBalls: public Scene {
 public:
-    SceneRandomBalls(GLuint texture_width, GLuint texture_height);
+    SceneRandomBalls(GLuint texture_width, GLuint texture_height, float time_scale, AVRational time_base);
 };
 
 class SceneRelativityTest: public Scene {
 public:
-    SceneRelativityTest(GLuint texture_width, GLuint texture_height);
+    SceneRelativityTest(GLuint texture_width, GLuint texture_height, float time_scale, AVRational time_base);
 };
 
 class SceneRelativisticMovementTest: public Scene {
 public:
-    SceneRelativisticMovementTest(GLuint texture_width, GLuint texture_height);
+    SceneRelativisticMovementTest(GLuint texture_width, GLuint texture_height, float time_scale, AVRational time_base);
 };
 
 

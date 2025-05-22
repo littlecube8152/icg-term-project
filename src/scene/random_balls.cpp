@@ -5,7 +5,7 @@
 #include "randutil.h"
 
 
-SceneRandomBalls::SceneRandomBalls(GLuint texture_width, GLuint texture_height) {
+SceneRandomBalls::SceneRandomBalls(GLuint texture_width, GLuint texture_height, float time_scale, AVRational time_base) {
     camera = Camera(CameraConfig{
         .image_width = texture_width,
         .image_height = texture_height,
@@ -15,7 +15,9 @@ SceneRandomBalls::SceneRandomBalls(GLuint texture_width, GLuint texture_height) 
         .lookup = glm::vec3(0, 1, 0),
         .sqrt_samples_per_pixel = 4,
         .max_recursion_depth = 10,
-        .inertial_frame = std::make_shared<InertialFrame>(glm::vec3(0.0, 0.0, 0.0))
+        .inertial_frame = std::make_shared<InertialFrame>(glm::vec3(0.0, 0.0, 0.0)),
+        .time_scale = time_scale,
+        .time_base = time_base
     });
 
     auto material_ground = std::make_shared<Lambertian>(glm::vec4(0.5f, 0.5f, 0.5f, 1.0f));

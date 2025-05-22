@@ -8,9 +8,9 @@
 Scene::Scene(void) : world(std::make_shared<InertialFrame>(object_space_frame)) {}
 
 
-GLuint Scene::renderAsTexture() {
+GLuint Scene::renderAsTexture(int frame_number) {
     const auto start = std::chrono::high_resolution_clock::now();
-    GLuint texture = camera.renderAsTexture(world);
+    GLuint texture = camera.renderAsTexture(world, frame_number);
     const auto end = std::chrono::high_resolution_clock::now();
     const std::chrono::duration<double> elapsed = end - start;
     std::cerr << "Frame time: " << elapsed << std::endl;

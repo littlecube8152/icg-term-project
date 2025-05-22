@@ -94,9 +94,9 @@ int main(void)
     // SceneRandomBalls scene(window_width, window_height);
     // SceneMaterialDemo scene(window_width, window_height);
     // SceneRelativityTest scene(window_width, window_height);
-    SceneRelativisticMovementTest scene(window_width, window_height);
+    SceneRelativisticMovementTest scene(window_width, window_height, 1e-7f, AVRational{1, 30});
 
-    GLuint texture = scene.renderAsTexture();
+    GLuint texture = scene.renderAsTexture(0);
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, texture);
     GLint u_texture = glGetUniformLocation(shader, "u_texture");

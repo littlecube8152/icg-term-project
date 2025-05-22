@@ -16,6 +16,7 @@ Camera::Camera(const CameraConfig &_config)
 {
     config = _config;
     initViewport();
+    dt = config.time_scale * (float)config.time_base.den / (float)config.time_base.num;
 }
 
 void Camera::initViewport()
@@ -37,9 +38,14 @@ void Camera::initViewport()
 
 Ray Camera::getRayToPixel(float x, float y)
 {
+    return getRayToPixel(x, y, 0.0f);
+}
+
+Ray Camera::getRayToPixel(float x, float y, float t)
+{
     glm::vec3 pixel_position = glm::vec3(viewport_lower_left + viewport_dx * x + viewport_dy * y);
     return Ray(
-        config.lookfrom,
+        glm::vec4(config.lookfrom, t),
         glm::normalize(pixel_position - config.lookfrom),
         config.inertial_frame);
 }
@@ -64,7 +70,8 @@ glm::vec4 Camera::getRayColor(Ray &ray, const Hittable &hittable, const int &rec
                 glm::vec3 velocity = ray.referenceFrame().transformVelocityFrom(record.ray.referenceFrame(), glm::vec3(0, 0, 0));
                 glm::vec3 line_of_sight = ray.referenceFrame().transformCoordinateFrom(record.ray.referenceFrame(),
                                                                                        record.ray.origin().w / speedOfLight,
-                                                                                       glm::vec3(record.ray.origin())).second -
+                                                                                       glm::vec3(record.ray.origin()))
+                                              .second -
                                           (glm::vec3)ray.origin();
                 float cosine = glm::dot(default_normalize(velocity, velocity), glm::normalize(line_of_sight));
 
@@ -89,14 +96,16 @@ glm::vec4 Camera::getRayColor(Ray &ray, const Hittable &hittable, const int &rec
     }
 }
 
-glm::vec4 Camera::getPixelColor(float x, float y, const Hittable &hittable)
+glm::vec4 Camera::getPixelColor(float x, float y, float t, const Hittable &hittable)
 {
     glm::vec4 pixel_color = glm::vec4(0, 0, 0, 0);
     for (int dx = 0; dx < config.sqrt_samples_per_pixel; dx++)
     {
         for (int dy = 0; dy < config.sqrt_samples_per_pixel; dy++)
         {
-            Ray sampled_ray = getRayToPixel(x + pixel_samples_delta * (0.5f + (float)dx), y + pixel_samples_delta * (0.5f + (float)dy));
+            Ray sampled_ray = getRayToPixel(x + pixel_samples_delta * (0.5f + (float)dx),
+                                            y + pixel_samples_delta * (0.5f + (float)dy),
+                                            t);
             pixel_color += getRayColor(sampled_ray, hittable, 1);
         }
     }
@@ -106,22 +115,30 @@ glm::vec4 Camera::getPixelColor(float x, float y, const Hittable &hittable)
     return pixel_color;
 }
 
-GLuint Camera::renderAsTexture(const Hittable &world)
+glm::vec4 Camera::getPixelColor(float x, float y, const Hittable &hittable)
 {
+    return getPixelColor(x, y, 0.0f, hittable);
+}
+
+GLuint Camera::renderAsTexture(const Hittable &world, int frame_number)
+{
+    float t = dt * static_cast<float>(frame_number);
     std::vector<GLubyte> texture_data(config.image_width * config.image_height * 4);
     int data_index = 0;
     for (GLuint y = 0; y < config.image_height; y++)
     {
         for (GLuint x = 0; x < config.image_width; x++)
         {
-            glm::vec4 pixel_color = getPixelColor((float)x, (float)y, world);
+            glm::vec4 pixel_color = getPixelColor((float)x, (float)y, t, world);
             texture_data[data_index++] = (GLubyte)(pixel_color.r * 255);
             texture_data[data_index++] = (GLubyte)(pixel_color.g * 255);
             texture_data[data_index++] = (GLubyte)(pixel_color.b * 255);
             texture_data[data_index++] = (GLubyte)(pixel_color.a * 255);
         }
-        std::cerr << "Render progress " << (y + 1) << " / " << config.image_height << std::endl;
+        if ((y + 1) % 10 == 0)
+            std::cerr << "Render progress " << (y + 1) << " / " << config.image_height << std::endl;
     }
+
 
     GLuint texture;
     glGenTextures(1, &texture);
@@ -133,6 +150,5 @@ GLuint Camera::renderAsTexture(const Hittable &world)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, config.image_width, config.image_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, texture_data.data());
-
     return texture;
 }
