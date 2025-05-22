@@ -8,8 +8,11 @@
 #include "glm/glm.hpp"
 
 #include "ray.h"
-#include "hittable.h"
+#include "hit_record.h"
+#include "objects.h"
+#include "hittable_list.h"
 #include "inertial.h"
+
 
 struct CameraConfig {
     GLuint image_width;
@@ -24,11 +27,29 @@ struct CameraConfig {
 };
 
 
+// NOTE:
+// vec3 intentionally replaced with vec4 to avoid alignment issues
+// https://stackoverflow.com/questions/38172696/should-i-ever-use-a-vec3-inside-of-a-uniform-buffer-or-shader-storage-buffer-o
+
+struct alignas(16) CameraUniform {
+    alignas(4)  int sqrt_samples_per_pixel;
+    alignas(4)  int max_recursion_depth;
+    alignas(4)  float pixel_samples_scale;
+    alignas(4)  float pixel_samples_delta;
+    alignas(16) glm::vec4 lookfrom;
+    alignas(16) glm::vec4 iframe;
+    alignas(16) glm::vec4 viewport_lower_left;
+    alignas(16) glm::vec4 viewport_dx;
+    alignas(16) glm::vec4 viewport_dy;
+};
+
+
 class Camera {
 public:
     Camera();
     Camera(const CameraConfig &config);
-    GLuint renderAsTexture(const Hittable &world);
+    GLuint renderAsTexture(const HittableList &world) const;
+    void toUniform(CameraUniform &camera_uniform) const;
 
 private:
     CameraConfig config;
@@ -40,13 +61,9 @@ private:
     float pixel_samples_delta;
 
     void initViewport();
-    Ray getRayToPixel(float x, float y);
-    glm::vec4 getRayColor(Ray &ray, const Hittable &hittable, const int &recursion_depth);
-    glm::vec4 getPixelColor(float x, float y, const Hittable &hittable);
-
-    // gamma 2 correction
-    float linear_to_gamma(float linear_component);
-    glm::vec4 linear_to_gamma(glm::vec4 color);
+    Ray getRayToPixel(float x, float y) const;
+    glm::vec4 getRayColor(Ray &ray, const HittableList &world, const int &recursion_depth) const;
+    glm::vec4 getPixelColor(float x, float y, const HittableList &world) const;
 };
 
 #endif

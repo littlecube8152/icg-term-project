@@ -1,0 +1,23 @@
+#include "compute/constants.comp"
+
+
+const Interval Interval_empty    = {+kInfinity, -kInfinity};
+const Interval Interval_universe = {-kInfinity, +kInfinity};
+const Interval Interval_positive = {+kEpsilon , +kInfinity};
+
+
+float Interval_size(Interval interval) {
+    return interval.max - interval.min;
+}
+
+bool Interval_contains(Interval interval, float x) {
+    return interval.min <= x && x <= interval.max;
+}
+
+bool Interval_surrounds(Interval interval, float x) {
+    return interval.min < x && x < interval.max;
+}
+
+float Interval_clamp(Interval interval, float x) {
+    return clamp(x, interval.min, interval.max);
+}

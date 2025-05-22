@@ -1,0 +1,72 @@
+// NOTE:
+// to simplify struct structures and reduce depth of nested structs,
+// inertial frames (abbreviated as iframe's) are represented by a
+// single vec3, which corresponds to InertialFrame::frame_velocity
+
+#include "compute/constants.comp"
+
+
+vec3 IFrame_transformVelocityFrom(vec3 measured_relative_velocity, vec3 velocity_to_transform) {
+    if (length(measured_relative_velocity) < kEpsilon) {
+        return velocity_to_transform - measured_relative_velocity;
+    }
+
+    vec3 basis_x = normalize(measured_relative_velocity);
+
+    float this_velocity_x = dot(velocity_to_transform, basis_x);
+    float from_velocity_x = length(measured_relative_velocity);
+    vec3 this_velocity_yz = velocity_to_transform - this_velocity_x * basis_x;
+
+    vec3 beta = measured_relative_velocity / kSpeedOfLight;
+    float gamma = 1.0f / sqrt(1.0f - dot(beta, beta));
+
+    float one_minus_speed_prod = 1.0f - this_velocity_x * from_velocity_x / kSpeedOfLight / kSpeedOfLight;
+
+    return basis_x * (this_velocity_x - from_velocity_x) / one_minus_speed_prod +
+           this_velocity_yz / gamma / one_minus_speed_prod;
+}
+
+vec3 IFrame_relativeFrameVelocityFrom(vec3 iframe, vec3 from_iframe) {
+    return IFrame_transformVelocityFrom(from_iframe, iframe);
+}
+
+vec3 IFrame_transformVelocityFrom(vec3 iframe, vec3 from_iframe, vec3 velocity) {
+    vec3 relative_velocity = IFrame_relativeFrameVelocityFrom(iframe, from_iframe);
+    return IFrame_transformVelocityFrom(relative_velocity, velocity);
+}
+
+// std::pair<float, glm::vec3>
+vec4 IFrame_transformCoordinateFrom(vec3 iframe, vec3 from_iframe, float time, vec3 space) {
+    vec3 beta = IFrame_relativeFrameVelocityFrom(iframe, from_iframe) / kSpeedOfLight;
+    float beta_square = dot(beta, beta);
+    float gamma = 1.0 / sqrt(1.0 - beta_square);
+    float gammam1betainv = gamma * gamma / (1.0 + gamma);
+
+    mat4x4 lorentz = mat4x4(vec4(gamma, -gamma * beta),
+                            vec4(-gamma, beta * gammam1betainv) * beta[0],
+                            vec4(-gamma, beta * gammam1betainv) * beta[1],
+                            vec4(-gamma, beta * gammam1betainv) * beta[2]);
+    lorentz = transpose(lorentz);
+
+    for (int i = 1; i <= 3; i++)
+        lorentz[i][i] += 1.0f;
+    vec4 timespace = lorentz * vec4(time * kSpeedOfLight, space);
+    timespace[0] /= kSpeedOfLight;
+
+    return timespace;
+}
+
+vec3 IFrame_transformNormalFrom(vec3 iframe, vec3 from_iframe, vec3 normal) {
+    vec3 beta = IFrame_relativeFrameVelocityFrom(iframe, from_iframe) / kSpeedOfLight;
+    float beta_square = dot(beta, beta);
+    float gamma = 1.0 / sqrt(1.0 - beta_square);
+    float gammam1betainv = gamma * gamma / (1.0 + gamma);
+
+    mat3x3 lorentz = mat3x3(beta * gammam1betainv * beta[0],
+                            beta * gammam1betainv * beta[1],
+                            beta * gammam1betainv * beta[2]);
+    for (int i = 0; i < 3; i++)
+        lorentz[i][i] += 1.0f;
+
+    return transpose(inverse(lorentz)) * vec3(normal);
+}

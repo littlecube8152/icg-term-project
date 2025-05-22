@@ -1,0 +1,43 @@
+uint Random_randstate;
+
+void Random_setSeed(uint seed) {
+    Random_randstate = seed;
+}
+
+// Xorshift RNG from https://en.wikipedia.org/wiki/Xorshift
+uint Random_uint() {
+    uint x = Random_randstate;
+    x ^= x << 13;
+    x ^= x >> 17;
+    x ^= x << 5;
+    Random_randstate = x;
+    return x;
+}
+
+// random float in [0, 1]
+float Random_float_unitPositive() {
+    return float(Random_uint()) / 4294967295.0f;
+}
+
+// random float in [-1, 1]
+float Random_float_unitBox() {
+    return 2.0f * Random_float_unitPositive() - 1.0f;
+}
+
+vec3 Random_vec3_unitBox() {
+    return vec3(
+        Random_float_unitBox(),
+        Random_float_unitBox(),
+        Random_float_unitBox()
+    );
+}
+
+vec3 Random_vec3_unitLength() {
+    vec3 result;
+    float length2;
+    do {
+        result = Random_vec3_unitBox();
+        length2 = dot(result, result);
+    } while(length2 > 1.0f || length2 < kEpsilon);
+    return normalize(result);
+}

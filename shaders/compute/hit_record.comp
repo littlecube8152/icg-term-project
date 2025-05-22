@@ -1,0 +1,7 @@
+#include "compute/ray.comp"
+
+
+void HitRecord_setFaceNormal(inout HitRecord record, Ray ray, vec3 outward_normal) {
+    record.front_face = dot(ray.direction, outward_normal) < 0;
+    record.normal = normalize(record.front_face ? outward_normal : -outward_normal);
+}

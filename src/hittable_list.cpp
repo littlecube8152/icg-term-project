@@ -8,7 +8,7 @@ void HittableList::clear() {
 }
 
 // Add an object to the list.
-void HittableList::add(std::shared_ptr<Hittable> obj) {
+void HittableList::add(std::shared_ptr<Object> obj) {
     hittables.emplace_back(obj);
 }
 
@@ -30,4 +30,8 @@ bool HittableList::hit(Ray &ray, HitRecord &record) const {
     }
 
     return hit_any;
+}
+
+const std::vector<std::shared_ptr<Object>>& HittableList::getObjects() const {
+    return hittables;
 }

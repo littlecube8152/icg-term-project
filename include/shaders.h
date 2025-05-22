@@ -6,5 +6,6 @@
 
 
 GLuint loadShaderProgram(void);
+GLuint loadPathTracerProgram(void);
 
 #endif

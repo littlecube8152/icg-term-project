@@ -5,6 +5,7 @@
 #include "randutil.h"
 #include "vecutil.h"
 #include "constants.h"
+#include "shaders/compute/materials/material_types.h"
 
 
 Lambertian::Lambertian(const glm::vec4 &_albedo): albedo(_albedo) {}
@@ -17,4 +18,12 @@ bool Lambertian::scatter(const Ray &r_in, HitRecord &rec) const {
     rec.scattered = Ray(rec.p, scatter_dir, r_in.referenceFramePtr());
     rec.attenuation = albedo;
     return true;
+}
+
+
+void Lambertian::toUniform(MaterialUniform &material_uniform) const {
+    material_uniform.material_type = MATERIAL_TYPE_LAMBERTIAN;
+    material_uniform.lambertian = (LambertianUniform) {
+        .albedo = albedo,
+    };
 }

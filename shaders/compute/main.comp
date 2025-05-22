@@ -1,0 +1,20 @@
+#version 460 core
+
+// ensure usage of IEEE 754 float's
+precision highp float;
+
+#include "compute/defs.comp"
+#include "compute/uniforms.comp"
+#include "compute/camera.comp"
+
+void main() {
+    vec4 color = vec4(0.0, 0.0, 0.0, 1.0);
+    ivec2 pixel_coord = ivec2(gl_GlobalInvocationID.xy);
+    uint global_invocation_id = gl_GlobalInvocationID.y * gl_NumWorkGroups.x + gl_GlobalInvocationID.x;
+
+    // random seed can't be zero, so we add an arbitrary constant
+    Random_setSeed(global_invocation_id + 48763);
+    color = Camera_getPixelColor(pixel_coord);
+
+    imageStore(u_img_output, pixel_coord, color);
+}

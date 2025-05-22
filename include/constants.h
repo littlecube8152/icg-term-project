@@ -3,6 +3,11 @@
 
 #include <limits>
 
+#include "GL/gl.h"
+
+
+static constexpr GLuint kWindowWidth = 960;
+static constexpr GLuint kWindowHeight = 540;
 
 static constexpr float kInfinity = std::numeric_limits<float>::infinity();
 

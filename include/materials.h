@@ -3,23 +3,47 @@
 
 #include "glm/glm.hpp"
 
-#include "hittable.h"
+#include "hit_record.h"
 #include "ray.h"
+
+
+struct alignas(16) MetalUniform {
+    alignas(16) glm::vec4 albedo;
+    alignas(4)  float fuzz;
+};
+
+struct alignas(16) LambertianUniform {
+    alignas(16) glm::vec4 albedo;
+};
+
+struct alignas(16) DielectricUniform {
+    alignas(4) float eta;
+};
+
+struct alignas(16) MaterialUniform {
+    alignas(4)  int material_type;
+    alignas(16) MetalUniform metal;
+    alignas(16) LambertianUniform lambertian;
+    alignas(16) DielectricUniform dielectric;
+};
 
 
 class Material {
 public:
-    virtual ~Material() = default;
+    Material();
+    const int& getId() const;
 
-    virtual bool scatter(const Ray &r_in, HitRecord &rec) const {
-        [](...){}(r_in, rec);
-        return false;
-    }
+    virtual void toUniform(MaterialUniform &material_uniform) const = 0;
+    virtual bool scatter(const Ray &r_in, HitRecord &rec) const = 0;
+
+private:
+    int material_id;
 };
 
 class Metal: public Material {
 public:
     Metal(const glm::vec4 &albedo, const float &fuzz);
+    void toUniform(MaterialUniform &material_uniform) const override;
     bool scatter(const Ray &r_in, HitRecord &rec) const override;
 
 private:
@@ -30,6 +54,7 @@ private:
 class Dielectric: public Material {
 public:
     Dielectric(const float &eta);
+    void toUniform(MaterialUniform &material_uniform) const override;
     bool scatter(const Ray &r_in, HitRecord &rec) const override;
 
 private:
@@ -40,11 +65,11 @@ private:
     // Schlick's approximation for reflectance
     static float reflectance(const float &cosine, const float &eta);
 };
-
    
 class Lambertian: public Material {
 public:
     Lambertian(const glm::vec4 &albedo);
+    void toUniform(MaterialUniform &material_uniform) const override;
     bool scatter(const Ray &r_in, HitRecord &rec) const override;
 
 private:

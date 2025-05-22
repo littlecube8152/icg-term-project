@@ -1,5 +1,6 @@
 #include "objects.h"
 #include "constants.h"
+#include "shaders/compute/objects/object_types.h"
 
 #include "glm/gtx/projection.hpp"
 #include "glm/gtx/norm.hpp"
@@ -8,7 +9,7 @@
 #include <iostream>
 
 Sphere::Sphere(const glm::vec3 &_center, const float &_radius, std::shared_ptr<Material> _mat)
-    : center(_center), radius(_radius), mat(_mat) {}
+    : Object(_mat), center(_center), radius(_radius) {}
 
 bool Sphere::hit(Ray &ray, HitRecord &record) const
 {
@@ -43,4 +44,13 @@ bool Sphere::hit(Ray &ray, HitRecord &record) const
     record.has_scattered = mat.get() ? mat->scatter(ray, record) : false;
 
     return true;
+}
+
+void Sphere::toUniform(ObjectUniform &object_uniform) const {
+    object_uniform.object_type = OBJECT_TYPE_SPHERE;
+    object_uniform.sphere = (SphereUniform) {
+        .center = glm::vec4(center, 0),
+        .radius = radius,
+        .material_id = mat.get() ? mat->getId() : -1,
+    };
 }

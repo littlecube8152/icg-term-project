@@ -1,0 +1,43 @@
+#include "compute/defs.comp"
+#include "compute/objects/object_types.h"
+#include "compute/ray.comp"
+#include "compute/hit_record.comp"
+#include "compute/interval.comp"
+#include "compute/vecutil.comp"
+#include "compute/materials/materials.comp"
+
+
+Object Sphere_new(vec3 center, float radius, int material_id) {
+    Object object;
+    object.object_type = OBJECT_TYPE_SPHERE;
+    object.sphere = Sphere(vec4(center, 0), radius, material_id);
+    return object;
+}
+
+bool Sphere_hit(Sphere sphere, Ray ray, out HitRecord record) {
+    vec3 origin_to_center = sphere.center.xyz - ray.origin.xyz;
+    vec3 proj = proj_unit(origin_to_center, ray.direction);
+    vec3 closest = origin_to_center - proj;
+
+    if (dot(closest, closest) > sphere.radius * sphere.radius)
+        return false;
+    
+    float alpha = dot(proj, ray.direction);
+    float d_alpha = sqrt(sphere.radius * sphere.radius - dot(closest, closest));
+
+    float hit;
+    if (Interval_surrounds(ray.interval, alpha - d_alpha))
+        hit = alpha - d_alpha;
+    else if (Interval_surrounds(ray.interval, alpha + d_alpha))
+        hit = alpha + d_alpha;
+    else
+        return false;
+    
+    vec4 coord = Ray_at(ray, hit);
+    record.alpha = hit;
+    record.coord = coord.xyz;
+    HitRecord_setFaceNormal(record, ray, (coord.xyz - sphere.center.xyz) / sphere.radius);
+    record.has_scattered = Material_scatter(sphere.material_id, ray, record);
+
+    return true;
+}
