@@ -6,3 +6,9 @@ build/
 
 # output images
 outputs/
+
+# generated shaders
+compute.h
+fragment.h
+vertex.h
+shaders/compute.comp
