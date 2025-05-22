@@ -26,8 +26,8 @@ bool Cube_testHitSurface(inout Ray ray, inout HitRecord record, vec3 surface_cor
     float alpha = (surface_level - origin_level) / alpha_level;
     if (!Interval_surrounds(ray.interval, alpha))
         return false;
-    vec3 hit_point = Ray_at(ray, alpha).xyz;
-    vec3 surface_hit_vector = hit_point - surface_corner;
+    vec4 hit_point = Ray_at(ray, alpha);
+    vec3 surface_hit_vector = hit_point.xyz - surface_corner;
     if (dot(cross(vec_u, surface_hit_vector), normal) >= 0 &&
         dot(cross(vec_v, surface_hit_vector), normal) <= 0 &&
         dot(cross(vec_u, surface_hit_vector - vec_v), normal) <= 0 &&

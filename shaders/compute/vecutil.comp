@@ -1,5 +1,8 @@
 // common vectors calculation
 
+#include "compute/constants.comp"
+
 
 #define proj_unit(vec, unit_dir) (dot(vec, unit_dir) * (unit_dir))
 #define perp_unit(vec, unit_dir) ((vec) - proj_unit(vec, unit_dir))
+#define default_normalize(vec, default_vec) (length(vec) < kEpsilon ? default_vec : normalize(vec))

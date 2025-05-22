@@ -4,6 +4,7 @@
 
 #include "shaders.h"
 #include "scene.h"
+#include "color.h"
 
 
 static GLuint createTexture(GLuint texture_unit, GLuint width, GLuint height) {
@@ -64,6 +65,18 @@ static GLuint createWindowVao(GLuint shader) {
 }
 
 
+static GLuint sendUniform(GLuint program, void* data, GLuint size, GLuint bind_point, const char *block_name) {
+    GLuint ubo;
+    glGenBuffers(1, &ubo);
+    glBindBuffer(GL_UNIFORM_BUFFER, ubo);
+    glBufferData(GL_UNIFORM_BUFFER, size, data, GL_STATIC_DRAW);
+    glBindBufferBase(GL_UNIFORM_BUFFER, bind_point, ubo);
+    GLuint uniform_block_index = glGetUniformBlockIndex(program, block_name);
+    glUniformBlockBinding(program, uniform_block_index, bind_point);
+    return ubo;
+}
+
+
 Renderer::Renderer(GLuint _window_width, GLuint _window_height)
     : window_width(_window_width), window_height(_window_height) {
     path_tracer = loadPathTracerProgram();
@@ -77,20 +90,18 @@ Renderer::Renderer(GLuint _window_width, GLuint _window_height)
 void Renderer::renderFrame(const Scene &scene) {
     glUseProgram(path_tracer);
 
-    std::unique_ptr<SceneUniform> uniform = std::make_unique<SceneUniform>();
-    scene.toUniform(*uniform);
-    GLuint ubo;
-    glGenBuffers(1, &ubo);
-    glBindBuffer(GL_UNIFORM_BUFFER, ubo);
-    glBufferData(GL_UNIFORM_BUFFER, sizeof(SceneUniform), uniform.get(), GL_STATIC_DRAW);
-    glBindBufferBase(GL_UNIFORM_BUFFER, 0, ubo);
-    GLuint uniform_block_index = glGetUniformBlockIndex(path_tracer, "SceneUniform");
-    glUniformBlockBinding(path_tracer, uniform_block_index, 0);
+    std::unique_ptr<SceneUniform> scene_uniform = std::make_unique<SceneUniform>();
+    scene.toUniform(*scene_uniform);
+    GLuint scene_ubo = sendUniform(path_tracer, scene_uniform.get(), sizeof(SceneUniform), 0, "SceneUniform");
+    std::unique_ptr<ColorConstantsUniform> color_uniform = std::make_unique<ColorConstantsUniform>();
+    toColorConstantsUniform(*color_uniform);
+    GLuint color_ubo = sendUniform(path_tracer, color_uniform.get(), sizeof(ColorConstantsUniform), 1, "ColorConstantsUniform");
 
     glDispatchCompute(window_width, window_height, 1);
     glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 
-    glDeleteBuffers(1, &ubo);
+    glDeleteBuffers(1, &scene_ubo);
+    glDeleteBuffers(1, &color_ubo);
 }
 
 

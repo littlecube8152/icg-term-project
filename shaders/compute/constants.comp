@@ -6,3 +6,10 @@ const float kEpsilon  = 1e-3f;
 const float kSpeedOfLight = 299792458.0f;
 
 const float kPi = 3.1415926535897932384626433832795;
+
+// colors
+const int wavelength_start = 360;
+const int wavelength_end = 700;
+const int wavelength_size = wavelength_end - wavelength_start;
+const int hue_range = 360;
+const int hue_split = 300;

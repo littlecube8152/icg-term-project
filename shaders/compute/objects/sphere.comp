@@ -35,7 +35,7 @@ bool Sphere_hit(Sphere sphere, Ray ray, out HitRecord record) {
     
     vec4 coord = Ray_at(ray, hit);
     record.alpha = hit;
-    record.coord = coord.xyz;
+    record.coord = coord;
     HitRecord_setFaceNormal(record, ray, (coord.xyz - sphere.center.xyz) / sphere.radius);
     record.has_scattered = Material_scatter(sphere.material_id, ray, record);
 

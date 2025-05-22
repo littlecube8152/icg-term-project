@@ -13,3 +13,8 @@ layout (std140) uniform SceneUniform {
     Object objects[MAX_OBJECTS];
     Material materials[MAX_MATERIALS];
 };
+
+layout (std140) uniform ColorConstantsUniform {
+    float table_hue_to_wavelength[hue_range];
+    float table_wavelength_to_hue[wavelength_size];
+};

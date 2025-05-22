@@ -35,9 +35,23 @@ vec3 IFrame_transformVelocityFrom(vec3 iframe, vec3 from_iframe, vec3 velocity) 
     return IFrame_transformVelocityFrom(relative_velocity, velocity);
 }
 
+vec3 IFrame_getBeta(vec3 iframe, vec3 from_iframe) {
+    return IFrame_relativeFrameVelocityFrom(iframe, from_iframe) / kSpeedOfLight;
+}
+float IFrame_getBetaScalar(vec3 iframe, vec3 from_iframe) {
+    return length(IFrame_getBeta(iframe, from_iframe));
+}
+float IFrame_getBetaSquare(vec3 iframe, vec3 from_iframe) {
+    vec3 beta = IFrame_getBeta(iframe, from_iframe);
+    return dot(beta, beta);
+}
+float IFrame_getGamma(vec3 iframe, vec3 from_iframe) {
+    return 1.0f / sqrt(1.0f - IFrame_getBetaSquare(iframe, from_iframe));
+}
+
 // std::pair<float, glm::vec3>
 vec4 IFrame_transformCoordinateFrom(vec3 iframe, vec3 from_iframe, float time, vec3 space) {
-    vec3 beta = IFrame_relativeFrameVelocityFrom(iframe, from_iframe) / kSpeedOfLight;
+    vec3 beta = IFrame_getBeta(iframe, from_iframe);
     float beta_square = dot(beta, beta);
     float gamma = 1.0 / sqrt(1.0 - beta_square);
     float gammam1betainv = gamma * gamma / (1.0 + gamma);
@@ -57,7 +71,7 @@ vec4 IFrame_transformCoordinateFrom(vec3 iframe, vec3 from_iframe, float time, v
 }
 
 vec3 IFrame_transformNormalFrom(vec3 iframe, vec3 from_iframe, vec3 normal) {
-    vec3 beta = IFrame_relativeFrameVelocityFrom(iframe, from_iframe) / kSpeedOfLight;
+    vec3 beta = IFrame_getBeta(iframe, from_iframe);
     float beta_square = dot(beta, beta);
     float gamma = 1.0 / sqrt(1.0 - beta_square);
     float gammam1betainv = gamma * gamma / (1.0 + gamma);

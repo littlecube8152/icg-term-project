@@ -1,0 +1,100 @@
+#include "compute/uniforms.comp"
+#include "compute/constants.comp"
+
+
+vec3 Color_sRGBToHCL(vec3 sRGB_color) {
+    float maxM = max(max(sRGB_color[0], sRGB_color[1]), sRGB_color[2]);
+    float minM = min(min(sRGB_color[0], sRGB_color[1]), sRGB_color[2]);
+    float C = maxM - minM;
+
+    float hue = 0.0;
+    if (C <= kEpsilon)
+        hue = 0.0;
+    else if (maxM == sRGB_color[0])
+        hue = mod((sRGB_color[1] - sRGB_color[2]) / C + 6.0f, 6.0f) * 60.0f;
+    else if (maxM == sRGB_color[1])
+        hue = ((sRGB_color[2] - sRGB_color[0]) / C + 2.0f) * 60.0f;
+    else if (maxM == sRGB_color[2])
+        hue = ((sRGB_color[0] - sRGB_color[1]) / C + 4.0f) * 60.0f;
+
+    return vec3(hue, C, 0.5f * (maxM + minM));
+}
+
+vec3 Color_hclTosRGB(vec3 hcl_color) {
+    float hue = hcl_color[0] / 60.0f;
+    float diff_of_peak = hcl_color[1];
+    float sum_of_peak = 2.0f * hcl_color[2];
+
+    float max_component = (sum_of_peak + diff_of_peak) / 2.0f;
+    float min_component = (sum_of_peak - diff_of_peak) / 2.0f;
+
+    if (max_component - min_component <= kEpsilon)
+        return vec3(min_component, min_component, min_component);
+    else if (hue < 1.0f)
+        return vec3(max_component, hue * diff_of_peak + min_component, min_component);
+    else if (1.0f <= hue && hue < 2.0f)
+        return vec3(min_component - (hue - 2.0f) * diff_of_peak, max_component, min_component);
+    else if (2.0f <= hue && hue < 3.0f)
+        return vec3(min_component, max_component, (hue - 2.0f) * diff_of_peak + min_component);
+    else if (3.0f <= hue && hue < 4.0f)
+        return vec3(min_component, min_component - (hue - 4.0f) * diff_of_peak, max_component);
+    else if (4.0f <= hue && hue < 5.0f)
+        return vec3((hue - 4.0f) * diff_of_peak + min_component, min_component, max_component);
+    else if (5.0f <= hue)
+        return vec3(max_component, min_component, (hue - 6.0f) * diff_of_peak + min_component);
+
+    return vec3(0);
+}
+
+float Color_interpolateHueToWavelength(float hue)
+{
+    int hue_int = int(hue);
+    float hue_frac = hue - float(hue_int);
+    return (1.0f - hue_frac) * table_hue_to_wavelength[hue_int] + hue_frac * table_hue_to_wavelength[(hue_int + 1) % hue_range];
+}
+
+float Color_interpolateWavelengthToHue(float wavelength)
+{
+    wavelength = clamp(wavelength, wavelength_start, wavelength_end - 1.0f - kEpsilon);
+    int wavelength_int = int(wavelength);
+    float wavelength_frac = wavelength - float(wavelength_int);
+
+    int index = wavelength_int - wavelength_start;
+    if (table_wavelength_to_hue[index] < table_wavelength_to_hue[index + 1])
+        return table_wavelength_to_hue[index];
+    return (1.0f - wavelength_frac) * table_wavelength_to_hue[index] + wavelength_frac * table_wavelength_to_hue[index + 1];
+}
+
+vec3 Color_lightWavelengthShift(vec3 sRGBcolor, float scale) {
+    vec3 hclColor = Color_sRGBToHCL(sRGBcolor);
+    float wavelength = Color_interpolateHueToWavelength(hclColor[0]);
+    wavelength *= scale;
+
+    float decay = 1.0f;
+
+    if (wavelength < wavelength_start)
+        decay = exp(0.02f * (wavelength - wavelength_start));
+    if (wavelength_end < wavelength)
+        decay = exp(0.02f * (wavelength_end - wavelength));
+
+    hclColor[0] = Color_interpolateWavelengthToHue(wavelength);
+    hclColor[1] *= decay;
+    hclColor[2] *= decay;
+
+    return Color_hclTosRGB(hclColor);
+}
+
+float Color_gammaCorrection(float linear_component)
+{
+    if (linear_component > 0.0f)
+        return sqrt(linear_component);
+    return 0.0f;
+}
+
+vec4 Color_gammaCorrection(vec4 color)
+{
+    color.r = Color_gammaCorrection(color.r);
+    color.g = Color_gammaCorrection(color.g);
+    color.b = Color_gammaCorrection(color.b);
+    return color;
+}

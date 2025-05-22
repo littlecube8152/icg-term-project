@@ -6,6 +6,8 @@
 #include <algorithm>
 #include <array>
 #include <optional>
+#include <cstring>
+#include <fstream>
 
 static constexpr glm::mat3x3 sRGBToXYZMat(0.4124f, 0.3576f, 0.1805f,
                                           0.2126f, 0.7152f, 0.0722f,
@@ -406,12 +408,6 @@ constexpr glm::vec3 hclTosRGB(glm::vec3 hcl_color)
     return {0.0f, 0.0f, 0.0f};
 }
 
-constexpr int wavelength_start = 360;
-constexpr int wavelength_end = 700;
-constexpr int wavelength_size = wavelength_end - wavelength_start;
-constexpr int hue_range = 360;
-constexpr int hue_split = 300;
-
 constexpr std::array<float, wavelength_size> getArrayWavelengthToHue()
 {
     std::array<float, wavelength_size> hue{};
@@ -489,7 +485,7 @@ const glm::vec3 lightWavelengthShift(glm::vec3 sRGBcolor, float scale)
 
     if (wavelength < wavelength_start)
         decay = expf(0.02f * (wavelength - wavelength_start));
-    if (wavelength_end < wavelength && wavelength)
+    if (wavelength_end < wavelength)
         decay = expf(0.02f * (wavelength_end - wavelength));
 
     hclColor[0] = interpolateWavelengthToHue(wavelength);
@@ -512,4 +508,11 @@ const glm::vec4 gammaCorrection(glm::vec4 color)
     color.g = gammaCorrection(color.g);
     color.b = gammaCorrection(color.b);
     return color;
+}
+
+void toColorConstantsUniform(ColorConstantsUniform &color_constants_uniform) {
+    for (int i = 0; i < hue_range; i++)
+        color_constants_uniform.table_hue_to_wavelength[i].value = table_hue_to_wavelength[i];
+    for (int i = 0; i < wavelength_size; i++)
+        color_constants_uniform.table_wavelength_to_hue[i].value = table_wavelength_to_hue[i];
 }
