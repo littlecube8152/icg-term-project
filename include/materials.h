@@ -11,8 +11,8 @@ class Material {
 public:
     virtual ~Material() = default;
 
-    virtual bool scatter(const Ray &r_in, HitRecord &rec) const {
-        [](...){}(r_in, rec);
+    virtual bool scatter(HitRecord &rec) const {
+        [](...){}(rec);
         return false;
     }
 };
@@ -20,7 +20,7 @@ public:
 class Metal: public Material {
 public:
     Metal(const glm::vec4 &albedo, const float &fuzz);
-    bool scatter(const Ray &r_in, HitRecord &rec) const override;
+    bool scatter(HitRecord &rec) const override;
 
 private:
     glm::vec4 albedo;
@@ -30,7 +30,7 @@ private:
 class Dielectric: public Material {
 public:
     Dielectric(const float &eta);
-    bool scatter(const Ray &r_in, HitRecord &rec) const override;
+    bool scatter(HitRecord &rec) const override;
 
 private:
     // Refractive index relative to air
@@ -45,7 +45,7 @@ private:
 class Lambertian: public Material {
 public:
     Lambertian(const glm::vec4 &albedo);
-    bool scatter(const Ray &r_in, HitRecord &rec) const override;
+    bool scatter(HitRecord &rec) const override;
 
 private:
     glm::vec4 albedo;

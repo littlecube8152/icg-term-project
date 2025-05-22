@@ -3,30 +3,32 @@
 
 #include "glm/glm.hpp"
 
-#include "hittable.h"
+#include "inertial.h"
 #include "materials.h"
+#include "object.h"
 
 
-class Sphere: public Hittable {
+class Sphere: public Object {
 public:
-    Sphere(const glm::vec3 &center, const float &radius, std::shared_ptr<Material> mat);
+    Sphere(const glm::vec3 &center, const float &radius, std::shared_ptr<Material> material, InertialFrame frame);
+    Sphere(const glm::vec3 &center, const float &radius, std::shared_ptr<Material> material);
     bool hit(Ray &ray, HitRecord &record) const override;
 
 private:
     glm::vec3 center;
     float radius;
-    std::shared_ptr<Material> mat;
 };
 
 
-class Cube: public Hittable {
+class Cube: public Object {
 public:
-    Cube(const glm::vec3 &corner, const float &side_length, std::shared_ptr<Material> mat);
+    Cube(const glm::vec3 &center, const float &side_length, std::shared_ptr<Material> material, InertialFrame frame);
+    Cube(const glm::vec3 &center, const float &side_length, std::shared_ptr<Material> material);
     bool hit(Ray &ray, HitRecord &record) const override;
 
 private:
-    glm::vec3 corner, x_axis, y_axis, z_axis;
-    std::shared_ptr<Material> mat;
+    glm::vec3 corner;
+    glm::vec3 x_axis, y_axis, z_axis;
 };
 
 #endif

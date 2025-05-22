@@ -32,4 +32,10 @@ public:
     SceneRelativityTest(GLuint texture_width, GLuint texture_height);
 };
 
+class SceneRelativisticMovementTest: public Scene {
+public:
+    SceneRelativisticMovementTest(GLuint texture_width, GLuint texture_height);
+};
+
+
 #endif

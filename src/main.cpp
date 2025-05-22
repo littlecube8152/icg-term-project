@@ -93,7 +93,8 @@ int main(void)
 
     // SceneRandomBalls scene(window_width, window_height);
     // SceneMaterialDemo scene(window_width, window_height);
-    SceneRelativityTest scene(window_width, window_height);
+    // SceneRelativityTest scene(window_width, window_height);
+    SceneRelativisticMovementTest scene(window_width, window_height);
 
     GLuint texture = scene.renderAsTexture();
     glActiveTexture(GL_TEXTURE0);

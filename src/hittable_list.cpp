@@ -16,8 +16,6 @@ void HittableList::add(std::shared_ptr<Hittable> obj) {
 // If true, returns `true` and store the HitRecord in `record`.
 bool HittableList::hit(Ray &ray, HitRecord &record) const {
 
-    ray.transformFrame(*frame);
-
     HitRecord hit_result;
     bool hit_any = false;
     

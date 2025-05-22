@@ -7,40 +7,46 @@
 #include <utility>
 #include <iostream>
 
-Sphere::Sphere(const glm::vec3 &_center, const float &_radius, std::shared_ptr<Material> _mat)
-    : center(_center), radius(_radius), mat(_mat) {}
+Sphere::Sphere(const glm::vec3 &_center, const float &_radius, std::shared_ptr<Material> _material, InertialFrame _frame)
+    : Object(_material, _frame), center(_center), radius(_radius)
+{
+    center = frame.transformCoordinateFrom(object_space_frame, 0.0f, center).second;
+}
+
+Sphere::Sphere(const glm::vec3 &_center, const float &_radius, std::shared_ptr<Material> _material)
+    : Sphere(_center, _radius, _material, object_space_frame) {}
 
 bool Sphere::hit(Ray &ray, HitRecord &record) const
 {
+    Ray observed_ray = ray;
+    observed_ray.transformFrame(frame);
 
-    // The closest point to the sphere on the ray
+    // The closest point to the sphere on the observed ray
     // Cast to vec3 extracts the first three component: xyz
-    glm::vec3 origin_to_center = center - (glm::vec3)ray.origin();
-    glm::vec3 proj = glm::proj(origin_to_center, ray.direction());
+    glm::vec3 origin_to_center = center - (glm::vec3)observed_ray.origin();
+    glm::vec3 proj = glm::proj(origin_to_center, observed_ray.direction());
     glm::vec3 closest = origin_to_center - proj;
 
     if (glm::length2(closest) > radius * radius)
         return false;
 
-    float ray_speed = 1.0f; // glm::length(ray.direction()); but it is unit length
-
-    float alpha = glm::dot(proj, ray.direction()) / ray_speed;
-    float d_alpha = sqrtf(radius * radius - glm::length2(closest)) / ray_speed;
+    float alpha = glm::dot(proj, observed_ray.direction());
+    float d_alpha = sqrtf(radius * radius - glm::length2(closest));
 
     float hit;
-    if (ray.interval.surrounds(alpha - d_alpha))
+    if (observed_ray.interval.surrounds(alpha - d_alpha))
         hit = alpha - d_alpha;
-    else if (ray.interval.surrounds(alpha + d_alpha))
+    else if (observed_ray.interval.surrounds(alpha + d_alpha))
         hit = alpha + d_alpha;
     else
         return false;
 
-    glm::vec4 object_hit_space_time = ray.at(hit);
-    record.alpha = hit;
-    record.p = object_hit_space_time;
+    glm::vec4 observed_hit_space_time = observed_ray.at(hit);
 
-    record.setFaceNormal(ray, ((glm::vec3)ray.at(hit) - center) / radius);
-    record.has_scattered = mat.get() ? mat->scatter(ray, record) : false;
+    record.alpha = observed_hit_space_time.w;
+    record.ray = Ray(observed_hit_space_time, observed_ray.direction(), observed_ray.referenceFramePtr());
+    record.setFaceNormal(((glm::vec3)observed_ray.at(hit) - center) / radius);
+    record.has_scattered = mat.get() ? mat->scatter(record) : false;
 
     return true;
 }
