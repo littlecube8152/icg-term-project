@@ -56,6 +56,7 @@ public:
     Camera(const CameraConfig &config);
     GLuint renderAsTexture(const HittableList &world, int frame_number) const;
     void toUniform(CameraUniform &camera_uniform) const;
+    float getDeltaT() const { return dt; }
 
 private:
     CameraConfig config;

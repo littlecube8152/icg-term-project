@@ -20,7 +20,6 @@ Ray Camera_getRayToPixel(vec2 pixel_coord) {
 }
 
 bool Camera_hitAllObjects(Ray ray, out HitRecord record) {
-    Ray_transformFrame(ray, world_iframe.xyz);
     HitRecord hit_result;
     bool hit_any = false;
     for (int i = 0; i < n_objects; i++) {
@@ -34,7 +33,6 @@ bool Camera_hitAllObjects(Ray ray, out HitRecord record) {
 }
 
 
-// TODO
 vec4 Camera_getRayColor(Ray ray) {
     vec4 accum_attenuation = vec4(1, 1, 1, 1);
     vec4 object_space_color = vec4(0, 0, 0, 1);
@@ -48,7 +46,7 @@ vec4 Camera_getRayColor(Ray ray) {
             // sky box
             float dotval = dot(ray.direction, vec3(0, 1, 0));
             float ratio = (dotval + 1) / 2.0f;
-            vec4 sky_color = (1.0f - ratio) * vec4(1, 1, 1, 1) + ratio * vec4(0.5, 0.7, 1.0, 1.0);
+            vec4 sky_color = (1.0f - ratio) * vec4(1, 1, 1, 1) + ratio * vec4(0.2, 0.2, 1.0, 1.0);
             object_space_color = accum_attenuation * sky_color;
             break;
         }
@@ -66,14 +64,14 @@ vec4 Camera_getRayColor(Ray ray) {
     }
 
     // doppler effect of light
-    if (first_hit) {
-        vec3 velocity = IFrame_transformVelocityFrom(camera.iframe.xyz, world_iframe.xyz, vec3(0, 0, 0));
-        vec3 line_of_sight = IFrame_transformCoordinateFrom(camera.iframe.xyz, world_iframe.xyz, first_record.coord.w / kSpeedOfLight, first_record.coord.xyz).yzw - camera.lookfrom.xyz;
-        float cosine = dot(default_normalize(velocity, velocity), normalize(line_of_sight));
-        float beta = IFrame_getBetaScalar(camera.iframe.xyz, world_iframe.xyz);
-        float scale = sqrt((1.0f - beta * cosine) / (1.0f + beta * cosine));
-        object_space_color = vec4(Color_lightWavelengthShift(object_space_color.rgb, scale), object_space_color.a);
-    }
+    // if (first_hit) {
+    //     vec3 velocity = IFrame_transformVelocityFrom(camera.iframe.xyz, world_iframe.xyz, vec3(0, 0, 0));
+    //     vec3 line_of_sight = IFrame_transformCoordinateFrom(camera.iframe.xyz, world_iframe.xyz, first_record.ray.origin.w / kSpeedOfLight, first_record.ray.origin.xyz).yzw - camera.lookfrom.xyz;
+    //     float cosine = dot(default_normalize(velocity, velocity), normalize(line_of_sight));
+    //     float beta = IFrame_getBetaScalar(camera.iframe.xyz, world_iframe.xyz);
+    //     float scale = sqrt((1.0f - beta * cosine) / (1.0f + beta * cosine));
+    //     object_space_color = vec4(Color_lightWavelengthShift(object_space_color.rgb, scale), object_space_color.a);
+    // }
     return object_space_color;
 }
 

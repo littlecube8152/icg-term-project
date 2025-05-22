@@ -8,6 +8,7 @@
 
 struct alignas(16) SceneUniform {
     alignas(4)  int n_objects;
+    alignas(4)  float scene_time;
     alignas(16) glm::vec4 world_iframe;
     alignas(16) CameraUniform camera_uniform;
     alignas(16) ObjectUniform objects[MAX_OBJECTS];
@@ -19,7 +20,7 @@ class Scene {
 public:
     Scene(void);
     GLuint renderAsTexture(int frame_number);
-    void toUniform(SceneUniform &scene_uniform) const;
+    void toUniform(SceneUniform &scene_uniform, int frame_number) const;
 
 protected:
     Camera camera;

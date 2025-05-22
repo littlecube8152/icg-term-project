@@ -87,11 +87,11 @@ Renderer::Renderer(GLuint _window_width, GLuint _window_height)
 }
 
 
-void Renderer::renderFrame(const Scene &scene) {
+void Renderer::renderFrame(const Scene &scene, int frame_number) {
     glUseProgram(path_tracer);
 
     std::unique_ptr<SceneUniform> scene_uniform = std::make_unique<SceneUniform>();
-    scene.toUniform(*scene_uniform);
+    scene.toUniform(*scene_uniform, frame_number);
     GLuint scene_ubo = sendUniform(path_tracer, scene_uniform.get(), sizeof(SceneUniform), 0, "SceneUniform");
     std::unique_ptr<ColorConstantsUniform> color_uniform = std::make_unique<ColorConstantsUniform>();
     toColorConstantsUniform(*color_uniform);

@@ -17,12 +17,13 @@ GLuint Scene::renderAsTexture(int frame_number) {
     return texture;
 }
 
-void Scene::toUniform(SceneUniform &scene_uniform) const {
+void Scene::toUniform(SceneUniform &scene_uniform, int frame_number) const {
     auto objects = world.getObjects();
     int n_objects = (int)objects.size();
     assert(n_objects <= MAX_OBJECTS);
 
     scene_uniform.n_objects = n_objects;
+    scene_uniform.scene_time = camera.getDeltaT() * (float)frame_number;
     scene_uniform.world_iframe = glm::vec4(object_space_frame.frame_velocity, 0);
     camera.toUniform(scene_uniform.camera_uniform);
 

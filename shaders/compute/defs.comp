@@ -12,7 +12,7 @@ struct Ray {
 
 
 struct HitRecord {
-    vec4 coord;
+    Ray ray;
     vec3 normal;
     float alpha;
     bool front_face;
@@ -58,6 +58,7 @@ struct Cube {
 
 struct Object {
     int object_type;
+    vec4 iframe;
     Sphere sphere;
     Cube cube;
 };

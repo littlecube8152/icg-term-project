@@ -54,6 +54,7 @@ bool Sphere::hit(Ray &ray, HitRecord &record) const
 
 void Sphere::toUniform(ObjectUniform &object_uniform) const {
     object_uniform.object_type = OBJECT_TYPE_SPHERE;
+    object_uniform.iframe = glm::vec4(frame.frame_velocity, 1.0f);
     object_uniform.sphere = (SphereUniform) {
         .center = glm::vec4(center, 0),
         .radius = radius,

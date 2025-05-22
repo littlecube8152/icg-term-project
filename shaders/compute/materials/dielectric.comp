@@ -19,21 +19,21 @@ float Dielectric_reflectance(float cosine, float eta) {
     return r0 + (1 - r0) * pow((1 - cosine), 5);
 }
 
-bool Dielectric_scatter(Dielectric dielectric, Ray ray, inout HitRecord record) {
+bool Dielectric_scatter(Dielectric dielectric, inout HitRecord record) {
     record.attenuation = vec4(1, 1, 1, 1);
     float real_eta = record.front_face ? (1.0f / dielectric.eta) : dielectric.eta;
-    vec3 refracted = refract(ray.direction, record.normal, real_eta);
-    vec3 reflected = reflect(ray.direction, record.normal);
+    vec3 refracted = refract(record.ray.direction, record.normal, real_eta);
+    vec3 reflected = reflect(record.ray.direction, record.normal);
     if (abs(length(refracted)) < kEpsilon) {
-        record.scattered_ray = Ray_new(record.coord, reflected, ray.iframe);
+        record.scattered_ray = Ray_new(record.ray.origin, reflected, record.ray.iframe);
     } else {
-        float cosine = dot(-ray.direction, record.normal);
+        float cosine = dot(-record.ray.direction, record.normal);
         float r = Dielectric_reflectance(min(cosine, 1.0f), real_eta);
         float rand_sample = Random_float_unitPositive();
         if (rand_sample < r) {
-            record.scattered_ray = Ray_new(record.coord, reflected, ray.iframe);
+            record.scattered_ray = Ray_new(record.ray.origin, reflected, record.ray.iframe);
         } else {
-            record.scattered_ray = Ray_new(record.coord, refracted, ray.iframe);
+            record.scattered_ray = Ray_new(record.ray.origin, refracted, record.ray.iframe);
         }
     }
     return true;

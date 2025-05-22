@@ -22,6 +22,7 @@ struct alignas(16) CubeUniform {
 
 struct alignas(16) ObjectUniform {
     alignas(4)  int object_type;
+    alignas(16) glm::vec4 iframe;
     alignas(16) SphereUniform sphere;
     alignas(16) CubeUniform cube;
 };

@@ -12,10 +12,10 @@ Material Metal_new(vec4 albedo, float fuzz) {
     return material;
 }
 
-bool Metal_scatter(Metal metal, Ray ray, inout HitRecord record) {
-    vec3 reflected = reflect(ray.direction, record.normal);
+bool Metal_scatter(Metal metal, inout HitRecord record) {
+    vec3 reflected = reflect(record.ray.direction, record.normal);
     reflected = normalize(reflected + metal.fuzz * Random_vec3_unitLength());
-    record.scattered_ray = Ray_new(record.coord, reflected, ray.iframe);
+    record.scattered_ray = Ray_new(record.ray.origin, reflected, record.ray.iframe);
     record.attenuation = metal.albedo;
     return dot(reflected, record.normal) > 0.0f;
 }

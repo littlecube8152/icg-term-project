@@ -8,11 +8,18 @@
 #include "compute/materials/materials.comp"
 
 
-Object Cube_new(vec3 center, float side_length, int material_id) {
+Object Cube_new(vec3 center, float side_length, int material_id, vec4 frame) {
+    vec4 actual_center = IFrame_transformCoordinateFrom(frame.xyz, vec3(0.0f, 0.0f, 0.0f), 0.0f, center);
+
     Object object;
     object.object_type = OBJECT_TYPE_CUBE;
-    object.cube = Cube(vec4(center, 0), side_length, material_id);
+    object.iframe = frame;
+    object.cube = Cube(vec4(actual_center.xyz, 0), side_length, material_id);
     return object;
+}
+
+Object Cube_new(vec3 center, float side_length, int material_id) {
+    return Cube_new(center, side_length, material_id, vec4(0.0f, 0.0f, 0.0f, 0.0f));
 }
 
 bool Cube_testHitSurface(inout Ray ray, inout HitRecord record, vec3 surface_corner, vec3 vec_u, vec3 vec_v) {
@@ -34,28 +41,31 @@ bool Cube_testHitSurface(inout Ray ray, inout HitRecord record, vec3 surface_cor
         dot(cross(vec_v, surface_hit_vector - vec_u), normal) >= 0) {
         ray.interval.max = alpha;
         record.alpha = alpha;
-        record.coord = hit_point;
-        HitRecord_setFaceNormal(record, ray, normal);
+        record.ray = Ray_new(hit_point, ray.direction, ray.iframe);
+        HitRecord_setFaceNormal(record, normal);
         return true;
     }
     return false;
 }
 
-bool Cube_hit(Cube cube, Ray ray, out HitRecord record) {
+bool Cube_hit(Object object, Ray ray, out HitRecord record) {
+    Cube cube = object.cube;
+    Ray object_space_ray = ray;
+    Ray_transformFrame(object_space_ray, object.iframe.xyz);
     vec3 corner_1 = cube.center.xyz - vec3(cube.side_length / 2);
     vec3 corner_2 = cube.center.xyz + vec3(cube.side_length / 2);
     vec3 x_axis = vec3(cube.side_length, 0, 0);
     vec3 y_axis = vec3(0, cube.side_length, 0);
     vec3 z_axis = vec3(0, 0, cube.side_length);
     bool hit = false;
-    hit = Cube_testHitSurface(ray, record, corner_1,  x_axis,  z_axis) || hit;
-    hit = Cube_testHitSurface(ray, record, corner_1,  z_axis,  y_axis) || hit;
-    hit = Cube_testHitSurface(ray, record, corner_1,  y_axis,  x_axis) || hit;
-    hit = Cube_testHitSurface(ray, record, corner_2, -x_axis, -z_axis) || hit;
-    hit = Cube_testHitSurface(ray, record, corner_2, -z_axis, -y_axis) || hit;
-    hit = Cube_testHitSurface(ray, record, corner_2, -y_axis, -x_axis) || hit;
+    hit = Cube_testHitSurface(object_space_ray, record, corner_1,  x_axis,  z_axis) || hit;
+    hit = Cube_testHitSurface(object_space_ray, record, corner_1,  z_axis,  y_axis) || hit;
+    hit = Cube_testHitSurface(object_space_ray, record, corner_1,  y_axis,  x_axis) || hit;
+    hit = Cube_testHitSurface(object_space_ray, record, corner_2, -x_axis, -z_axis) || hit;
+    hit = Cube_testHitSurface(object_space_ray, record, corner_2, -z_axis, -y_axis) || hit;
+    hit = Cube_testHitSurface(object_space_ray, record, corner_2, -y_axis, -x_axis) || hit;
 
-    record.has_scattered = Material_scatter(cube.material_id, ray, record);
+    record.has_scattered = Material_scatter(cube.material_id, record);
 
     return hit;
 }

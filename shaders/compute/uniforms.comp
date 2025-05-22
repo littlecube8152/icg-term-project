@@ -8,6 +8,7 @@ layout (rgba32f) uniform image2D u_img_output;
 
 layout (std140) uniform SceneUniform {
     int n_objects;
+    float scene_time;
     vec4 world_iframe;
     Camera camera;
     Object objects[MAX_OBJECTS];

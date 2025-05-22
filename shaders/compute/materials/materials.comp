@@ -6,17 +6,17 @@
 #include "compute/materials/dielectric.comp"
 
 
-bool Material_scatter(int material_id, Ray ray, inout HitRecord record) {
+bool Material_scatter(int material_id, inout HitRecord record) {
     if (material_id < 0) {
         return false;
     }
     switch (materials[material_id].material_type) {
         case MATERIAL_TYPE_METAL:
-            return Metal_scatter(materials[material_id].metal, ray, record);
+            return Metal_scatter(materials[material_id].metal, record);
         case MATERIAL_TYPE_LAMBERTIAN:
-            return Lambertian_scatter(materials[material_id].lambertian, ray, record);
+            return Lambertian_scatter(materials[material_id].lambertian, record);
         case MATERIAL_TYPE_DIELECTRIC:
-            return Dielectric_scatter(materials[material_id].dielectric, ray, record);
+            return Dielectric_scatter(materials[material_id].dielectric, record);
         default:
             return false;
     }

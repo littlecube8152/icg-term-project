@@ -8,9 +8,9 @@
 bool Object_hit(int object_id, Ray ray, out HitRecord record) {
     switch (objects[object_id].object_type) {
         case OBJECT_TYPE_SPHERE:
-            return Sphere_hit(objects[object_id].sphere, ray, record);
+            return Sphere_hit(objects[object_id], ray, record);
         case OBJECT_TYPE_CUBE:
-            return Cube_hit(objects[object_id].cube, ray, record);
+            return Cube_hit(objects[object_id], ray, record);
         default:
             return false;
     }

@@ -39,12 +39,12 @@ int main(void)
     glfwSetKeyCallback(window, keyCallback);
 
     std::cerr << "Generating scene" << std::endl;
-    SceneRelativityTest scene(kWindowWidth, kWindowHeight, 1e-7f, AVRational{1, 30});
+    SceneRelativisticMovementTest scene(kWindowWidth, kWindowHeight, 1e-7f, AVRational{1, 30});
 
     // render the frame
     std::cerr << "Rendering" << std::endl;
     Renderer renderer(kWindowWidth, kWindowHeight);
-    renderer.renderFrame(scene);
+    renderer.renderFrame(scene, 0);
 
     bool saved = false;
     // main loop

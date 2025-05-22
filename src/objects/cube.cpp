@@ -73,6 +73,7 @@ bool Cube::hit(Ray &ray, HitRecord &record) const
 
 void Cube::toUniform(ObjectUniform &object_uniform) const {
     object_uniform.object_type = OBJECT_TYPE_CUBE;
+    object_uniform.iframe = glm::vec4(frame.frame_velocity, 1.0f);
     object_uniform.cube = (CubeUniform) {
         .center = glm::vec4(corner + (x_axis + y_axis + z_axis) / 2.0f, 0),
         .side_length = x_axis.x,
