@@ -14,7 +14,7 @@ extern "C"
 #include <algorithm>
 #include <cstring>
 
-void saveToPNG(const char *filename, int width, int height)
+void saveToPNG(std::string filename, int width, int height)
 {
     std::vector<uint8_t> pixels(width * height * 4);
     glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, pixels.data());

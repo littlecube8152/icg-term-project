@@ -25,6 +25,7 @@ struct InertialFrame
     glm::vec3 transformNormalFrom(const InertialFrame &from_frame, glm::vec3 normal) const;
 };
 
+// fixed frame for constructing the scene
 static const InertialFrame object_space_frame;
 
 #endif // INERTIAL_H_

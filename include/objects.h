@@ -52,7 +52,6 @@ private:
     float radius;
 };
 
-
 class Cube: public Object {
 public:
     Cube(const glm::vec3 &center, const float &side_length, std::shared_ptr<Material> material, InertialFrame frame);

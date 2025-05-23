@@ -1,9 +1,6 @@
 #include <iostream>
 #include <string>
 #include <filesystem>
-#include <chrono>
-
-using namespace std::string_literals;
 
 #define GL_GLEXT_PROTOTYPES
 #include "GL/gl.h"
@@ -57,7 +54,7 @@ int main(void)
         if (!saved)
         {
             std::filesystem::create_directory("outputs");
-            saveToPNG("outputs/screen.png", kWindowWidth, kWindowHeight);
+            saveToPNG((std::filesystem::path("outputs") / "screen.png").string(), kWindowWidth, kWindowHeight);
             saved = true;
         }
 

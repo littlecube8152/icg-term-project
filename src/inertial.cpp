@@ -3,13 +3,10 @@
 
 #include <cmath>
 #include <utility>
-#include <iostream>
 
 // velocity is given in the unit of light speed
 InertialFrame::InertialFrame(glm::vec3 velocity) { this->frame_velocity = velocity * speedOfLight; };
 InertialFrame::InertialFrame() { this->frame_velocity = glm::vec3(0.0f); };
-
-
 
 // Transforms velocity between two frames, given the measured velocity from the original frame S to the desired frame S'
 glm::vec3 InertialFrame::transformVelocityFrom(glm::vec3 measured_relative_velocity, glm::vec3 velocity_to_transform)

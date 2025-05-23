@@ -2,12 +2,6 @@
 #include "constants.h"
 #include "shaders/compute/objects/object_types.h"
 
-#include "glm/gtx/projection.hpp"
-#include "glm/gtx/norm.hpp"
-
-#include <utility>
-#include <iostream>
-
 Cube::Cube(const glm::vec3 &_center, const float &side_length, std::shared_ptr<Material> material, InertialFrame _frame)
     : Object(material, _frame)
 {

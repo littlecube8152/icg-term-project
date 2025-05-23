@@ -5,9 +5,6 @@
 #include "glm/gtx/projection.hpp"
 #include "glm/gtx/norm.hpp"
 
-#include <utility>
-#include <iostream>
-
 Sphere::Sphere(const glm::vec3 &_center, const float &_radius, std::shared_ptr<Material> _material, InertialFrame _frame)
     : Object(_material, _frame), center(_center), radius(_radius)
 {

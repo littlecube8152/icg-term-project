@@ -5,9 +5,6 @@
 
 #include <algorithm>
 #include <array>
-#include <optional>
-#include <cstring>
-#include <fstream>
 
 static constexpr glm::mat3x3 sRGBToXYZMat(0.4124f, 0.3576f, 0.1805f,
                                           0.2126f, 0.7152f, 0.0722f,

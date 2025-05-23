@@ -1,13 +1,9 @@
 #ifndef HITTABLE_H_
 #define HITTABLE_H_
 
-#include <memory>
-#include <iostream>
-
 #include "glm/glm.hpp"
 
 #include "ray.h"
-#include "interval.h"
 #include "inertial.h"
 
 // Always store the result in the camera's inertial frame

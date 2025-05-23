@@ -4,6 +4,11 @@
 #include <iostream>
 #include <format>
 
+Ray::Ray(const glm::vec4 &origin, const glm::vec3 &direction, std::shared_ptr<InertialFrame> reference_frame)
+: ray_origin(origin), ray_direction(direction), ray_reference_frame(reference_frame), interval(Interval::positive) {}
+Ray::Ray(const glm::vec3 &origin, const glm::vec3 &direction, std::shared_ptr<InertialFrame> reference_frame)
+: Ray(glm::vec4(origin, 0.0f), direction, reference_frame) {}
+
 const glm::vec4 &Ray::origin() const { return ray_origin; }
 const glm::vec3 &Ray::direction() const { return ray_direction; }
 // const Interval &Ray::interval() const { return ray_interval; }
