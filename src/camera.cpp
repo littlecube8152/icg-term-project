@@ -86,11 +86,11 @@ glm::vec4 Camera::getRayColor(Ray &ray, const HittableList &world, const int &re
                                           (glm::vec3)ray.origin();
                 float cosine = glm::dot(default_normalize(velocity, velocity), glm::normalize(line_of_sight));
 
-                // float scale = 1.0f / config.inertial_frame->getGamma(object_space_frame)
-                //                    / (1.0f + config.inertial_frame->getBetaScalar(object_space_frame) * cosine);
+                float scale = 1.0f / config.inertial_frame->getGamma(object_space_frame)
+                                   / (1.0f + config.inertial_frame->getBetaScalar(object_space_frame) * cosine);
 
-                float beta_cosine = ray.referenceFrame().getBetaScalar(record.ray.referenceFrame()) * cosine;
-                float scale = std::sqrtf((1.0f - beta_cosine) / (1.0f + beta_cosine));
+                // float beta_cosine = ray.referenceFrame().getBetaScalar(record.ray.referenceFrame()) * cosine;
+                // float scale = std::sqrtf((1.0f - beta_cosine) / (1.0f + beta_cosine));
 
                 shifted_color = glm::vec4(lightWavelengthShift(rgb_color, scale), shifted_color.a);
             }

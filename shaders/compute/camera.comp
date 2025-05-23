@@ -75,8 +75,9 @@ vec4 Camera_getRayColor(vec3 camera_iframe, Ray ray) {
         vec3 line_of_sight = IFrame_transformCoordinateFrom(ray.iframe.xyz, record.ray.iframe.xyz, record.ray.origin.w / kSpeedOfLight, record.ray.origin.xyz).yzw - ray.origin.xyz;
         float cosine = dot(default_normalize(velocity, velocity), normalize(line_of_sight));
         float beta = IFrame_getBetaScalar(ray.iframe.xyz, record.ray.iframe.xyz);
-        scales[depth] = sqrt((1.0f - beta * cosine) / (1.0f + beta * cosine));
-        
+        float gamma = IFrame_getGamma(ray.iframe.xyz, record.ray.iframe.xyz);\
+        scales[depth] = 1.0f / gamma / (1.0f + beta * cosine);
+
         ray = record.scattered_ray;
     }
     depth--;
