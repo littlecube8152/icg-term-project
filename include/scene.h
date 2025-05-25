@@ -4,6 +4,7 @@
 #include "camera.h"
 #include "hittable_list.h"
 #include "shaders/compute/macros.h"
+#include "arguments.h"
 
 
 struct alignas(16) SceneUniform {
@@ -30,23 +31,23 @@ protected:
 
 class SceneMaterialDemo: public Scene {
 public:
-    SceneMaterialDemo(GLuint texture_width, GLuint texture_height, float time_scale, AVRational time_base, int max_recursion_depth);
+    SceneMaterialDemo(GLuint texture_width, GLuint texture_height, float time_scale, const ArgumentParser &options);
 };
 
 
 class SceneRandomBalls: public Scene {
 public:
-    SceneRandomBalls(GLuint texture_width, GLuint texture_height, float time_scale, AVRational time_base, int max_recursion_depth);
+    SceneRandomBalls(GLuint texture_width, GLuint texture_height, float time_scale, const ArgumentParser &options);
 };
 
 class SceneRelativityTest: public Scene {
 public:
-    SceneRelativityTest(GLuint texture_width, GLuint texture_height, float time_scale, AVRational time_base, int max_recursion_depth);
+    SceneRelativityTest(GLuint texture_width, GLuint texture_height, float time_scale, const ArgumentParser &options);
 };
 
 class SceneRelativisticMovementTest: public Scene {
 public:
-    SceneRelativisticMovementTest(GLuint texture_width, GLuint texture_height, float time_scale, AVRational time_base, int max_recursion_depth);
+    SceneRelativisticMovementTest(GLuint texture_width, GLuint texture_height, float time_scale, const ArgumentParser &options);
 };
 
 

@@ -4,7 +4,7 @@
 #include "materials.h"
 
 
-SceneMaterialDemo::SceneMaterialDemo(GLuint texture_width, GLuint texture_height, float time_scale, AVRational time_base, int max_recursion_depth) {
+SceneMaterialDemo::SceneMaterialDemo(GLuint texture_width, GLuint texture_height, float time_scale, const ArgumentParser &options) {
     camera = Camera((CameraConfig) {
         .image_width = texture_width,
         .image_height = texture_height,
@@ -12,11 +12,11 @@ SceneMaterialDemo::SceneMaterialDemo(GLuint texture_width, GLuint texture_height
         .lookfrom = glm::vec3(0, 0, 1),
         .lookat = glm::vec3(0, 0, 0),
         .lookup = glm::vec3(0, 1, 0),
-        .sqrt_samples_per_pixel = 4,
-        .max_recursion_depth = max_recursion_depth,
+        .sqrt_samples_per_pixel = options.getSampleOption(),
+        .max_recursion_depth = options.getDepthOption(),
         .inertial_frame = std::make_shared<InertialFrame>(glm::vec3(0.0, 0.0, 0.0)),
         .time_scale = time_scale,
-        .time_base = time_base
+        .time_base = options.getTimeBase()
     });
 
     auto material_ground = std::make_shared<Lambertian>(glm::vec4(0.8f, 0.8f, 0.0f, 1.0f));

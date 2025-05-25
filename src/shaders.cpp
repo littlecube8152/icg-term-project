@@ -5,16 +5,19 @@
 #include "shaders/compute.h"
 #else 
 unsigned char compute_shader_source[] = {}; 
+unsigned int compute_shader_source_len = 0;
 #endif
 #if __has_include("shaders/fragment.h")
 #include "shaders/fragment.h"
 #else 
 unsigned char fragment_shader_source[] = {};
+unsigned int fragment_shader_source_len = 0;
 #endif
 #if __has_include("shaders/vertex.h")
 #include "shaders/vertex.h"
 #else 
 unsigned char vertex_shader_source[] = {};
+unsigned int vertex_shader_source_len = 0;
 #endif
 
 #include <string>
