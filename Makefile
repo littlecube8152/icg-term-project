@@ -3,7 +3,7 @@ INCFLAGS   += -I .
 INCFLAGS   += -I include
 
 LINKFLAGS  = -lGL -lGLU -lglfw
-LINKFLAGS  += -lavcodec -lavformat -lavutil
+LINKFLAGS  += -lavcodec -lavformat -lavutil -lswscale
 
 CFLAGS     =  -O2 -Wall -Wextra -Wshadow -Wconversion
 CFLAGS     += -std=gnu++20

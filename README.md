@@ -11,7 +11,7 @@ We implemented a ray tracing engine supporting special relativistic effects in C
 - OpenGL, GLFW, and FFmpeg Libraries.  
   For Debian-based distributions, the dependencies can be installed by
     ```sh
-    apt install libopengl-dev libglfw3-dev libavcodec-dev libavformat-dev libavutil-dev
+    apt install libopengl-dev libglfw3-dev libavcodec-dev libavformat-dev libavutil-dev libswscale-dev
     ```
 
 ## Running the Program

@@ -13,7 +13,7 @@
 #include "renderer.h"
 #include "scene.h"
 #include "shaders.h"
-#include "writer.h"
+#include "exporter.h"
 
 bool window_should_close = false;
 
@@ -35,18 +35,23 @@ std::condition_variable texture_free_cv;
 std::mutex texture_mutex;
 bool termination;
 int texture_status;
+int frame_index = -1;
 
 
-int max_recursion_depth = 32;
+static const int max_recursion_depth = 32;
+static const int FPS = 30;
+static const int frames = 60;
+
+
 void worker_routine(GLFWwindow *worker_window, Renderer &renderer)
 {
     glfwMakeContextCurrent(worker_window);
 
     std::cerr << "Generating scene" << std::endl;
-    SceneRelativisticMovementTest scene(kWindowWidth, kWindowHeight, 1e-7f, AVRational{1, 30}, max_recursion_depth);
+    SceneRelativisticMovementTest scene(kWindowWidth, kWindowHeight, 1e-8f, AVRational{1, FPS}, max_recursion_depth);
 
     // render the frame
-    for (int i = 0; i < 50; i++)
+    for (int i = 0; i < frames; i++)
     {
         std::unique_lock lock(texture_mutex);
         texture_free_cv.wait(lock, [](){ return texture_status == TEXTURE_FREE || termination == true; });
@@ -63,6 +68,7 @@ void worker_routine(GLFWwindow *worker_window, Renderer &renderer)
         
         lock.lock();
         texture_status = TEXTURE_DISPATCHED;
+        frame_index = i;
     }
 }
 
@@ -90,7 +96,6 @@ int main(void)
     texture_status = TEXTURE_FREE;
     termination = false;
 
-    bool saved = false;
 
     glClear(GL_COLOR_BUFFER_BIT);
     glfwSwapBuffers(window);
@@ -100,6 +105,10 @@ int main(void)
     glfwMakeContextCurrent(window);
 
     // main loop
+    std::filesystem::create_directory("outputs");
+    MKVExporter video_exporter(kWindowWidth, kWindowHeight, AVRational{1, FPS});
+    video_exporter.open(std::filesystem::path("outputs") / "video.mkv");
+
     while (!window_should_close && !glfwWindowShouldClose(window)) 
     {
         std::unique_lock lock(texture_mutex);
@@ -107,15 +116,23 @@ int main(void)
         if (texture_status == TEXTURE_DISPATCHED && renderer.pollFrame())
         {
             texture_status = TEXTURE_DRAWING;
-            glClear(GL_COLOR_BUFFER_BIT);
             std::cerr << "Drawing" << std::endl;
+
+            glClear(GL_COLOR_BUFFER_BIT);
             renderer.drawFrame();
-            if (!saved)
+
+            auto pixels = dumpPixelFromGL(kWindowWidth, kWindowHeight);
+            if (frame_index == 0)
             {
                 std::filesystem::create_directory("outputs");
-                saveToPNG((std::filesystem::path("outputs") / "screen.png").string(), kWindowWidth, kWindowHeight);
-                saved = true;
+                saveToPNG((std::filesystem::path("outputs") / "screen.png").string(),
+                          kWindowWidth, kWindowHeight,
+                          dumpPixelFromGL(kWindowWidth, kWindowHeight));
             }
+            video_exporter.addFrame(pixels);
+            if (frame_index == frames - 1)
+                video_exporter.close();
+
             glfwSwapBuffers(window);
             texture_status = TEXTURE_FREE;
         }

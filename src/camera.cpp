@@ -27,7 +27,7 @@ Camera::Camera(const CameraConfig &_config)
 {
     config = _config;
     initViewport();
-    dt = config.time_scale * (float)config.time_base.den / (float)config.time_base.num;
+    dt = config.time_scale * (float)config.time_base.num / (float)config.time_base.den;
 }
 
 void Camera::initViewport()
