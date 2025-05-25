@@ -1,7 +1,6 @@
 #include "ray.h"
 #include "constants.h"
 
-#include <iostream>
 #include <format>
 
 Ray::Ray(const glm::vec4 &origin, const glm::vec3 &direction, std::shared_ptr<InertialFrame> reference_frame)

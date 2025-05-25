@@ -5,10 +5,10 @@
 #include "randutil.h"
 
 
-SceneRandomBalls::SceneRandomBalls(GLuint texture_width, GLuint texture_height, float time_scale, const ArgumentParser &options) {
+SceneRandomBalls::SceneRandomBalls(const ArgumentParser &options, float time_scale) {
     camera = Camera(CameraConfig{
-        .image_width = texture_width,
-        .image_height = texture_height,
+        .image_width = static_cast<unsigned>(options.getWidth()),
+        .image_height = static_cast<unsigned>(options.getHeight()),
         .vfov = 20,
         .lookfrom = glm::vec3(13, 2, 3),
         .lookat = glm::vec3(0, 0, 0),

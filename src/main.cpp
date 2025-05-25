@@ -44,13 +44,12 @@ bool termination;
 TextureStatus texture_status;
 int frame_index = -1;
 
-
 void worker_routine(GLFWwindow *worker_window, Renderer &renderer, ArgumentParser &arguments)
 {
     glfwMakeContextCurrent(worker_window);
 
     std::cerr << "Generating scene" << std::endl;
-    SceneRelativisticMovementTest scene(kWindowWidth, kWindowHeight, 1e-8f, arguments);
+    SceneRelativisticMovementTest scene(arguments, 1e-8f);
 
     // render the frame
     for (int i = 0; i < arguments.getTotalFrames(); i++)
@@ -98,9 +97,9 @@ int main(int argc, char *argv[])
     glfwSetKeyCallback(window, keyCallback);
 
     glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
-    worker_window = glfwCreateWindow(kWindowWidth, kWindowHeight, "Hello World", NULL, window);
+    worker_window = glfwCreateWindow(arguments.getWidth(), arguments.getHeight(), "Hello World", NULL, window);
 
-    Renderer renderer(kWindowWidth, kWindowHeight, arguments.getDepthOption());
+    Renderer renderer(arguments);
 
     texture_status = TEXTURE_FREE;
     termination = false;
@@ -114,7 +113,7 @@ int main(int argc, char *argv[])
 
     // main loop
     std::filesystem::create_directory("outputs");
-    MKVExporter video_exporter(kWindowWidth, kWindowHeight, arguments.getTimeBase());
+    MKVExporter video_exporter(arguments);
     video_exporter.open(std::filesystem::path("outputs") / "video.mkv");
 
     while (!window_should_close && !glfwWindowShouldClose(window))
@@ -129,13 +128,12 @@ int main(int argc, char *argv[])
             glClear(GL_COLOR_BUFFER_BIT);
             renderer.drawFrame();
 
-            auto pixels = dumpPixelFromGL(kWindowWidth, kWindowHeight);
+            auto pixels = renderer.dumpPixelFromTexture();
             if (frame_index == 0)
             {
                 std::filesystem::create_directory("outputs");
                 saveToPNG((std::filesystem::path("outputs") / "screen.png").string(),
-                          kWindowWidth, kWindowHeight,
-                          dumpPixelFromGL(kWindowWidth, kWindowHeight));
+                          arguments.getWidth(), arguments.getHeight(), pixels);
             }
             video_exporter.addFrame(pixels);
             if (frame_index == arguments.getTotalFrames() - 1)

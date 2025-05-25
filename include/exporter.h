@@ -10,8 +10,10 @@ extern "C"
 #include "libavformat/avformat.h"
 }
 
+#include "arguments.h"
+
+
 void saveToPNG(std::string filename, int width, int height, std::vector<uint8_t> pixels);
-std::vector<uint8_t> dumpPixelFromGL(int width, int height);
 
 struct MKVExporter
 {
@@ -21,7 +23,7 @@ private:
     int height;
     AVRational time_base;
     int frame_index;
-    int bitrate;
+    int crf;
 
     AVFormatContext *fmt_ctx;
     AVCodecContext *codec_ctx;
@@ -33,7 +35,7 @@ private:
 public:
     const AVCodecID codec_id = AV_CODEC_ID_H264;
 
-    MKVExporter(int width, int height, AVRational time_base, int bitrate = 10'000'000);
+    MKVExporter(const ArgumentParser &options);
 
     // open an MKV file for export.
     void open(std::string filename);

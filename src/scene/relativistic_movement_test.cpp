@@ -3,11 +3,11 @@
 #include "objects.h"
 #include "materials.h"
 
-SceneRelativisticMovementTest::SceneRelativisticMovementTest(GLuint texture_width, GLuint texture_height, float time_scale, const ArgumentParser &options)
+SceneRelativisticMovementTest::SceneRelativisticMovementTest(const ArgumentParser &options, float time_scale)
 {
     camera = Camera((CameraConfig){
-        .image_width = texture_width,
-        .image_height = texture_height,
+        .image_width = static_cast<unsigned>(options.getWidth()),
+        .image_height = static_cast<unsigned>(options.getHeight()),
         .vfov = 90,
         .lookfrom = glm::vec3(-0.2, 0, -1),
         .lookat = glm::vec3(0.2, 0, 0),

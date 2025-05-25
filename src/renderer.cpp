@@ -77,9 +77,9 @@ static GLuint sendUniform(GLuint program, void* data, GLuint size, GLuint bind_p
 }
 
 
-Renderer::Renderer(GLuint _window_width, GLuint _window_height, int max_recursion_depth)
-    : window_width(_window_width), window_height(_window_height) {
-    path_tracer = loadPathTracerProgram(max_recursion_depth);
+Renderer::Renderer(const ArgumentParser &options)
+    : window_width(options.getWidth()), window_height(options.getHeight()) {
+    path_tracer = loadPathTracerProgram(options.getDepthOption());
     texture_unit = 0;
     texture = createTexture(texture_unit, window_width, window_height);
     shader = loadShaderProgram();
@@ -122,4 +122,21 @@ void Renderer::drawFrame(void) {
     glUniform1i(glGetUniformLocation(shader, "u_texture"), texture_unit);
     glDrawArrays(GL_TRIANGLES, 0, 6);
     glMemoryBarrier(GL_FRAMEBUFFER_BARRIER_BIT);
+}
+
+std::vector<uint8_t> Renderer::dumpPixelFromTexture()
+{
+    glActiveTexture(GL_TEXTURE0 + texture_unit);
+    glBindTexture(GL_TEXTURE_2D, texture);
+
+    std::vector<uint8_t> pixels(window_width * window_height * 4);
+    glGetnTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, window_width * window_height * 4, pixels.data());
+
+    // Flip vertically (OpenGL is bottom-left origin; PNG is top-left)
+    for (unsigned y = 0; y < window_height / 2; y++)
+    {
+        std::swap_ranges(pixels.begin() + y * window_width * 4, pixels.begin() + (y + 1) * window_width * 4,
+                         pixels.begin() + (window_height - y - 1) * window_width * 4);
+    }
+    return pixels;
 }

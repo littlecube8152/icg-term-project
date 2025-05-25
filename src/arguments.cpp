@@ -1,10 +1,12 @@
 #include "arguments.h"
 
-#include <iostream>
+#include <algorithm>
 #include <functional>
 #include <format>
+#include <iostream>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "constants.h"
 
@@ -16,15 +18,30 @@ void ArgumentParser::parse(int argc, char *argv[])
         {"-f", "--fps", "Set FPS of the video output.",
          [this](int arg)
          { option_fps = arg; return true; }},
-        {"-d", "--depth", "Set ray-tracing recursion depth.",
+        {"-d", "--depth", "Set ray-tracing recursion depth. Default: 32.",
          [this](int arg)
          { option_depth = arg; return true; }},
-        {"-s", "--samples", "Set ray-tracing samples per unit length. Actual samples per pixel will be the square of this argument.",
+        {"-s", "--samples", "Set ray-tracing samples per unit length. Actual samples per pixel will be the square of this argument. Default: 4.",
          [this](int arg)
          { option_samples = arg; return true; }},
-        {"-l", "--length", "Set simulation time length.",
+        {"-l", "--length", "Set simulation time length in second. Default: 2 (second).",
          [this](int arg)
          { option_length = arg; return true; }},
+        {"-r", "--resolution", "Set the height of the image output. Must be one of 144, 240, 360, 540 (default), 720, 1080, 2160, 4320",
+         [this](int arg)
+         {
+             static const std::vector<int> support = {144, 240, 360, 540, 720, 1080, 2160, 4320};
+             if (std::find(support.begin(), support.end(), arg) == support.end())
+                 return false;
+             option_resolution = arg;
+             return true;
+         }},
+         {"-q", "--quality", "Set CRF (constant rate factor) of the encoding. Default to 18.",
+          [this](int arg)
+          {
+              option_crf = arg;
+              return true;
+          }},
     };
     const std::vector<std::tuple<std::string, std::string, std::string, std::function<bool(void)>>> flag_arguments = {
         {"-h", "--help", "Display this help message.",

@@ -5,6 +5,7 @@ extern "C"
 #include "libavcodec/avcodec.h"
 #include "libavformat/avformat.h"
 #include "libavutil/imgutils.h"
+#include "libavutil/opt.h"
 #include "libswscale/swscale.h"
 }
 
@@ -95,20 +96,6 @@ struct CodecPacket
     }
 };
 
-std::vector<uint8_t> dumpPixelFromGL(int width, int height)
-{
-    std::vector<uint8_t> pixels(width * height * 4);
-    glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, pixels.data());
-
-    // Flip vertically (OpenGL is bottom-left origin; PNG is top-left)
-    for (int y = 0; y < height / 2; y++)
-    {
-        std::swap_ranges(pixels.begin() + y * width * 4, pixels.begin() + (y + 1) * width * 4,
-                         pixels.begin() + (height - y - 1) * width * 4);
-    }
-    return pixels;
-}
-
 void saveToPNG(std::string filename, int width, int height, std::vector<uint8_t> pixels)
 {
     const AVCodec *codec = avcodec_find_encoder(AV_CODEC_ID_PNG);
@@ -148,26 +135,6 @@ void saveToPNG(std::string filename, int width, int height, std::vector<uint8_t>
     avcodec_free_context(&context);
 }
 
-// // Set up a dummy RGB image
-// std::vector<uint8_t> fill_frame(int width, int height, int frame_index)
-// {
-//     std::vector image(height, std::vector<uint8_t>(width * 4));
-//     for (int y = 0; y < height; ++y)
-//     {
-//         for (int x = 0; x < width; ++x)
-//         {
-//             image[y][4 * x + 0] = (uint8_t)((x + frame_index) % 255);
-//             image[y][4 * x + 1] = (uint8_t)(y % 255);
-//             image[y][4 * x + 2] = (uint8_t)(128);
-//             image[y][4 * x + 3] = (uint8_t)(255);
-//         }
-//     }
-//     std::vector<uint8_t> pixels;
-//     for (int y = 0; y < height; ++y)
-//         pixels.insert(pixels.end(), image[y].begin(), image[y].end());
-//     return pixels;
-// }
-
 // Exports a file into MKV.
 
 void MKVExporter::writeFrames()
@@ -185,7 +152,7 @@ void MKVExporter::writeFrames()
     }
 }
 
-MKVExporter::MKVExporter(int _width, int _height, AVRational _time_base, int _bitrate) : width(_width), height(_height), time_base(_time_base), bitrate(_bitrate) {};
+MKVExporter::MKVExporter(const ArgumentParser &options) : width(options.getWidth()), height(options.getHeight()), time_base(options.getTimeBase()), crf(options.getCRF()) {};
 
 void MKVExporter::open(std::string filename)
 {
@@ -206,13 +173,13 @@ void MKVExporter::open(std::string filename)
 
     codec_ctx = avcodec_alloc_context3(codec);
     codec_ctx->codec_id = codec_id;
-    codec_ctx->bit_rate = bitrate;
     codec_ctx->width = width;
     codec_ctx->height = height;
     codec_ctx->time_base = time_base;
     codec_ctx->framerate = {time_base.num, time_base.num};
     codec_ctx->gop_size = 12;
     codec_ctx->pix_fmt = AV_PIX_FMT_YUV420P;
+    av_opt_set(codec_ctx->priv_data, "crf", std::to_string(crf).c_str(), 0);
 
     // Allocate format context
     avformat_alloc_output_context2(&fmt_ctx, nullptr, "matroska", filename.c_str());
@@ -285,14 +252,3 @@ void MKVExporter::close()
         avio_closep(&fmt_ctx->pb);
     avformat_free_context(fmt_ctx);
 }
-
-// void exportToMkv()
-// {
-//     int width = 640;
-//     int height = 480;
-//     MKVExporter exporter(width, height, AVRational{1, 30});
-//     exporter.open("output.mkv");
-//     for (int i = 0; i < 100; i++)
-//         exporter.add_frame(fill_frame(width, height, i));
-//     exporter.close();
-// }

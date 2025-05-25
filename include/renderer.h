@@ -5,7 +5,10 @@
 #include "GL/gl.h"
 
 #include "scene.h"
+#include "arguments.h"
 
+#include <vector>
+#include <cstdint>
 
 class Renderer {
 
@@ -13,7 +16,7 @@ public:
     
     Renderer() = delete;
     Renderer(const Renderer &renderer) = delete;
-    Renderer(GLuint window_width, GLuint window_height, int max_recursion_depth);
+    Renderer(const ArgumentParser &options);
 
     // render the scene into a texture with compute shaders
     // TODO: render the actual scene
@@ -24,6 +27,9 @@ public:
 
     // poll and receive whether the computation result is ready
     bool pollFrame();
+
+    // this does what you thinks
+    std::vector<uint8_t> dumpPixelFromTexture();
 
 private:
 

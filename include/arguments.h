@@ -12,6 +12,7 @@ private:
     int option_length = 2;
     int option_samples = 4;
     int option_resolution = kWindowHeight;
+    int option_crf = 18;
 
 public:
     void parse(int argc, char *argv[]);
@@ -24,6 +25,8 @@ public:
     int getFPSOption() const { return option_fps; }
     // Get samples per unit length (sqrt sample per pixel).
     int getSampleOption() const { return option_samples; }
+    // Get CRF (Constant Rate Factor)
+    int getCRF() const { return option_crf; }
 
     // Computed options
 
@@ -31,6 +34,10 @@ public:
     int getTotalFrames() const { return option_fps * option_length; }
     // Get time base.
     AVRational getTimeBase() const { return AVRational{1, option_fps}; }
+    // Get height.
+    int getHeight() const { return option_resolution; }
+    // Get width.
+    int getWidth() const { return option_resolution / 9 * 16; }
 };
 
 #endif // ARGUMENTS_H_

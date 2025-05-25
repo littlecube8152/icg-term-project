@@ -31,23 +31,23 @@ protected:
 
 class SceneMaterialDemo: public Scene {
 public:
-    SceneMaterialDemo(GLuint texture_width, GLuint texture_height, float time_scale, const ArgumentParser &options);
+    SceneMaterialDemo(const ArgumentParser &options, float time_scale);
 };
 
 
 class SceneRandomBalls: public Scene {
 public:
-    SceneRandomBalls(GLuint texture_width, GLuint texture_height, float time_scale, const ArgumentParser &options);
+    SceneRandomBalls(const ArgumentParser &options, float time_scale);
 };
 
 class SceneRelativityTest: public Scene {
 public:
-    SceneRelativityTest(GLuint texture_width, GLuint texture_height, float time_scale, const ArgumentParser &options);
+    SceneRelativityTest(const ArgumentParser &options, float time_scale);
 };
 
 class SceneRelativisticMovementTest: public Scene {
 public:
-    SceneRelativisticMovementTest(GLuint texture_width, GLuint texture_height, float time_scale, const ArgumentParser &options);
+    SceneRelativisticMovementTest(const ArgumentParser &options, float time_scale);
 };
 
 
