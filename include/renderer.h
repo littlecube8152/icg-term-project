@@ -22,6 +22,9 @@ public:
     // draw the texture onto the screen
     void drawFrame(void);
 
+    // poll and receive whether the computation result is ready
+    bool pollFrame();
+
 private:
 
     // dimensions of the rendering area
@@ -35,6 +38,8 @@ private:
     // VAO and vertex/fragment shaders responsible for drawing the texture onto the screen
     GLuint window_vao;
     GLuint shader;
+    // synchronizes computation
+    GLsync compute_fence;
 
 };
 

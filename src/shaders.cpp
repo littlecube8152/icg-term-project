@@ -71,8 +71,10 @@ static GLuint createLinkedProgram(const std::initializer_list<GLuint> &shaders) 
 
 
 GLuint loadShaderProgram(void) {
-    GLuint vert_shader = compileShader(GL_VERTEX_SHADER, reinterpret_cast<char*>(vertex_shader_source));
-    GLuint frag_shader = compileShader(GL_FRAGMENT_SHADER, reinterpret_cast<char*>(fragment_shader_source));
+    std::string vert_source(reinterpret_cast<char*>(vertex_shader_source), vertex_shader_source_len);
+    std::string frag_source(reinterpret_cast<char*>(fragment_shader_source), fragment_shader_source_len);
+    GLuint vert_shader = compileShader(GL_VERTEX_SHADER, vert_source);
+    GLuint frag_shader = compileShader(GL_FRAGMENT_SHADER, frag_source);
     GLuint program = createLinkedProgram({vert_shader, frag_shader});
     glDeleteShader(vert_shader);
     glDeleteShader(frag_shader);
@@ -81,9 +83,11 @@ GLuint loadShaderProgram(void) {
 
 
 GLuint loadPathTracerProgram(int max_recursion_depth) {
-    std::string raw_source(reinterpret_cast<char*>(compute_shader_source));
-    raw_source = std::format("#define MAX_RECURSION_DEPTH {}\n", max_recursion_depth) + raw_source;
-    GLuint compute_shader = compileShader(GL_COMPUTE_SHADER, reinterpret_cast<char*>(compute_shader_source));
+    std::string raw_source(reinterpret_cast<char*>(compute_shader_source), compute_shader_source_len);
+
+    std::string flags = std::format("#define MAX_RECURSION_DEPTH {}\n", max_recursion_depth);
+    raw_source.insert(raw_source.find_first_of('\n') + 1, flags);
+    GLuint compute_shader = compileShader(GL_COMPUTE_SHADER, raw_source);
     GLuint program = createLinkedProgram({compute_shader});
     glDeleteShader(compute_shader);
     return program;

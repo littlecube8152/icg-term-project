@@ -89,6 +89,9 @@ Renderer::Renderer(GLuint _window_width, GLuint _window_height, int max_recursio
 
 void Renderer::renderFrame(const Scene &scene, int frame_number) {
     glUseProgram(path_tracer);
+    glActiveTexture(GL_TEXTURE0 + texture_unit);
+    glBindTexture(GL_TEXTURE_2D, texture);
+    glBindImageTexture(texture_unit, texture, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA32F);
 
     std::unique_ptr<SceneUniform> scene_uniform = std::make_unique<SceneUniform>();
     scene.toUniform(*scene_uniform, frame_number);
@@ -98,16 +101,25 @@ void Renderer::renderFrame(const Scene &scene, int frame_number) {
     GLuint color_ubo = sendUniform(path_tracer, color_uniform.get(), sizeof(ColorConstantsUniform), 1, "ColorConstantsUniform");
 
     glDispatchCompute(window_width, window_height, 1);
-    glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+    compute_fence = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
 
     glDeleteBuffers(1, &scene_ubo);
     glDeleteBuffers(1, &color_ubo);
 }
 
 
+bool Renderer::pollFrame() {
+    GLenum result = glClientWaitSync(compute_fence, GL_SYNC_FLUSH_COMMANDS_BIT, 0);
+    return result == GL_ALREADY_SIGNALED || result == GL_CONDITION_SATISFIED;
+}
+
+
 void Renderer::drawFrame(void) {
     glUseProgram(shader);
+    glActiveTexture(GL_TEXTURE0 + texture_unit);
+    glBindTexture(GL_TEXTURE_2D, texture);
     glBindVertexArray(window_vao);
     glUniform1i(glGetUniformLocation(shader, "u_texture"), texture_unit);
     glDrawArrays(GL_TRIANGLES, 0, 6);
+    glMemoryBarrier(GL_FRAMEBUFFER_BARRIER_BIT);
 }
