@@ -7,16 +7,16 @@
 
 
 bool Material_scatter(int material_id, inout HitRecord record) {
-    if (material_id < 0) {
+    if (material_id <= 0) {
         return false;
     }
-    switch (materials[material_id].material_type) {
+    switch (u_materials[material_id].material_type) {
         case MATERIAL_TYPE_METAL:
-            return Metal_scatter(materials[material_id].metal, record);
+            return Metal_scatter(u_materials[material_id].metal, record);
         case MATERIAL_TYPE_LAMBERTIAN:
-            return Lambertian_scatter(materials[material_id].lambertian, record);
+            return Lambertian_scatter(u_materials[material_id].lambertian, record);
         case MATERIAL_TYPE_DIELECTRIC:
-            return Dielectric_scatter(materials[material_id].dielectric, record);
+            return Dielectric_scatter(u_materials[material_id].dielectric, record);
         default:
             return false;
     }

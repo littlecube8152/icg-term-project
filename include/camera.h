@@ -32,21 +32,6 @@ struct CameraConfig {
 };
 
 
-// NOTE:
-// vec3 intentionally replaced with vec4 to avoid alignment issues
-// https://stackoverflow.com/questions/38172696/should-i-ever-use-a-vec3-inside-of-a-uniform-buffer-or-shader-storage-buffer-o
-struct alignas(16) CameraUniform {
-    alignas(4)  int sqrt_samples_per_pixel;
-    alignas(4)  float pixel_samples_scale;
-    alignas(4)  float pixel_samples_delta;
-    alignas(16) glm::vec4 lookfrom;
-    alignas(16) glm::vec4 iframe;
-    alignas(16) glm::vec4 viewport_lower_left;
-    alignas(16) glm::vec4 viewport_dx;
-    alignas(16) glm::vec4 viewport_dy;
-};
-
-
 class Camera {
 public:
     Camera();

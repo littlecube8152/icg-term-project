@@ -5,27 +5,7 @@
 
 #include "hit_record.h"
 #include "ray.h"
-
-
-struct alignas(16) MetalUniform {
-    alignas(16) glm::vec4 albedo;
-    alignas(4)  float fuzz;
-};
-
-struct alignas(16) LambertianUniform {
-    alignas(16) glm::vec4 albedo;
-};
-
-struct alignas(16) DielectricUniform {
-    alignas(4) float eta;
-};
-
-struct alignas(16) MaterialUniform {
-    alignas(4)  int material_type;
-    alignas(16) MetalUniform metal;
-    alignas(16) LambertianUniform lambertian;
-    alignas(16) DielectricUniform dielectric;
-};
+#include "shader_data.h"
 
 
 class Material {

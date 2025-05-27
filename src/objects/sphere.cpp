@@ -1,5 +1,6 @@
 #include "objects.h"
 #include "constants.h"
+#include "scene.h"
 
 #include "glm/gtx/projection.hpp"
 #include "glm/gtx/norm.hpp"
@@ -48,11 +49,17 @@ bool Sphere::hit(Ray &ray, HitRecord &record) const
     return true;
 }
 
-void Sphere::toUniform(SphereUniform &sphere_uniform) const {
-    sphere_uniform = (SphereUniform) {
+void Sphere::toUniform(SceneUniformCollector &collector) const {
+    int material_id = 0;
+    if (mat.get()) {
+        collector.materials.emplace_back();
+        mat->toUniform(collector.materials.back());
+        material_id = static_cast<int>(collector.materials.size());
+    }
+    collector.spheres.emplace_back((SphereUniform) {
         .center = glm::vec4(center, 0),
         .radius = radius,
-        .material_id = mat.get() ? mat->getId() : -1,
+        .material_id = material_id,
         .iframe = glm::vec4(frame.frame_velocity, 1.0f),
-    };
+    });
 }

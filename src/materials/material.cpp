@@ -1,7 +1,7 @@
 #include "materials.h"
 
 Material::Material() {
-    static int material_id_counter = 0;
+    static int material_id_counter = 1;
     material_id = material_id_counter++;
 }
 

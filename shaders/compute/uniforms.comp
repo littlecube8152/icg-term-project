@@ -7,14 +7,20 @@ layout (local_size_x = 1, local_size_y = 1, local_size_z = 1) in;
 layout (rgba32f) uniform image2D u_img_output;
 
 layout (std140) uniform SceneUniform {
-    int n_spheres;
-    int n_cubes;
+    uint n_spheres;
+    uint n_triangles;
     float scene_time;
     vec4 world_iframe;
     Camera camera;
-    Sphere spheres[MAX_OBJECTS];
-    Cube cubes[MAX_OBJECTS];
-    Material materials[MAX_MATERIALS];
+    // all arrays are 1-indexed. index 0 represent null pointers
+    vec4 u_iframes[MAX_IFRAMES];
+    Sphere u_spheres[MAX_OBJECTS];
+    Material u_materials[MAX_MATERIALS];
+    vec4 u_vertices[MAX_VERTICES];
+    // vertices index: 3 ints (12 bytes)
+    // material id: 1 short (2 bytes)
+    // iframe id: 1 short (2 bytes)
+    ivec4 u_triangles[MAX_TRIANGLES];
 };
 
 layout (std140) uniform ColorConstantsUniform {

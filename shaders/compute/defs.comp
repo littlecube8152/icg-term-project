@@ -52,13 +52,6 @@ struct Sphere {
     vec4 iframe;
 };
 
-struct Cube {
-    vec4 center;
-    float side_length;
-    int material_id;
-    vec4 iframe;
-};
-
 
 struct Camera {
     int sqrt_samples_per_pixel;
