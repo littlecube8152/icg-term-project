@@ -1,0 +1,49 @@
+#include "compute/defs.comp"
+#include "compute/ray.comp"
+#include "compute/hit_record.comp"
+#include "compute/interval.comp"
+#include "compute/vecutil.comp"
+#include "compute/constants.comp"
+#include "compute/materials/materials.comp"
+
+bool Triangle_hit(vec3 p1, vec3 p2, vec3 p3, int material_id, vec3 object_iframe, inout Ray ray, inout HitRecord record) {
+    // unpack compressed triangle data
+    // vec3 p1 = u_vertices[triangle.metadata[0]].xyz;
+    // vec3 p2 = u_vertices[triangle.metadata[1]].xyz;
+    // vec3 p3 = u_vertices[triangle.metadata[2]].xyz;
+    // int material_id = triangle.metadata[3] >> 16;
+    // int object_iframe_id = triangle.metadata[3] & 65535;
+
+    // vec3 object_iframe = u_iframes[object_iframe_id].xyz;
+    // vec3 object_iframe = vec3(-0.5, 0, 0);
+    Ray_transformFrame(ray, object_iframe);
+    
+    vec3 vec_u = p2 - p1;
+    vec3 vec_v = p3 - p1;
+    vec3 normal = normalize(cross(vec_u, vec_v));
+    float surface_level = dot(p1, normal);
+    float origin_level = dot(ray.origin.xyz, normal);
+    float alpha_level = dot(ray.direction, normal);
+
+    if (abs(alpha_level) < kEpsilon)
+        return false;
+    float alpha = (surface_level - origin_level) / alpha_level;
+    if (!Interval_surrounds(ray.interval, alpha))
+        return false;
+
+    vec4 hit_point = Ray_at(ray, alpha);
+    vec3 vec_hit_p1 = p1 - hit_point.xyz;
+    vec3 vec_hit_p2 = p2 - hit_point.xyz;
+    vec3 vec_hit_p3 = p3 - hit_point.xyz;
+    if (dot(cross(vec_hit_p1, vec_hit_p2), normal) >= 0 &&
+        dot(cross(vec_hit_p2, vec_hit_p3), normal) >= 0 &&
+        dot(cross(vec_hit_p3, vec_hit_p1), normal) >= 0) {
+        ray.interval.max = alpha;
+        record.alpha = alpha;
+        record.ray = Ray_new(hit_point, ray.direction, ray.iframe);
+        HitRecord_setFaceNormal(record, normal);
+        // record.has_scattered = Material_scatter(material_id, record);
+        return true;
+    }
+    return false;
+}
