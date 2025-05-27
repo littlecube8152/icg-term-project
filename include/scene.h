@@ -50,5 +50,9 @@ public:
     SceneRelativisticMovementTest(const ArgumentParser &options, float time_scale);
 };
 
+class SceneRelativisticDopplerTest: public Scene {
+public:
+    SceneRelativisticDopplerTest(const ArgumentParser &options, float time_scale);
+};
 
 #endif

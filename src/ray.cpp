@@ -16,7 +16,7 @@ std::shared_ptr<InertialFrame> Ray::referenceFramePtr() const { return ray_refer
 
 glm::vec4 Ray::at(float alpha) const
 {
-    return ray_origin + glm::vec4(alpha * ray_direction, alpha);
+    return ray_origin + glm::vec4(alpha * ray_direction, alpha / speedOfLight);
 }
 
 void Ray::transformFrame(InertialFrame to_frame)

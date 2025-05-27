@@ -73,9 +73,9 @@ vec3 Color_lightWavelengthShift(vec3 sRGBcolor, float scale) {
     float decay = 1.0f;
 
     if (wavelength < wavelength_start)
-        decay = exp(0.02f * (wavelength - wavelength_start));
+        decay = smoothstep(wavelength_start / 1.1f, wavelength_start, wavelength);
     if (wavelength_end < wavelength)
-        decay = exp(0.02f * (wavelength_end - wavelength));
+        decay = smoothstep(wavelength_end * 1.1f, wavelength_end, wavelength);
 
     hclColor[0] = Color_interpolateWavelengthToHue(wavelength);
     hclColor[1] *= decay;

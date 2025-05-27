@@ -49,7 +49,7 @@ void worker_routine(GLFWwindow *worker_window, Renderer &renderer, ArgumentParse
     glfwMakeContextCurrent(worker_window);
 
     std::cerr << "Generating scene" << std::endl;
-    SceneRelativisticMovementTest scene(arguments, 1e-8f);
+    SceneRelativisticDopplerTest scene(arguments, 1e-8f);
 
     // render the frame
     for (int i = 0; i < arguments.getTotalFrames(); i++)

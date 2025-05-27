@@ -79,11 +79,10 @@ glm::vec4 Camera::getRayColor(Ray &ray, const HittableList &world, const int &re
             {
                 glm::vec3 rgb_color(hit_space_color);
                 glm::vec3 velocity = ray.referenceFrame().transformVelocityFrom(record.ray.referenceFrame(), glm::vec3(0, 0, 0));
-                glm::vec3 line_of_sight = ray.referenceFrame().transformCoordinateFrom(record.ray.referenceFrame(),
-                                                                                       record.ray.origin().w / speedOfLight,
-                                                                                       glm::vec3(record.ray.origin()))
-                                              .second -
-                                          (glm::vec3)ray.origin();
+                glm::vec3 reflection_coord = ray.referenceFrame().transformCoordinateFrom(record.ray.referenceFrame(),
+                                                                                       record.ray.origin().w,
+                                                                                       glm::vec3(record.ray.origin())).second;
+                glm::vec3 line_of_sight = (glm::vec3)ray.origin() - reflection_coord;
                 float cosine = glm::dot(default_normalize(velocity, velocity), glm::normalize(line_of_sight));
 
                 float scale = 1.0f / config.inertial_frame->getGamma(object_space_frame)

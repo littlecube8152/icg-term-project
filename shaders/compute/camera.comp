@@ -71,11 +71,11 @@ vec4 Camera_getRayColor(vec3 camera_iframe, Ray ray) {
         attenuations[depth] = Camera_compressColor(accum_attenuation);
 
         // doppler effect of light
-        vec3 velocity = IFrame_transformVelocityFrom(ray.iframe.xyz, record.ray.iframe.xyz, vec3(0, 0, 0));
-        vec3 line_of_sight = IFrame_transformCoordinateFrom(ray.iframe.xyz, record.ray.iframe.xyz, record.ray.origin.w / kSpeedOfLight, record.ray.origin.xyz).yzw - ray.origin.xyz;
-        float cosine = dot(default_normalize(velocity, velocity), normalize(line_of_sight));
-        float beta = IFrame_getBetaScalar(ray.iframe.xyz, record.ray.iframe.xyz);
-        float gamma = IFrame_getGamma(ray.iframe.xyz, record.ray.iframe.xyz);\
+        vec3 velocity = IFrame_transformVelocityFrom(ray.iframe, record.ray.iframe, vec3(0, 0, 0));
+        vec3 line_of_sight = ray.origin.xyz - IFrame_transformCoordinateFrom(ray.iframe, record.ray.iframe, record.ray.origin.w, record.ray.origin.xyz).xyz;
+        float cosine = dot(default_normalize(velocity, vec3(0.0f)), normalize(line_of_sight));
+        float beta = IFrame_getBetaScalar(ray.iframe, record.ray.iframe);
+        float gamma = IFrame_getGamma(ray.iframe, record.ray.iframe);
         scales[depth] = 1.0f / gamma / (1.0f + beta * cosine);
 
         ray = record.scattered_ray;
