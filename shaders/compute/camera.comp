@@ -30,6 +30,9 @@ bool Camera_hitAllObjects(Ray ray, out HitRecord record) {
             record = hit_result;
         }
     }
+    if (hit_any) {
+        record.has_scattered = Material_scatter(record.material_id, record);
+    }
     return hit_any;
 }
 

@@ -48,7 +48,7 @@ bool Sphere_hit(Object object, Ray ray, out HitRecord record) {
     record.alpha = hit;
     record.ray = Ray_new(coord, object_space_ray.direction, object_space_ray.iframe);
     HitRecord_setFaceNormal(record, (coord.xyz - sphere.center.xyz) / sphere.radius);
-    record.has_scattered = Material_scatter(sphere.material_id, record);
+    record.material_id = sphere.material_id;
 
     return true;
 }

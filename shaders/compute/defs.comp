@@ -16,6 +16,7 @@ struct HitRecord {
     vec3 normal;
     float alpha;
     bool front_face;
+    int material_id;
 
     bool has_scattered;
     vec4 attenuation;

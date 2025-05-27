@@ -42,7 +42,7 @@ bool Triangle_hit(vec3 p1, vec3 p2, vec3 p3, int material_id, vec3 object_iframe
         record.alpha = alpha;
         record.ray = Ray_new(hit_point, ray.direction, ray.iframe);
         HitRecord_setFaceNormal(record, normal);
-        // record.has_scattered = Material_scatter(material_id, record);
+        record.material_id = material_id;
         return true;
     }
     return false;

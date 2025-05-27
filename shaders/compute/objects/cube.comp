@@ -79,7 +79,5 @@ bool Cube_hit(Object object, Ray ray, out HitRecord record) {
     hit = Triangle_hit(v7, v3, v4, cube.material_id, object.iframe.xyz, ray, record) || hit;
     hit = Triangle_hit(v7, v8, v4, cube.material_id, object.iframe.xyz, ray, record) || hit;
 
-    record.has_scattered = Material_scatter(cube.material_id, record);
-
     return hit;
 }
