@@ -1,6 +1,5 @@
 #include "objects.h"
 #include "constants.h"
-#include "shaders/compute/objects/object_types.h"
 
 #include "glm/gtx/projection.hpp"
 #include "glm/gtx/norm.hpp"
@@ -49,12 +48,11 @@ bool Sphere::hit(Ray &ray, HitRecord &record) const
     return true;
 }
 
-void Sphere::toUniform(ObjectUniform &object_uniform) const {
-    object_uniform.object_type = OBJECT_TYPE_SPHERE;
-    object_uniform.iframe = glm::vec4(frame.frame_velocity, 1.0f);
-    object_uniform.sphere = (SphereUniform) {
+void Sphere::toUniform(SphereUniform &sphere_uniform) const {
+    sphere_uniform = (SphereUniform) {
         .center = glm::vec4(center, 0),
         .radius = radius,
         .material_id = mat.get() ? mat->getId() : -1,
+        .iframe = glm::vec4(frame.frame_velocity, 1.0f),
     };
 }

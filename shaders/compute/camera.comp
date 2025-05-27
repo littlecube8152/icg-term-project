@@ -4,7 +4,8 @@
 #include "compute/interval.comp"
 #include "compute/ray.comp"
 #include "compute/hit_record.comp"
-#include "compute/objects/objects.comp"
+#include "compute/objects/sphere.comp"
+#include "compute/objects/cube.comp"
 #include "compute/color.comp"
 #include "compute/macros.h"
 
@@ -23,8 +24,15 @@ Ray Camera_getRayToPixel(vec2 pixel_coord) {
 bool Camera_hitAllObjects(Ray ray, out HitRecord record) {
     HitRecord hit_result;
     bool hit_any = false;
-    for (int i = 0; i < n_objects; i++) {
-        if (Object_hit(i, ray, hit_result)) {
+    for (int i = 0; i < n_spheres; i++) {
+        if (Sphere_hit(spheres[i], ray, hit_result)) {
+            hit_any = true;
+            ray.interval.max = hit_result.alpha;
+            record = hit_result;
+        }
+    }
+    for (int i = 0; i < n_cubes; i++) {
+        if (Cube_hit(cubes[i], ray, hit_result)) {
             hit_any = true;
             ray.interval.max = hit_result.alpha;
             record = hit_result;

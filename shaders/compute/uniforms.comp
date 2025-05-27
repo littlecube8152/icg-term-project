@@ -7,11 +7,13 @@ layout (local_size_x = 1, local_size_y = 1, local_size_z = 1) in;
 layout (rgba32f) uniform image2D u_img_output;
 
 layout (std140) uniform SceneUniform {
-    int n_objects;
+    int n_spheres;
+    int n_cubes;
     float scene_time;
     vec4 world_iframe;
     Camera camera;
-    Object objects[MAX_OBJECTS];
+    Sphere spheres[MAX_OBJECTS];
+    Cube cubes[MAX_OBJECTS];
     Material materials[MAX_MATERIALS];
 };
 

@@ -49,19 +49,14 @@ struct Sphere {
     vec4 center;
     float radius;
     int material_id;
+    vec4 iframe;
 };
 
 struct Cube {
     vec4 center;
     float side_length;
     int material_id;
-};
-
-struct Object {
-    int object_type;
     vec4 iframe;
-    Sphere sphere;
-    Cube cube;
 };
 
 

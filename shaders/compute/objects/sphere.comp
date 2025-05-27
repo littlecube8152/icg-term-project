@@ -1,5 +1,4 @@
 #include "compute/defs.comp"
-#include "compute/objects/object_types.h"
 #include "compute/ray.comp"
 #include "compute/hit_record.comp"
 #include "compute/interval.comp"
@@ -7,24 +6,18 @@
 #include "compute/materials/materials.comp"
 
 
-Object Sphere_new(vec3 center, float radius, int material_id, vec4 frame) {
+Sphere Sphere_new(vec3 center, float radius, int material_id, vec4 frame) {
     vec4 actual_center = IFrame_transformCoordinateFrom(frame.xyz, world_iframe.xyz, 0.0f, center);
-
-    Object object;
-    object.object_type = OBJECT_TYPE_SPHERE;
-    object.iframe = frame;
-    object.sphere = Sphere(vec4(actual_center.xyz, 0), radius, material_id);
-    return object;
+    return Sphere(vec4(actual_center.xyz, 0), radius, material_id, frame);
 }
 
-Object Sphere_new(vec3 center, float radius, int material_id) {
+Sphere Sphere_new(vec3 center, float radius, int material_id) {
     return Sphere_new(center, radius, material_id, vec4(0.0f, 0.0f, 0.0f, 0.0f));
 }
 
-bool Sphere_hit(Object object, Ray ray, out HitRecord record) {
-    Sphere sphere = object.sphere;
+bool Sphere_hit(Sphere sphere, Ray ray, out HitRecord record) {
     Ray object_space_ray = ray;
-    Ray_transformFrame(object_space_ray, object.iframe.xyz);
+    Ray_transformFrame(object_space_ray, sphere.iframe.xyz);
 
     vec3 origin_to_center = sphere.center.xyz - object_space_ray.origin.xyz;
     vec3 proj = proj_unit(origin_to_center, object_space_ray.direction);

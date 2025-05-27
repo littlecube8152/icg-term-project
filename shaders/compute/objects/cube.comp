@@ -1,5 +1,4 @@
 #include "compute/defs.comp"
-#include "compute/objects/object_types.h"
 #include "compute/objects/triangle.comp"
 #include "compute/ray.comp"
 #include "compute/hit_record.comp"
@@ -9,17 +8,12 @@
 #include "compute/materials/materials.comp"
 
 
-Object Cube_new(vec3 center, float side_length, int material_id, vec4 frame) {
+Cube Cube_new(vec3 center, float side_length, int material_id, vec4 frame) {
     vec4 actual_center = IFrame_transformCoordinateFrom(frame.xyz, world_iframe.xyz, 0.0f, center);
-
-    Object object;
-    object.object_type = OBJECT_TYPE_CUBE;
-    object.iframe = frame;
-    object.cube = Cube(vec4(actual_center.xyz, 0), side_length, material_id);
-    return object;
+    return Cube(vec4(actual_center.xyz, 0), side_length, material_id, frame);
 }
 
-Object Cube_new(vec3 center, float side_length, int material_id) {
+Cube Cube_new(vec3 center, float side_length, int material_id) {
     return Cube_new(center, side_length, material_id, vec4(0.0f, 0.0f, 0.0f, 0.0f));
 }
 
@@ -49,8 +43,7 @@ bool Cube_testHitSurface(inout Ray ray, inout HitRecord record, vec3 surface_cor
     return false;
 }
 
-bool Cube_hit(Object object, Ray ray, out HitRecord record) {
-    Cube cube = object.cube;
+bool Cube_hit(Cube cube, Ray ray, out HitRecord record) {
 
     vec3 corner = cube.center.xyz - vec3(cube.side_length / 2);
     vec3 x_axis = vec3(cube.side_length, 0, 0);
@@ -66,18 +59,18 @@ bool Cube_hit(Object object, Ray ray, out HitRecord record) {
     vec3 v7 = v3 + z_axis;
     vec3 v8 = v4 + z_axis;
     bool hit = false;
-    hit = Triangle_hit(v1, v2, v3, cube.material_id, object.iframe.xyz, ray, record) || hit;
-    hit = Triangle_hit(v1, v4, v3, cube.material_id, object.iframe.xyz, ray, record) || hit;
-    hit = Triangle_hit(v1, v2, v6, cube.material_id, object.iframe.xyz, ray, record) || hit;
-    hit = Triangle_hit(v1, v5, v6, cube.material_id, object.iframe.xyz, ray, record) || hit;
-    hit = Triangle_hit(v1, v4, v8, cube.material_id, object.iframe.xyz, ray, record) || hit;
-    hit = Triangle_hit(v1, v5, v8, cube.material_id, object.iframe.xyz, ray, record) || hit;
-    hit = Triangle_hit(v7, v3, v2, cube.material_id, object.iframe.xyz, ray, record) || hit;
-    hit = Triangle_hit(v7, v6, v2, cube.material_id, object.iframe.xyz, ray, record) || hit;
-    hit = Triangle_hit(v7, v6, v5, cube.material_id, object.iframe.xyz, ray, record) || hit;
-    hit = Triangle_hit(v7, v8, v5, cube.material_id, object.iframe.xyz, ray, record) || hit;
-    hit = Triangle_hit(v7, v3, v4, cube.material_id, object.iframe.xyz, ray, record) || hit;
-    hit = Triangle_hit(v7, v8, v4, cube.material_id, object.iframe.xyz, ray, record) || hit;
+    hit = Triangle_hit(v1, v2, v3, cube.material_id, cube.iframe.xyz, ray, record) || hit;
+    hit = Triangle_hit(v1, v4, v3, cube.material_id, cube.iframe.xyz, ray, record) || hit;
+    hit = Triangle_hit(v1, v2, v6, cube.material_id, cube.iframe.xyz, ray, record) || hit;
+    hit = Triangle_hit(v1, v5, v6, cube.material_id, cube.iframe.xyz, ray, record) || hit;
+    hit = Triangle_hit(v1, v4, v8, cube.material_id, cube.iframe.xyz, ray, record) || hit;
+    hit = Triangle_hit(v1, v5, v8, cube.material_id, cube.iframe.xyz, ray, record) || hit;
+    hit = Triangle_hit(v7, v3, v2, cube.material_id, cube.iframe.xyz, ray, record) || hit;
+    hit = Triangle_hit(v7, v6, v2, cube.material_id, cube.iframe.xyz, ray, record) || hit;
+    hit = Triangle_hit(v7, v6, v5, cube.material_id, cube.iframe.xyz, ray, record) || hit;
+    hit = Triangle_hit(v7, v8, v5, cube.material_id, cube.iframe.xyz, ray, record) || hit;
+    hit = Triangle_hit(v7, v3, v4, cube.material_id, cube.iframe.xyz, ray, record) || hit;
+    hit = Triangle_hit(v7, v8, v4, cube.material_id, cube.iframe.xyz, ray, record) || hit;
 
     return hit;
 }

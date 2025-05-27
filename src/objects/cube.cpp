@@ -1,6 +1,5 @@
 #include "objects.h"
 #include "constants.h"
-#include "shaders/compute/objects/object_types.h"
 
 Cube::Cube(const glm::vec3 &_center, const float &side_length, std::shared_ptr<Material> material, InertialFrame _frame)
     : Object(material, _frame)
@@ -65,12 +64,11 @@ bool Cube::hit(Ray &ray, HitRecord &record) const
     return hit;
 }
 
-void Cube::toUniform(ObjectUniform &object_uniform) const {
-    object_uniform.object_type = OBJECT_TYPE_CUBE;
-    object_uniform.iframe = glm::vec4(frame.frame_velocity, 1.0f);
-    object_uniform.cube = (CubeUniform) {
+void Cube::toUniform(CubeUniform &cube_uniform) const {
+    cube_uniform = (CubeUniform) {
         .center = glm::vec4(corner + (x_axis + y_axis + z_axis) / 2.0f, 0),
         .side_length = x_axis.x,
         .material_id = mat.get() ? mat->getId() : -1,
+        .iframe = glm::vec4(frame.frame_velocity, 1.0f),
     };
 }
