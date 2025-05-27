@@ -5,6 +5,7 @@
 #include "compute/ray.comp"
 #include "compute/hit_record.comp"
 #include "compute/objects/sphere.comp"
+#include "compute/objects/triangle.comp"
 #include "compute/color.comp"
 #include "compute/macros.h"
 
@@ -25,6 +26,13 @@ bool Camera_hitAllObjects(Ray ray, out HitRecord record) {
     bool hit_any = false;
     for (int i = 1; i <= n_spheres; i++) {
         if (Sphere_hit(u_spheres[i], ray, hit_result)) {
+            hit_any = true;
+            ray.interval.max = hit_result.alpha;
+            record = hit_result;
+        }
+    }
+    for (int i = 0; i < n_triangles; i++) {
+        if (Triangle_hit(u_triangles[i], ray, hit_result)) {
             hit_any = true;
             ray.interval.max = hit_result.alpha;
             record = hit_result;

@@ -1,10 +1,10 @@
 #ifndef SHADERS_COMPUTE_MACROS_H_
 #define SHADERS_COMPUTE_MACROS_H_
 
-#define MAX_IFRAMES     10
-#define MAX_OBJECTS     10
-#define MAX_MATERIALS   10
-#define MAX_VERTICES    10
+#define MAX_IFRAMES     100
+#define MAX_OBJECTS     100
+#define MAX_MATERIALS   100
+#define MAX_VERTICES    100
 #define MAX_TRIANGLES   100
 
 #ifndef MAX_RECURSION_DEPTH
