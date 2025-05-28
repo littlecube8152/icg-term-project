@@ -115,6 +115,9 @@ bool Renderer::pollFrame() {
 
 
 void Renderer::drawFrame(void) {
+    if (pollFrame() == false)
+        throw std::runtime_error("A frame is drawn before synchronization!");
+    glDeleteSync(compute_fence);
     glUseProgram(shader);
     glActiveTexture(GL_TEXTURE0 + texture_unit);
     glBindTexture(GL_TEXTURE_2D, texture);
