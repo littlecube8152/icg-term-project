@@ -1,6 +1,7 @@
 #ifndef RAY_H_
 #define RAY_H_
 
+#define GLM_ENABLE_EXPERIMENTAL
 #include "glm/glm.hpp"
 #include "inertial.h"
 #include "interval.h"

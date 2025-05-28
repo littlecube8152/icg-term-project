@@ -1,6 +1,7 @@
 #ifndef HITTABLE_H_
 #define HITTABLE_H_
 
+#define GLM_ENABLE_EXPERIMENTAL
 #include "glm/glm.hpp"
 
 #include "ray.h"

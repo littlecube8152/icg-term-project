@@ -1,6 +1,7 @@
 #include "color.h"
 #include "constants.h"
 
+#define GLM_ENABLE_EXPERIMENTAL
 #include "glm/glm.hpp"
 
 #include <algorithm>

@@ -1,6 +1,7 @@
 #ifndef OBJECTS_H_
 #define OBJECTS_H_
 
+#define GLM_ENABLE_EXPERIMENTAL
 #include "glm/glm.hpp"
 
 #include "hit_record.h"
