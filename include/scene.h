@@ -11,7 +11,8 @@ class Scene {
 public:
     Scene(void);
     GLuint renderAsTexture(int frame_number);
-    void toUniform(SceneUniform &scene_uniform, int frame_number) const;
+    void toUniform(SceneUniformCollector &collector) const;
+    float getSceneTime(int frame_number) const;
 
 protected:
     Camera camera;

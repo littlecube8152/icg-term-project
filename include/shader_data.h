@@ -10,6 +10,7 @@
 // NOTE:
 // vec3 intentionally replaced with vec4 to avoid alignment issues
 // https://stackoverflow.com/questions/38172696/should-i-ever-use-a-vec3-inside-of-a-uniform-buffer-or-shader-storage-buffer-o
+
 struct alignas(16) CameraUniform {
     alignas(4)  int sqrt_samples_per_pixel;
     alignas(4)  float pixel_samples_scale;
@@ -51,17 +52,16 @@ struct alignas(16) MaterialUniform {
 struct alignas(16) SceneUniform {
     alignas(4)  int n_spheres;
     alignas(4)  int n_triangles;
-    alignas(4)  float scene_time;
     alignas(16) glm::vec4 world_iframe;
     alignas(16) CameraUniform camera_uniform;
     alignas(16) glm::vec4 u_iframes[MAX_IFRAMES];
     alignas(16) SphereUniform u_spheres[MAX_OBJECTS];
     alignas(16) MaterialUniform u_materials[MAX_MATERIALS];
     alignas(16) glm::vec4 u_vertices[MAX_VERTICES];
-    alignas(16) glm::ivec4 u_triangles[MAX_TRIANGLES];
 };
 
 struct SceneUniformCollector {
+    SceneUniform scene;
     std::vector<glm::vec4> iframes;
     std::vector<SphereUniform> spheres;
     std::vector<MaterialUniform> materials;

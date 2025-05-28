@@ -93,18 +93,27 @@ void Renderer::renderFrame(const Scene &scene, int frame_number) {
     glBindTexture(GL_TEXTURE_2D, texture);
     glBindImageTexture(texture_unit, texture, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA32F);
 
-    std::unique_ptr<SceneUniform> scene_uniform = std::make_unique<SceneUniform>();
-    scene.toUniform(*scene_uniform, frame_number);
-    GLuint scene_ubo = sendUniform(path_tracer, scene_uniform.get(), sizeof(SceneUniform), 0, "SceneUniform");
+    GLuint scene_time_location = glGetUniformLocation(path_tracer, "scene_time");
+    glUniform1f(scene_time_location, scene.getSceneTime(frame_number));
+
+    std::unique_ptr<SceneUniformCollector> collector = std::make_unique<SceneUniformCollector>();
+    scene.toUniform(*collector);
+    GLuint scene_ubo = sendUniform(path_tracer, &collector->scene, sizeof(SceneUniform), 0, "SceneUniform");
     std::unique_ptr<ColorConstantsUniform> color_uniform = std::make_unique<ColorConstantsUniform>();
     toColorConstantsUniform(*color_uniform);
     GLuint color_ubo = sendUniform(path_tracer, color_uniform.get(), sizeof(ColorConstantsUniform), 1, "ColorConstantsUniform");
+
+    GLuint triangles_ssbo;
+    glCreateBuffers(1, &triangles_ssbo);
+    glNamedBufferStorage(triangles_ssbo, sizeof(glm::ivec4) * collector->scene.n_triangles, collector->triangles.data(), GL_DYNAMIC_STORAGE_BIT);
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 5, triangles_ssbo);
 
     glDispatchCompute(window_width, window_height, 1);
     compute_fence = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
 
     glDeleteBuffers(1, &scene_ubo);
     glDeleteBuffers(1, &color_ubo);
+    glDeleteBuffers(1, &triangles_ssbo);
 }
 
 
