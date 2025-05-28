@@ -100,7 +100,7 @@ int main(int argc, char *argv[])
     glfwSwapBuffers(window);
 
     std::cerr << "Generating scene" << std::endl;
-    SceneRelativisticDopplerTest scene(arguments, 1e-8f);
+    SceneRelativisticMovementDemo scene(arguments, 2e-9f);
 
     const int thread_numbers = arguments.getWorkerCount();
     std::vector<std::shared_ptr<Renderer>> renderers;
