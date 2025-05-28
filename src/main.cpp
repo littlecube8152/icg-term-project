@@ -7,6 +7,7 @@
 #include <mutex>
 #include <functional>
 #include <utility>
+#include <numeric>
 
 #define GL_GLEXT_PROTOTYPES
 #include "GL/gl.h"

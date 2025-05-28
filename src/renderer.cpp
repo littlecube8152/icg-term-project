@@ -90,6 +90,7 @@ void Renderer::dispatchRenderFrame(const Scene &scene, int frame_number) {
     glUseProgram(path_tracer);
     glActiveTexture(GL_TEXTURE0 + texture_unit);
     glBindTexture(GL_TEXTURE_2D, texture);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, window_width, window_height, 0, GL_RGBA, GL_FLOAT, nullptr);
     glBindImageTexture(glGetUniformLocation(path_tracer, "u_img_output"), texture, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA32F);
 
     std::unique_ptr<SceneUniform> scene_uniform = std::make_unique<SceneUniform>();
@@ -134,8 +135,11 @@ std::vector<uint8_t> Renderer::dumpPixelFromTexture()
     glBindTexture(GL_TEXTURE_2D, texture);
 
     std::vector<uint8_t> pixels(window_width * window_height * 4);
-    glGetnTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, window_width * window_height * 4, pixels.data());
+    glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT | GL_TEXTURE_FETCH_BARRIER_BIT);
 
+    glActiveTexture(GL_TEXTURE0 + texture_unit);
+    glBindTexture(GL_TEXTURE_2D, texture);
+    glGetnTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, (int)pixels.size(), pixels.data());
     // Flip vertically (OpenGL is bottom-left origin; PNG is top-left)
     for (unsigned y = 0; y < window_height / 2; y++)
     {
