@@ -39,38 +39,37 @@ enum TextureStatus
     TEXTURE_DRAWING
 };
 
-std::condition_variable texture_free_cv;
-std::mutex texture_mutex;
-bool termination;
-TextureStatus texture_status;
-int frame_index = -1;
+std::vector<std::condition_variable> texture_free_cv;
+std::vector<TextureStatus> texture_status;
+std::vector<int> texture_drawing;
+std::mutex texture_mutex; // protects frame_index, must be a single one.
+bool termination = false;
+int next_draw_frame = 0;
 
-void workerRoutine(Window worker_window, Renderer &renderer, ArgumentParser &arguments)
+void workerRoutine(Window worker_window, Renderer &renderer, const Scene &scene, int worker_index, int max_frame)
 {
     glfwMakeContextCurrent(worker_window);
 
-    std::cerr << "Generating scene" << std::endl;
-    SceneRelativisticDopplerTest scene(arguments, 1e-8f);
-
     // render the frame
-    for (int i = 0; i < arguments.getTotalFrames(); i++)
+    while (!termination)
     {
         std::unique_lock lock(texture_mutex);
-        texture_free_cv.wait(lock, []()
-                             { return texture_status == TEXTURE_FREE || termination == true; });
-        if (termination == true)
-        {
-            lock.unlock();
-            return;
-        }
-        texture_status = TEXTURE_INITIALIZING;
+        texture_free_cv[worker_index].wait(lock, [worker_index, max_frame]()
+                                           { return texture_status[worker_index] == TEXTURE_FREE || 
+                                            termination == true ||
+                                            next_draw_frame >= max_frame; });
+        if (termination == true || next_draw_frame >= max_frame)
+            break;
+
+        texture_status[worker_index] = TEXTURE_INITIALIZING;
         lock.unlock();
 
-        renderer.dispatchRenderFrame(scene, i);
+        renderer.dispatchRenderFrame(scene, next_draw_frame);
+        texture_drawing[worker_index] = next_draw_frame;
+        ++next_draw_frame;
 
         lock.lock();
-        texture_status = TEXTURE_DISPATCHED;
-        frame_index = i;
+        texture_status[worker_index] = TEXTURE_DISPATCHED;
     }
 }
 
@@ -87,7 +86,7 @@ int main(int argc, char *argv[])
 
     if (!glfwInit())
     {
-        const char* description;
+        const char *description;
         int code = glfwGetError(&description);
         throw std::runtime_error(std::format("failed to init GLFW: error code {} ({})", code, std::string(description)));
     }
@@ -95,58 +94,68 @@ int main(int argc, char *argv[])
     Window window(kWindowWidth, kWindowHeight, !arguments.getWindowless());
     glfwMakeContextCurrent(window);
     glfwSetKeyCallback(window, keyCallback);
-
-    Window worker_window(arguments.getWidth(), arguments.getHeight(), false, window);
-
-    Renderer renderer(arguments);
-
-    texture_status = TEXTURE_FREE;
-    termination = false;
-
     glClear(GL_COLOR_BUFFER_BIT);
     glfwSwapBuffers(window);
 
-    glfwMakeContextCurrent(NULL);
-    std::thread worker_thread(workerRoutine, worker_window, std::ref(renderer), std::ref(arguments));
-    glfwMakeContextCurrent(window);
+    std::cerr << "Generating scene" << std::endl;
+    SceneRelativisticDopplerTest scene(arguments, 1e-8f);
+
+    const int thread_numbers = arguments.getWorkerCount();
+    std::vector<std::shared_ptr<Renderer>> renderers;
+    std::vector<std::thread> worker_threads;
+    texture_status.resize(thread_numbers, TEXTURE_FREE);
+    texture_free_cv = std::vector<std::condition_variable>(thread_numbers); // it can only be default constructed
+    texture_drawing.resize(thread_numbers, -1);
+    for (int i = 0; i < thread_numbers; i++)
+    {
+        renderers.emplace_back(std::make_shared<Renderer>(arguments));
+        Window worker_window(arguments.getWidth(), arguments.getHeight(), false, window);
+        glfwMakeContextCurrent(NULL);
+        worker_threads.emplace_back(workerRoutine, worker_window, std::ref(*renderers[i]), std::cref(scene), i, arguments.getTotalFrames());
+        glfwMakeContextCurrent(window);
+    }
 
     // main loop
     std::filesystem::create_directory("outputs");
     MKVExporter video_exporter(arguments);
     video_exporter.open(std::filesystem::path("outputs") / "video.mkv");
 
+    int next_display_frame = 0;
     while (!window_should_close && !glfwWindowShouldClose(window))
     {
         std::unique_lock lock(texture_mutex);
 
-        if (texture_status == TEXTURE_DISPATCHED && renderer.pollFrame())
-        {
-            texture_status = TEXTURE_DRAWING;
-            std::cerr << std::format("Drawing Frames {} / {}\n", frame_index + 1, arguments.getTotalFrames());
-
-            glClear(GL_COLOR_BUFFER_BIT);
-            renderer.drawFrame();
-
-            auto pixels = renderer.dumpPixelFromTexture();
-            if (frame_index == 0)
+        for (int i = 0; i < thread_numbers; i++)
+            if (texture_status[i] == TEXTURE_DISPATCHED &&
+                texture_drawing[i] == next_display_frame &&
+                renderers[i]->pollFrame())
             {
-                std::filesystem::create_directory("outputs");
-                saveToPNG((std::filesystem::path("outputs") / "screen.png").string(),
-                          arguments.getWidth(), arguments.getHeight(), pixels);
-            }
-            video_exporter.addFrame(pixels);
-            if (frame_index == arguments.getTotalFrames() - 1)
-            {
-                video_exporter.close();
-                std::cerr << "Done!\n";
-                if (arguments.getWindowless())
-                    break; 
-            }
+                texture_status[i] = TEXTURE_DRAWING;
 
-            glfwSwapBuffers(window);
-            texture_status = TEXTURE_FREE;
-            texture_free_cv.notify_one();
-        }
+                glClear(GL_COLOR_BUFFER_BIT);
+                renderers[i]->drawFrame();
+                auto pixels = renderers[i]->dumpPixelFromTexture();
+                if (next_display_frame == 0)
+                {
+                    std::filesystem::create_directory("outputs");
+                    saveToPNG((std::filesystem::path("outputs") / "screen.png").string(),
+                              arguments.getWidth(), arguments.getHeight(), pixels);
+                }
+                video_exporter.addFrame(pixels);
+                next_display_frame++;
+                std::cerr << std::format("Drawing Frames {} / {}\n", next_display_frame, arguments.getTotalFrames());
+                if (next_display_frame == arguments.getTotalFrames())
+                {
+                    video_exporter.close();
+                    std::cerr << "Done!\n";
+                    if (arguments.getWindowless())
+                        break;
+                }
+
+                glfwSwapBuffers(window);
+                texture_status[i] = TEXTURE_FREE;
+                texture_free_cv[i].notify_one();
+            }
         lock.unlock();
 
         glfwPollEvents();
@@ -155,8 +164,11 @@ int main(int argc, char *argv[])
     std::unique_lock lock(texture_mutex);
     termination = true;
     lock.unlock();
-    texture_free_cv.notify_one();
-    worker_thread.join();
+    for (int i = 0; i < thread_numbers; i++)
+    {
+        texture_free_cv[i].notify_one();
+        worker_threads[i].join();
+    }
 
     glfwTerminate();
     return 0;

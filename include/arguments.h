@@ -13,6 +13,7 @@ private:
     int option_samples = 4;
     int option_resolution = kWindowHeight;
     int option_crf = 18;
+    int option_worker_count = 1;
     bool option_no_window = false;
 
 public:
@@ -30,6 +31,8 @@ public:
     int getCRF() const { return option_crf; }
     // Get whether the program should operate without window.
     int getWindowless() const { return option_no_window; }
+    // Get worker thread numbers.
+    int getWorkerCount() const { return option_worker_count; }
 
     // Computed options
 
