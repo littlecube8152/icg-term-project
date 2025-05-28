@@ -51,13 +51,15 @@ void workerRoutine(Window worker_window, Renderer &renderer, const Scene &scene,
     glfwMakeContextCurrent(worker_window);
 
     // render the frame
-    while (!termination)
+    while (true)
     {
         std::unique_lock lock(texture_mutex);
-        texture_free_cv[worker_index].wait(lock, [worker_index, max_frame]()
-                                           { return texture_status[worker_index] == TEXTURE_FREE || 
-                                            termination == true ||
-                                            next_draw_frame >= max_frame; });
+        auto pred = [worker_index, max_frame]()
+        { return texture_status[worker_index] == TEXTURE_FREE ||
+                 termination == true ||
+                 next_draw_frame >= max_frame; };
+        texture_free_cv[worker_index].wait(lock, pred);
+
         if (termination == true || next_draw_frame >= max_frame)
             break;
 
@@ -103,7 +105,7 @@ int main(int argc, char *argv[])
     const int thread_numbers = arguments.getWorkerCount();
     std::vector<std::shared_ptr<Renderer>> renderers;
     std::vector<std::thread> worker_threads;
-    texture_status.resize(thread_numbers, TEXTURE_FREE);
+    texture_status.resize(thread_numbers, TEXTURE_DRAWING);                 // prevent start
     texture_free_cv = std::vector<std::condition_variable>(thread_numbers); // it can only be default constructed
     texture_drawing.resize(thread_numbers, -1);
     for (int i = 0; i < thread_numbers; i++)
@@ -115,13 +117,21 @@ int main(int argc, char *argv[])
         glfwMakeContextCurrent(window);
     }
 
+    for (int i = 0; i < thread_numbers; i++)
+    {
+        std::unique_lock lock(texture_mutex);
+        texture_status[i] = TEXTURE_FREE;
+        lock.unlock();
+        texture_free_cv[i].notify_one();
+    }
     // main loop
     std::filesystem::create_directory("outputs");
     MKVExporter video_exporter(arguments);
     video_exporter.open(std::filesystem::path("outputs") / "video.mkv");
 
     int next_display_frame = 0;
-    while (!window_should_close && !glfwWindowShouldClose(window))
+    while (!window_should_close && !glfwWindowShouldClose(window) &&
+           !(next_display_frame == arguments.getTotalFrames() && arguments.getWindowless()))
     {
         std::unique_lock lock(texture_mutex);
 
@@ -148,8 +158,6 @@ int main(int argc, char *argv[])
                 {
                     video_exporter.close();
                     std::cerr << "Done!\n";
-                    if (arguments.getWindowless())
-                        break;
                 }
 
                 glfwSwapBuffers(window);
