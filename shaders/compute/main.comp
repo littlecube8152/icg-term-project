@@ -1,4 +1,4 @@
-#version 460 core
+#version 450 core
 
 // ensure usage of IEEE 754 float's
 precision highp float;

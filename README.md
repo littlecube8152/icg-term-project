@@ -8,7 +8,7 @@ We implemented a ray tracing engine supporting special relativistic effects in C
   It is recommended to use GCC (the GNU Compiler Collection) version 13 or above.
 - Python3.  
   Python3 is required for preprocessing the shader files.
-- OpenGL 4.6 (or above), GLFW 3, and FFmpeg Libraries.  
+- OpenGL 4.5 (or above), GLFW 3, and FFmpeg Libraries.  
   For Debian-based distributions, the dependencies can be installed by
     ```sh
     apt install libopengl-dev libglfw3-dev libavcodec-dev libavformat-dev libavutil-dev libswscale-dev
