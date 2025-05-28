@@ -86,13 +86,20 @@ int main(int argc, char *argv[])
     GLFWwindow *window, *worker_window;
 
     if (!glfwInit())
-        return -1;
+    {
+        const char* description;
+        int code = glfwGetError(&description);
+        throw std::runtime_error(std::format("failed to init GLFW: error code {} ({})", code, std::string(description)));
+    }
     window = glfwCreateWindow(kWindowWidth, kWindowHeight, "Hello World", NULL, NULL);
     if (!window)
     {
+        const char* description;
+        int code = glfwGetError(&description);
         glfwTerminate();
-        return -1;
+        throw std::runtime_error(std::format("failed to init GLFW: error code {} ({})", code, std::string(description)));
     }
+
     glfwMakeContextCurrent(window);
     glfwSetKeyCallback(window, keyCallback);
 
