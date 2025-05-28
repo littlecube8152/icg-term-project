@@ -19,7 +19,7 @@ public:
     Renderer(const ArgumentParser &options);
 
     // render the scene into a texture with compute shaders
-    void renderFrame(const Scene &scene, int frame_number);
+    void dispatchRenderFrame(const Scene &scene, int frame_number);
 
     // draw the texture onto the screen
     void drawFrame(void);

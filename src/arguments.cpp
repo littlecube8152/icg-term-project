@@ -36,17 +36,20 @@ void ArgumentParser::parse(int argc, char *argv[])
              option_resolution = arg;
              return true;
          }},
-         {"-q", "--quality", "Set CRF (constant rate factor) of the encoding. Default to 18.",
-          [this](int arg)
-          {
-              option_crf = arg;
-              return true;
-          }},
+        {"-q", "--quality", "Set CRF (constant rate factor) of the encoding. Default to 18.",
+         [this](int arg)
+         {
+             option_crf = arg;
+             return true;
+         }},
     };
     const std::vector<std::tuple<std::string, std::string, std::string, std::function<bool(void)>>> flag_arguments = {
         {"-h", "--help", "Display this help message.",
          []()
-         { return false; }}};
+         { return false; }},
+        {"-n", "--no-window", "Do not open visible window and close immediate after every frames are computed and saved.",
+         [this]()
+         { option_no_window = true; return true; }}};
 
     auto check_integer = [](std::string s) -> int
     {

@@ -18,6 +18,7 @@
 #include "shaders.h"
 #include "exporter.h"
 #include "arguments.h"
+#include "window.h"
 
 using namespace std::string_literals;
 
@@ -44,7 +45,7 @@ bool termination;
 TextureStatus texture_status;
 int frame_index = -1;
 
-void worker_routine(GLFWwindow *worker_window, Renderer &renderer, ArgumentParser &arguments)
+void workerRoutine(Window worker_window, Renderer &renderer, ArgumentParser &arguments)
 {
     glfwMakeContextCurrent(worker_window);
 
@@ -65,7 +66,7 @@ void worker_routine(GLFWwindow *worker_window, Renderer &renderer, ArgumentParse
         texture_status = TEXTURE_INITIALIZING;
         lock.unlock();
 
-        renderer.renderFrame(scene, i);
+        renderer.dispatchRenderFrame(scene, i);
 
         lock.lock();
         texture_status = TEXTURE_DISPATCHED;
@@ -82,8 +83,7 @@ int main(int argc, char *argv[])
     // suppress FFMpeg library logs
     av_log_set_level(AV_LOG_QUIET);
 
-    // initialize glfw, the window, and OpenGL context
-    GLFWwindow *window, *worker_window;
+    // initialize GLFW (with OpenGL context)
 
     if (!glfwInit())
     {
@@ -91,20 +91,12 @@ int main(int argc, char *argv[])
         int code = glfwGetError(&description);
         throw std::runtime_error(std::format("failed to init GLFW: error code {} ({})", code, std::string(description)));
     }
-    window = glfwCreateWindow(kWindowWidth, kWindowHeight, "Hello World", NULL, NULL);
-    if (!window)
-    {
-        const char* description;
-        int code = glfwGetError(&description);
-        glfwTerminate();
-        throw std::runtime_error(std::format("failed to init GLFW: error code {} ({})", code, std::string(description)));
-    }
 
+    Window window(kWindowWidth, kWindowHeight, !arguments.getWindowless());
     glfwMakeContextCurrent(window);
     glfwSetKeyCallback(window, keyCallback);
 
-    glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
-    worker_window = glfwCreateWindow(arguments.getWidth(), arguments.getHeight(), "Hello World", NULL, window);
+    Window worker_window(arguments.getWidth(), arguments.getHeight(), false, window);
 
     Renderer renderer(arguments);
 
@@ -115,7 +107,7 @@ int main(int argc, char *argv[])
     glfwSwapBuffers(window);
 
     glfwMakeContextCurrent(NULL);
-    std::thread worker_thread(worker_routine, worker_window, std::ref(renderer), std::ref(arguments));
+    std::thread worker_thread(workerRoutine, worker_window, std::ref(renderer), std::ref(arguments));
     glfwMakeContextCurrent(window);
 
     // main loop
@@ -147,6 +139,8 @@ int main(int argc, char *argv[])
             {
                 video_exporter.close();
                 std::cerr << "Done!\n";
+                if (arguments.getWindowless())
+                    break; 
             }
 
             glfwSwapBuffers(window);

@@ -13,6 +13,7 @@ private:
     int option_samples = 4;
     int option_resolution = kWindowHeight;
     int option_crf = 18;
+    bool option_no_window = false;
 
 public:
     void parse(int argc, char *argv[]);
@@ -27,6 +28,8 @@ public:
     int getSampleOption() const { return option_samples; }
     // Get CRF (Constant Rate Factor)
     int getCRF() const { return option_crf; }
+    // Get whether the program should operate without window.
+    int getWindowless() const { return option_no_window; }
 
     // Computed options
 

@@ -87,7 +87,7 @@ Renderer::Renderer(const ArgumentParser &options)
 }
 
 
-void Renderer::renderFrame(const Scene &scene, int frame_number) {
+void Renderer::dispatchRenderFrame(const Scene &scene, int frame_number) {
     glUseProgram(path_tracer);
     glActiveTexture(GL_TEXTURE0 + texture_unit);
     glBindTexture(GL_TEXTURE_2D, texture);
