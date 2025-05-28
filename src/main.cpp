@@ -100,9 +100,7 @@ int main(int argc, char *argv[])
 
 
     std::cerr << "Generating scene" << std::endl;
-    // SceneRelativisticDopplerTest scene(arguments, 1e-8f);
-    SceneRelativisticMovementTest scene(arguments, 1e-8f);
-    // SceneMaterialDemo scene(arguments, 1e-8f);
+    SceneTeapotDemo scene(arguments, 1e-8f);
 
     Renderer renderer(arguments, scene);
 

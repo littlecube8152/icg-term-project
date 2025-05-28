@@ -1,6 +1,8 @@
 #ifndef OBJECTS_H_
 #define OBJECTS_H_
 
+#include <filesystem>
+
 #include "glm/glm.hpp"
 
 #include "hit_record.h"
@@ -42,6 +44,18 @@ public:
 
 private:
     glm::vec3 corner, x_axis, y_axis, z_axis;
+};
+
+class ObjMesh : public Object {
+public:
+    ObjMesh(const std::filesystem::path &file_path, glm::vec3 translation, float scale, std::shared_ptr<Material> material, InertialFrame inertial_frame);
+    bool hit(Ray& ray, HitRecord& record) const override;
+    void toUniform(SceneUniformCollector &collector) const override;
+
+private:
+    std::filesystem::path file_path;
+    glm::vec3 translation;
+    float scale;
 };
 
 #endif

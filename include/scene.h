@@ -46,4 +46,9 @@ public:
     SceneRelativisticDopplerTest(const ArgumentParser &options, float time_scale);
 };
 
+class SceneTeapotDemo: public Scene {
+public:
+    SceneTeapotDemo(const ArgumentParser &options, float time_scale);
+};
+
 #endif
