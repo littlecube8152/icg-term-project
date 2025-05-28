@@ -25,7 +25,7 @@ layout (std140) uniform ColorConstantsUniform {
     float table_wavelength_to_hue[wavelength_size];
 };
 
-layout (std140, binding = 5) readonly buffer TrianglesStorage {
+layout (std140) readonly buffer TrianglesStorage {
     // vertices index: 3 ints (12 bytes)
     // material id: 1 short (2 bytes)
     // iframe id: 1 short (2 bytes)

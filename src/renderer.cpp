@@ -77,7 +77,7 @@ static GLuint sendUniform(GLuint program, void* data, GLuint size, GLuint bind_p
 }
 
 template<typename T>
-static GLuint sendShaderStorage(std::vector<T> vec, GLuint bind_point) {
+static GLuint sendShaderStorage(GLuint program, std::vector<T> vec, GLuint bind_point, const char *buffer_name) {
     // the array to be sent must be 16-bytes aligned
     static_assert(sizeof(T) % 16 == 0);
 
@@ -85,6 +85,8 @@ static GLuint sendShaderStorage(std::vector<T> vec, GLuint bind_point) {
     glCreateBuffers(1, &ssbo);
     glNamedBufferStorage(ssbo, sizeof(T) * vec.size(), vec.data(), GL_DYNAMIC_STORAGE_BIT);
     glBindBufferBase(GL_SHADER_STORAGE_BUFFER, bind_point, ssbo);
+    GLuint shader_storage_index = glGetProgramResourceIndex(program, GL_SHADER_STORAGE_BLOCK, buffer_name);
+    glShaderStorageBlockBinding(program, shader_storage_index, bind_point);
     return ssbo;
 }
 
@@ -111,7 +113,7 @@ void Renderer::sendSceneData() {
     gpu_buffers.emplace_back(sendUniform(path_tracer, &collector->scene, sizeof(SceneUniform), 0, "SceneUniform"));
     gpu_buffers.emplace_back(sendUniform(path_tracer, color_uniform.get(), sizeof(ColorConstantsUniform), 1, "ColorConstantsUniform"));
 
-    gpu_buffers.emplace_back(sendShaderStorage(collector->triangles, 5));
+    gpu_buffers.emplace_back(sendShaderStorage(path_tracer, collector->triangles, 5, "TrianglesStorage"));
 }
 
 void Renderer::renderFrame(int frame_number) {
