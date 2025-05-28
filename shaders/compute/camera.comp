@@ -31,20 +31,13 @@ bool Camera_hitAllObjects(Ray ray, out HitRecord record) {
             record = hit_result;
         }
     }
-    for (int i = 0; i < n_triangles; i++) {
+    for (int i = 1; i <= n_triangles; i++) {
         if (Triangle_hit(u_triangles[i], ray, hit_result)) {
             hit_any = true;
             ray.interval.max = hit_result.alpha;
             record = hit_result;
         }
     }
-    // for (int i = 0; i < n_cubes; i++) {
-    //     if (Cube_hit(u_cubes[i], ray, hit_result)) {
-    //         hit_any = true;
-    //         ray.interval.max = hit_result.alpha;
-    //         record = hit_result;
-    //     }
-    // }
     if (hit_any) {
         record.has_scattered = Material_scatter(record.material_id, record);
     }

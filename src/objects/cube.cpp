@@ -68,13 +68,13 @@ bool Cube::hit(Ray &ray, HitRecord &record) const
 void Cube::toUniform(SceneUniformCollector &collector) const {
     int material_iframe_ids = 0;
     if (mat.get()) {
+        material_iframe_ids = static_cast<int>(collector.materials.size());
         collector.materials.emplace_back();
         mat->toUniform(collector.materials.back());
-        material_iframe_ids = static_cast<int>(collector.materials.size());
     }
 
-    collector.iframes.emplace_back(glm::vec4(frame.frame_velocity, 0));
     material_iframe_ids = (material_iframe_ids << 16) + static_cast<int>(collector.iframes.size()); // iframe id
+    collector.iframes.emplace_back(glm::vec4(frame.frame_velocity, 0));
 
     glm::vec3 vert[] = {
         corner,
@@ -105,5 +105,5 @@ void Cube::toUniform(SceneUniformCollector &collector) const {
         {7, 8, 4},
     };
     for (const auto &i:indices)
-        collector.triangles.emplace_back(glm::ivec4(i + glm::ivec3(base_idx), material_iframe_ids));
+        collector.triangles.emplace_back(glm::ivec4(i + glm::ivec3(base_idx) - 1, material_iframe_ids));
 }

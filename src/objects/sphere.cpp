@@ -52,9 +52,9 @@ bool Sphere::hit(Ray &ray, HitRecord &record) const
 void Sphere::toUniform(SceneUniformCollector &collector) const {
     int material_id = 0;
     if (mat.get()) {
+        material_id = static_cast<int>(collector.materials.size());
         collector.materials.emplace_back();
         mat->toUniform(collector.materials.back());
-        material_id = static_cast<int>(collector.materials.size());
     }
     collector.spheres.emplace_back((SphereUniform) {
         .center = glm::vec4(center, 0),

@@ -113,6 +113,10 @@ void Renderer::sendSceneData() {
     gpu_buffers.emplace_back(sendUniform(path_tracer, &collector->scene, sizeof(SceneUniform), 0, "SceneUniform"));
     gpu_buffers.emplace_back(sendUniform(path_tracer, color_uniform.get(), sizeof(ColorConstantsUniform), 1, "ColorConstantsUniform"));
 
+    gpu_buffers.emplace_back(sendShaderStorage(path_tracer, collector->iframes, 1, "IframesStorage"));
+    gpu_buffers.emplace_back(sendShaderStorage(path_tracer, collector->spheres, 2, "SpheresStorage"));
+    gpu_buffers.emplace_back(sendShaderStorage(path_tracer, collector->materials, 3, "MaterialsStorage"));
+    gpu_buffers.emplace_back(sendShaderStorage(path_tracer, collector->vertices, 4, "VerticesStorage"));
     gpu_buffers.emplace_back(sendShaderStorage(path_tracer, collector->triangles, 5, "TrianglesStorage"));
 }
 

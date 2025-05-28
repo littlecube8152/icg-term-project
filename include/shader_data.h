@@ -54,10 +54,6 @@ struct alignas(16) SceneUniform {
     alignas(4)  int n_triangles;
     alignas(16) glm::vec4 world_iframe;
     alignas(16) CameraUniform camera_uniform;
-    alignas(16) glm::vec4 u_iframes[MAX_IFRAMES];
-    alignas(16) SphereUniform u_spheres[MAX_OBJECTS];
-    alignas(16) MaterialUniform u_materials[MAX_MATERIALS];
-    alignas(16) glm::vec4 u_vertices[MAX_VERTICES];
 };
 
 struct SceneUniformCollector {

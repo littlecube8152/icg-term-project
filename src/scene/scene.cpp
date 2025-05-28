@@ -18,29 +18,21 @@ GLuint Scene::renderAsTexture(int frame_number) {
 }
 
 void Scene::toUniform(SceneUniformCollector &collector) const {
+    // arrays in SSBO are 1-indexed
+    collector.iframes.emplace_back();
+    collector.spheres.emplace_back();
+    collector.materials.emplace_back();
+    collector.vertices.emplace_back();
+    collector.triangles.emplace_back();
+
     collector.scene.world_iframe = glm::vec4(object_space_frame.frame_velocity, 0);
     camera.toUniform(collector.scene.camera_uniform);
-
     const auto &objects = world.getObjects();
     for (const auto &obj : objects) {
         obj->toUniform(collector);
     }
-
-    collector.scene.n_spheres = static_cast<int>(collector.spheres.size());
-    collector.scene.n_triangles = static_cast<int>(collector.triangles.size());
-    #define copy_collected(container_name, max_items) {\
-        if (collector.container_name.size() >= max_items) { \
-            throw std::runtime_error(std::format("Failed to create uniform from scene: number of {} exceeds {}", #container_name, max_items)); \
-        } \
-        for (size_t i = 0; i < collector.container_name.size(); i++) { \
-            collector.scene.u_##container_name[i + 1] = collector.container_name[i]; \
-        } \
-    }
-    copy_collected(iframes, MAX_IFRAMES);
-    copy_collected(spheres, MAX_OBJECTS);
-    copy_collected(materials, MAX_MATERIALS);
-    copy_collected(vertices, MAX_VERTICES);
-    #undef copy_collected
+    collector.scene.n_spheres = static_cast<int>(collector.spheres.size() - 1);
+    collector.scene.n_triangles = static_cast<int>(collector.triangles.size() - 1);
 }
 
 float Scene::getSceneTime(int frame_number) const {
