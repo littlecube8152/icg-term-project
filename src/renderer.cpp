@@ -17,7 +17,6 @@ static GLuint createTexture(GLuint texture_unit, GLuint width, GLuint height) {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, width, height, 0, GL_RGBA, GL_FLOAT, nullptr);
-    glBindImageTexture(texture_unit, texture, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA32F);
     return texture;
 }
 
@@ -77,10 +76,10 @@ static GLuint sendUniform(GLuint program, void* data, GLuint size, GLuint bind_p
 }
 
 
-Renderer::Renderer(const ArgumentParser &options)
+Renderer::Renderer(const ArgumentParser &options, int texture_unit_index)
     : window_width(options.getWidth()), window_height(options.getHeight()) {
     path_tracer = loadPathTracerProgram(options.getDepthOption());
-    texture_unit = 0;
+    texture_unit = texture_unit_index;
     texture = createTexture(texture_unit, window_width, window_height);
     shader = loadShaderProgram();
     window_vao = createWindowVao(shader);
@@ -91,7 +90,7 @@ void Renderer::dispatchRenderFrame(const Scene &scene, int frame_number) {
     glUseProgram(path_tracer);
     glActiveTexture(GL_TEXTURE0 + texture_unit);
     glBindTexture(GL_TEXTURE_2D, texture);
-    glBindImageTexture(texture_unit, texture, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA32F);
+    glBindImageTexture(glGetUniformLocation(path_tracer, "u_img_output"), texture, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA32F);
 
     std::unique_ptr<SceneUniform> scene_uniform = std::make_unique<SceneUniform>();
     scene.toUniform(*scene_uniform, frame_number);
@@ -118,6 +117,8 @@ void Renderer::drawFrame(void) {
     if (pollFrame() == false)
         throw std::runtime_error("A frame is drawn before synchronization!");
     glDeleteSync(compute_fence);
+    glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+
     glUseProgram(shader);
     glActiveTexture(GL_TEXTURE0 + texture_unit);
     glBindTexture(GL_TEXTURE_2D, texture);

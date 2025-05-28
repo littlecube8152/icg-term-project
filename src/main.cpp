@@ -64,11 +64,11 @@ void workerRoutine(Window worker_window, Renderer &renderer, const Scene &scene,
             break;
 
         texture_status[worker_index] = TEXTURE_INITIALIZING;
-        lock.unlock();
-
-        renderer.dispatchRenderFrame(scene, next_draw_frame);
         texture_drawing[worker_index] = next_draw_frame;
         ++next_draw_frame;
+        lock.unlock();
+
+        renderer.dispatchRenderFrame(scene, texture_drawing[worker_index]);
 
         lock.lock();
         texture_status[worker_index] = TEXTURE_DISPATCHED;
@@ -110,7 +110,7 @@ int main(int argc, char *argv[])
     texture_drawing.resize(thread_numbers, -1);
     for (int i = 0; i < thread_numbers; i++)
     {
-        renderers.emplace_back(std::make_shared<Renderer>(arguments));
+        renderers.emplace_back(std::make_shared<Renderer>(arguments, i));
         Window worker_window(arguments.getWidth(), arguments.getHeight(), false, window);
         glfwMakeContextCurrent(NULL);
         worker_threads.emplace_back(workerRoutine, worker_window, std::ref(*renderers[i]), std::cref(scene), i, arguments.getTotalFrames());

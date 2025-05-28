@@ -16,7 +16,7 @@ public:
     
     Renderer() = delete;
     Renderer(const Renderer &renderer) = delete;
-    Renderer(const ArgumentParser &options);
+    Renderer(const ArgumentParser &options, int texture_unit_index);
 
     // render the scene into a texture with compute shaders
     void dispatchRenderFrame(const Scene &scene, int frame_number);
