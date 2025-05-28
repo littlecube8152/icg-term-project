@@ -66,15 +66,15 @@ bool Cube::hit(Ray &ray, HitRecord &record) const
 }
 
 void Cube::toUniform(SceneUniformCollector &collector) const {
-    int material_id = 0;
+    int material_iframe_ids = 0;
     if (mat.get()) {
         collector.materials.emplace_back();
         mat->toUniform(collector.materials.back());
-        material_id = static_cast<int>(collector.materials.size());
+        material_iframe_ids = static_cast<int>(collector.materials.size());
     }
 
     collector.iframes.emplace_back(glm::vec4(frame.frame_velocity, 0));
-    material_id = (material_id << 16) + static_cast<int>(collector.iframes.size()); // iframe id
+    material_iframe_ids = (material_iframe_ids << 16) + static_cast<int>(collector.iframes.size()); // iframe id
 
     glm::vec3 vert[] = {
         corner,
@@ -91,19 +91,19 @@ void Cube::toUniform(SceneUniformCollector &collector) const {
         collector.vertices.emplace_back(glm::vec4(v, 0));
 
     glm::ivec3 indices[] = {
-        {1, 2, 3},
+        {1, 3, 2},
         {1, 4, 3},
-        {1, 2, 6},
+        {1, 6, 2},
         {1, 5, 6},
-        {1, 4, 8},
+        {1, 8, 4},
         {1, 5, 8},
-        {7, 3, 2},
+        {7, 2, 3},
         {7, 6, 2},
-        {7, 6, 5},
+        {7, 5, 6},
         {7, 8, 5},
-        {7, 3, 4},
+        {7, 4, 3},
         {7, 8, 4},
     };
     for (const auto &i:indices)
-        collector.triangles.emplace_back(glm::ivec4(i + glm::ivec3(base_idx), material_id));
+        collector.triangles.emplace_back(glm::ivec4(i + glm::ivec3(base_idx), material_iframe_ids));
 }
