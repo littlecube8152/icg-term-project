@@ -6,6 +6,8 @@
 
 #include "scene.h"
 #include "arguments.h"
+#include "scene.h"
+#include "color.h"
 
 #include <vector>
 #include <cstdint>
@@ -16,10 +18,15 @@ public:
     
     Renderer() = delete;
     Renderer(const Renderer &renderer) = delete;
-    Renderer(const ArgumentParser &options);
+    Renderer(const ArgumentParser &options, const Scene &scene);
+    ~Renderer();
+
+    // collect and send scene data to GPU
+    // call once before renderFrame
+    void sendSceneData();
 
     // render the scene into a texture with compute shaders
-    void renderFrame(const Scene &scene, int frame_number);
+    void renderFrame(int frame_number);
 
     // draw the texture onto the screen
     void drawFrame(void);
@@ -31,6 +38,8 @@ public:
     std::vector<uint8_t> dumpPixelFromTexture();
 
 private:
+
+    const Scene &scene;
 
     // dimensions of the rendering area
     GLuint window_width;
@@ -45,6 +54,8 @@ private:
     GLuint shader;
     // synchronizes computation
     GLsync compute_fence;
+
+    std::vector<GLuint> gpu_buffers;
 
 };
 

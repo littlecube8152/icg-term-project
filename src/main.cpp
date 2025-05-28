@@ -48,8 +48,7 @@ void worker_routine(GLFWwindow *worker_window, Renderer &renderer, ArgumentParse
 {
     glfwMakeContextCurrent(worker_window);
 
-    std::cerr << "Generating scene" << std::endl;
-    SceneRelativisticDopplerTest scene(arguments, 1e-8f);
+    renderer.sendSceneData();
 
     // render the frame
     for (int i = 0; i < arguments.getTotalFrames(); i++)
@@ -65,7 +64,7 @@ void worker_routine(GLFWwindow *worker_window, Renderer &renderer, ArgumentParse
         texture_status = TEXTURE_INITIALIZING;
         lock.unlock();
 
-        renderer.renderFrame(scene, i);
+        renderer.renderFrame(i);
 
         lock.lock();
         texture_status = TEXTURE_DISPATCHED;
@@ -85,13 +84,13 @@ int main(int argc, char *argv[])
     // initialize glfw, the window, and OpenGL context
     GLFWwindow *window, *worker_window;
 
-    if (!glfwInit())
-        return -1;
+    if (!glfwInit()) {
+        throw std::runtime_error("Failed to initialize GLFW");
+    }
     window = glfwCreateWindow(kWindowWidth, kWindowHeight, "Hello World", NULL, NULL);
-    if (!window)
-    {
+    if (!window) {
         glfwTerminate();
-        return -1;
+        throw std::runtime_error("Failed to create window");
     }
     glfwMakeContextCurrent(window);
     glfwSetKeyCallback(window, keyCallback);
@@ -99,7 +98,13 @@ int main(int argc, char *argv[])
     glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
     worker_window = glfwCreateWindow(arguments.getWidth(), arguments.getHeight(), "Hello World", NULL, window);
 
-    Renderer renderer(arguments);
+
+    std::cerr << "Generating scene" << std::endl;
+    // SceneRelativisticDopplerTest scene(arguments, 1e-8f);
+    SceneRelativisticMovementTest scene(arguments, 1e-8f);
+    // SceneMaterialDemo scene(arguments, 1e-8f);
+
+    Renderer renderer(arguments, scene);
 
     texture_status = TEXTURE_FREE;
     termination = false;
