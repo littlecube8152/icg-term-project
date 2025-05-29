@@ -11,5 +11,7 @@ const float kPi = 3.1415926535897932384626433832795;
 const int wavelength_start = 360;
 const int wavelength_end = 700;
 const int wavelength_size = wavelength_end - wavelength_start;
+const int wavelength_uv = 380;
+const int wavelength_ir = 780;
 const int hue_range = 360;
 const int hue_split = 300;
