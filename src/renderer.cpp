@@ -17,7 +17,6 @@ static GLuint createTexture(GLuint texture_unit, GLuint width, GLuint height) {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, width, height, 0, GL_RGBA, GL_FLOAT, nullptr);
-    glBindImageTexture(texture_unit, texture, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA32F);
     return texture;
 }
 
@@ -91,7 +90,7 @@ static GLuint sendShaderStorage(GLuint program, std::vector<T> vec, GLuint bind_
 }
 
 
-Renderer::Renderer(const ArgumentParser &options, const Scene &_scene)
+Renderer::Renderer(const ArgumentParser &options, const Scene &_scene, int texture_unit_index)
     : scene(_scene), window_width(options.getWidth()), window_height(options.getHeight()), gpu_buffers() {
     path_tracer = loadPathTracerProgram(options.getDepthOption());
     texture_unit = 0;
@@ -120,14 +119,20 @@ void Renderer::sendSceneData() {
     gpu_buffers.emplace_back(sendShaderStorage(path_tracer, collector->triangles, 5, "TrianglesStorage"));
 }
 
-void Renderer::renderFrame(int frame_number) {
+#include <iostream>
+
+void Renderer::dispatchRenderFrame(int frame_number) {
     glUseProgram(path_tracer);
     glActiveTexture(GL_TEXTURE0 + texture_unit);
     glBindTexture(GL_TEXTURE_2D, texture);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, window_width, window_height, 0, GL_RGBA, GL_FLOAT, nullptr);
     glBindImageTexture(texture_unit, texture, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA32F);
 
-    GLuint scene_time_location = glGetUniformLocation(path_tracer, "scene_time");
-    glUniform1f(scene_time_location, scene.getSceneTime(frame_number));
+    GLuint u_texture_location = glGetUniformLocation(path_tracer, "u_img_output");
+    glUniform1i(u_texture_location, texture_unit);
+
+    GLuint u_scene_time_location = glGetUniformLocation(path_tracer, "scene_time");
+    glUniform1f(u_scene_time_location, scene.getSceneTime(frame_number));
 
     glDispatchCompute(window_width, window_height, 1);
     compute_fence = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
@@ -141,6 +146,11 @@ bool Renderer::pollFrame() {
 
 
 void Renderer::drawFrame(void) {
+    if (pollFrame() == false)
+        throw std::runtime_error("A frame is drawn before synchronization!");
+    glDeleteSync(compute_fence);
+    glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+
     glUseProgram(shader);
     glActiveTexture(GL_TEXTURE0 + texture_unit);
     glBindTexture(GL_TEXTURE_2D, texture);
@@ -152,12 +162,9 @@ void Renderer::drawFrame(void) {
 
 std::vector<uint8_t> Renderer::dumpPixelFromTexture()
 {
-    glActiveTexture(GL_TEXTURE0 + texture_unit);
-    glBindTexture(GL_TEXTURE_2D, texture);
-
     std::vector<uint8_t> pixels(window_width * window_height * 4);
-    glGetnTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, window_width * window_height * 4, pixels.data());
-
+    glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT | GL_TEXTURE_FETCH_BARRIER_BIT);
+    glGetTextureImage(texture, 0, GL_RGBA, GL_UNSIGNED_BYTE, (int)pixels.size(), pixels.data());
     // Flip vertically (OpenGL is bottom-left origin; PNG is top-left)
     for (unsigned y = 0; y < window_height / 2; y++)
     {

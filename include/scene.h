@@ -51,4 +51,9 @@ public:
     SceneTeapotDemo(const ArgumentParser &options, float time_scale);
 };
 
+class SceneRelativisticMovementDemo: public Scene {
+public:
+    SceneRelativisticMovementDemo(const ArgumentParser &options, float time_scale);
+};
+
 #endif

@@ -15,7 +15,7 @@ void ArgumentParser::parse(int argc, char *argv[])
     bool valid = true;
 
     const std::vector<std::tuple<std::string, std::string, std::string, std::function<bool(int)>>> integer_arguments = {
-        {"-f", "--fps", "Set FPS of the video output.",
+        {"-f", "--fps", "Set FPS of the video output. Default: 30.",
          [this](int arg)
          { option_fps = arg; return true; }},
         {"-d", "--depth", "Set ray-tracing recursion depth. Default: 32.",
@@ -27,7 +27,7 @@ void ArgumentParser::parse(int argc, char *argv[])
         {"-l", "--length", "Set simulation time length in second. Default: 2 (second).",
          [this](int arg)
          { option_length = arg; return true; }},
-        {"-r", "--resolution", "Set the height of the image output. Must be one of 144, 240, 360, 540 (default), 720, 1080, 2160, 4320",
+        {"-r", "--resolution", "Set the height of the image output. Must be one of 144, 240, 360, 540 (default), 720, 1080, 2160, or 4320.",
          [this](int arg)
          {
              static const std::vector<int> support = {144, 240, 360, 540, 720, 1080, 2160, 4320};
@@ -36,17 +36,23 @@ void ArgumentParser::parse(int argc, char *argv[])
              option_resolution = arg;
              return true;
          }},
-         {"-q", "--quality", "Set CRF (constant rate factor) of the encoding. Default to 18.",
-          [this](int arg)
-          {
-              option_crf = arg;
-              return true;
-          }},
+        {"-q", "--quality", "Set CRF (constant rate factor) of the encoding. Default to 18.",
+         [this](int arg)
+         {
+             option_crf = arg;
+             return true;
+         }},
+        {"-t", "--thread", "Set GPU rendering worker thread numbers. Default: 1.",
+         [this](int arg)
+         { option_worker_count = arg; return true; }},
     };
     const std::vector<std::tuple<std::string, std::string, std::string, std::function<bool(void)>>> flag_arguments = {
         {"-h", "--help", "Display this help message.",
          []()
-         { return false; }}};
+         { return false; }},
+        {"-n", "--no-window", "Do not open visible window and close immediate after every frames are computed and saved.",
+         [this]()
+         { option_no_window = true; return true; }}};
 
     auto check_integer = [](std::string s) -> int
     {

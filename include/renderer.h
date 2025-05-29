@@ -18,7 +18,7 @@ public:
     
     Renderer() = delete;
     Renderer(const Renderer &renderer) = delete;
-    Renderer(const ArgumentParser &options, const Scene &scene);
+    Renderer(const ArgumentParser &options, const Scene &scene, int texture_unit_index);
     ~Renderer();
 
     // collect and send scene data to GPU
@@ -26,7 +26,7 @@ public:
     void sendSceneData();
 
     // render the scene into a texture with compute shaders
-    void renderFrame(int frame_number);
+    void dispatchRenderFrame(int frame_number);
 
     // draw the texture onto the screen
     void drawFrame(void);
