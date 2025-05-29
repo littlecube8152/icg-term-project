@@ -93,7 +93,7 @@ static GLuint sendShaderStorage(GLuint program, std::vector<T> vec, GLuint bind_
 Renderer::Renderer(const ArgumentParser &options, const Scene &_scene, int texture_unit_index)
     : scene(_scene), window_width(options.getWidth()), window_height(options.getHeight()), gpu_buffers() {
     path_tracer = loadPathTracerProgram(options.getDepthOption());
-    texture_unit = 0;
+    texture_unit = texture_unit_index;
     texture = createTexture(texture_unit, window_width, window_height);
     shader = loadShaderProgram();
     window_vao = createWindowVao(shader);
@@ -118,8 +118,6 @@ void Renderer::sendSceneData() {
     gpu_buffers.emplace_back(sendShaderStorage(path_tracer, collector->vertices, 4, "VerticesStorage"));
     gpu_buffers.emplace_back(sendShaderStorage(path_tracer, collector->triangles, 5, "TrianglesStorage"));
 }
-
-#include <iostream>
 
 void Renderer::dispatchRenderFrame(int frame_number) {
     glUseProgram(path_tracer);

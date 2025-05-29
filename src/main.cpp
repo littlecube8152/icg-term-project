@@ -47,7 +47,7 @@ std::mutex texture_mutex; // protects frame_index, must be a single one.
 bool termination = false;
 int next_draw_frame = 0;
 
-void workerRoutine(Window worker_window, Renderer &renderer, const Scene &scene, int worker_index, int max_frame)
+void workerRoutine(Window worker_window, Renderer &renderer, int worker_index, int max_frame)
 {
     glfwMakeContextCurrent(worker_window);
 
@@ -116,7 +116,7 @@ int main(int argc, char *argv[])
         renderers.emplace_back(std::make_shared<Renderer>(arguments, scene, i));
         Window worker_window(arguments.getWidth(), arguments.getHeight(), false, window);
         glfwMakeContextCurrent(NULL);
-        worker_threads.emplace_back(workerRoutine, worker_window, std::ref(*renderers[i]), std::cref(scene), i, arguments.getTotalFrames());
+        worker_threads.emplace_back(workerRoutine, worker_window, std::ref(*renderers[i]), i, arguments.getTotalFrames());
         glfwMakeContextCurrent(window);
     }
 
