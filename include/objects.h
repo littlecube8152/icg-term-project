@@ -49,7 +49,7 @@ private:
 
 class ObjMesh : public Object {
 public:
-    ObjMesh(const std::filesystem::path &file_path, glm::vec3 translation, float scale, std::shared_ptr<Material> material, InertialFrame inertial_frame);
+    ObjMesh(const std::filesystem::path &file_path, glm::vec3 translation, float scale, InertialFrame inertial_frame);
     bool hit(Ray& ray, HitRecord& record) const override;
     void toUniform(SceneUniformCollector &collector) const override;
 
