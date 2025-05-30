@@ -1,6 +1,6 @@
 #include "objects.h"
 #include "constants.h"
-#include "scene.h"
+#include "shader_data.h"
 
 Cube::Cube(const glm::vec3 &_center, const float &side_length, std::shared_ptr<Material> material, InertialFrame _frame)
     : Object(material, _frame)

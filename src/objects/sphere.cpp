@@ -1,6 +1,6 @@
 #include "objects.h"
 #include "constants.h"
-#include "scene.h"
+#include "shader_data.h"
 
 #include "glm/gtx/projection.hpp"
 #include "glm/gtx/norm.hpp"

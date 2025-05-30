@@ -1,8 +1,18 @@
 #ifndef ARGUMENTS_H_
 #define ARGUMENTS_H_
 
-#include "constants.h"
+#include <map>
+#include <functional>
+
+extern "C"
+{
 #include "libavcodec/avcodec.h"
+}
+
+struct ArgumentParser;
+
+#include "constants.h"
+#include "scene.h"
 
 struct ArgumentParser
 {
@@ -14,9 +24,16 @@ private:
     int option_resolution = kWindowHeight;
     int option_crf = 18;
     int option_worker_count = 1;
+    float option_time_ratio = 2e-9f;
     bool option_no_window = false;
+    std::string option_scene = "";
+
+    std::map<std::string, std::function<Scene(void)>> scene_constructors;
+    void registerScene(std::function<Scene(void)> constructor, std::string name, bool set_default = false);
 
 public:
+    // Exists because initializer causes cyclic dependency
+    void initSceneSelection();
     void parse(int argc, char *argv[]);
 
     /// Raw options
@@ -44,6 +61,8 @@ public:
     int getHeight() const { return option_resolution; }
     // Get width.
     int getWidth() const { return option_resolution / 9 * 16; }
+    // Get Scene.
+    Scene getScene() { return scene_constructors[option_scene](); }
 };
 
 #endif // ARGUMENTS_H_

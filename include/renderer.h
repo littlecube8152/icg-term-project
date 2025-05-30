@@ -4,7 +4,6 @@
 #define GL_GLEXT_PROTOTYPES
 #include "GL/gl.h"
 
-#include "scene.h"
 #include "arguments.h"
 #include "scene.h"
 #include "color.h"

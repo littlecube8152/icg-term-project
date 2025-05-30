@@ -16,6 +16,7 @@
 #include "constants.h"
 #include "renderer.h"
 #include "scene.h"
+#include "scenes.h"
 #include "shaders.h"
 #include "exporter.h"
 #include "arguments.h"
@@ -82,13 +83,13 @@ int main(int argc, char *argv[])
 {
     // parse command-line arguments
     ArgumentParser arguments;
+    arguments.initSceneSelection();
     arguments.parse(argc, argv);
 
     // suppress FFMpeg library logs
     av_log_set_level(AV_LOG_QUIET);
 
     // initialize GLFW (with OpenGL context)
-
     if (!glfwInit())
     {
         const char *description;
@@ -103,7 +104,7 @@ int main(int argc, char *argv[])
     glfwSwapBuffers(window);
 
     std::cerr << "Generating scene" << std::endl;
-    SceneTerellRotationTest scene(arguments, 2e-9f);
+    Scene scene = arguments.getScene();
 
     const int thread_numbers = arguments.getWorkerCount();
     std::vector<std::shared_ptr<Renderer>> renderers;
