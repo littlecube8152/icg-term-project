@@ -6,7 +6,6 @@
 
 #include "GL/gl.h"
 
-#define GLM_ENABLE_EXPERIMENTAL
 #include "glm/glm.hpp"
 extern "C"
 {

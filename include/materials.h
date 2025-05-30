@@ -1,7 +1,6 @@
 #ifndef MATERIALS_H_
 #define MATERIALS_H_
 
-#define GLM_ENABLE_EXPERIMENTAL
 #include "glm/glm.hpp"
 
 #include "hit_record.h"

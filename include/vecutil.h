@@ -1,7 +1,6 @@
 #ifndef VECUTIL_H_
 #define VECUTIL_H_
 
-#define GLM_ENABLE_EXPERIMENTAL
 #include "glm/glm.hpp"
 #include "glm/gtc/epsilon.hpp"
 

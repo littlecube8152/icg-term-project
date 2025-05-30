@@ -4,7 +4,6 @@
 #include <type_traits>
 #include <random>
 
-#define GLM_ENABLE_EXPERIMENTAL
 #include "glm/glm.hpp"
 #include "glm/gtc/epsilon.hpp"
 

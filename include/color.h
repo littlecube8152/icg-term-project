@@ -1,7 +1,6 @@
 #ifndef COLOR_H_
 #define COLOR_H_
 
-#define GLM_ENABLE_EXPERIMENTAL
 #include "glm/glm.hpp"
 
 constexpr int wavelength_start = 360;

@@ -7,6 +7,7 @@ LINKFLAGS  += -lavcodec -lavformat -lavutil -lswscale
 
 CFLAGS     =  -O2 -Wall -Wextra -Wshadow -Wconversion
 CFLAGS     += -std=gnu++20
+CFLAGS     += -D GLM_ENABLE_EXPERIMENTAL
 
 CC         = g++
 SRCS       = $(shell find src -name '*.cpp')

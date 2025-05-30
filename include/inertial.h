@@ -1,7 +1,6 @@
 #ifndef INERTIAL_H_
 #define INERTIAL_H_
 
-#define GLM_ENABLE_EXPERIMENTAL
 #include "glm/glm.hpp"
 
 // Implements special relativity inertial frames of reference.

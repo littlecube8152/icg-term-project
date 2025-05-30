@@ -16,8 +16,6 @@
 #include "constants.h"
 #include "renderer.h"
 #include "scene.h"
-#include "scenes.h"
-#include "shaders.h"
 #include "exporter.h"
 #include "arguments.h"
 #include "window.h"
