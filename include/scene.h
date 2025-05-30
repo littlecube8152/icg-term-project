@@ -56,4 +56,9 @@ public:
     SceneRelativisticMovementDemo(const ArgumentParser &options, float time_scale);
 };
 
+class SceneTerellRotationTest: public Scene {
+public:
+    SceneTerellRotationTest(const ArgumentParser &options, float time_scale);
+};
+
 #endif

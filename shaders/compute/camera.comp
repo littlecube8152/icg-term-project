@@ -47,7 +47,10 @@ bool Camera_hitAllObjects(Ray ray, out HitRecord record) {
 uint Camera_compressColor(vec4 color)
 {
     color *= 255.0f;
-    return (uint(color[3]) << 24) | (uint(color[2]) << 16) | (uint(color[1]) << 8) | uint(color[0]);
+    return (uint(clamp(color[3], 0.0, 255.0)) << 24) | 
+           (uint(clamp(color[2], 0.0, 255.0)) << 16) | 
+           (uint(clamp(color[1], 0.0, 255.0)) << 8) | 
+            uint(clamp(color[0], 0.0, 255.0));
 }
 
 vec4 Camera_decompressColor(uint color)
@@ -67,7 +70,7 @@ vec4 Camera_getRayColor(vec3 camera_iframe, Ray ray) {
     for (; depth < MAX_RECURSION_DEPTH; depth++) {
         if (!Camera_hitAllObjects(ray, record)) {
             // sky box
-            float dotval = dot(IFrame_transformVelocityFrom(camera_iframe.xyz, ray.iframe, ray.direction), vec3(0, 1, 0));
+            float dotval = dot(IFrame_transformVelocityFrom(camera_iframe.xyz, ray.iframe, ray.direction * kSpeedOfLight) / kSpeedOfLight, vec3(0, 1, 0));
             float ratio = (dotval + 1) / 2.0f;
             vec4 sky_color = (1.0f - ratio) * vec4(1, 1, 1, 1) + ratio * vec4(0.2, 0.2, 1.0, 1.0);
             object_space_color = accum_attenuation * sky_color;
