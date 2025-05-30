@@ -50,7 +50,7 @@ void ArgumentParser::parse(int argc, char *argv[])
         {"-h", "--help", "Display this help message.",
          []()
          { return false; }},
-        {"-n", "--no-window", "Do not open visible window and close immediate after every frames are computed and saved.",
+        {"-n", "--no-window", "Do not open visible window and close immediate after all frames are computed and saved.",
          [this]()
          { option_no_window = true; return true; }}};
 
