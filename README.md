@@ -15,22 +15,21 @@ We implemented a ray tracing engine supporting special relativistic effects in C
     ```
 
 ## Running the Program
-Run the Makefile via
-```
-make
-```
+Run the Makefile via `make`.
 The compiled binary will be produced at `build/bin/main`.
+The available options can be obtained via the `--help` command.
+For windowed mode (default option without `-n` or `--no-window` option), the escape key can be used to close the program.
 
 ## Common Issues
-
 ### GLFW Error Code 65550 (Failed to Detect Any Supported Platform)
 
 It is most likely that the machine has no window server supported by GLFW.
 For computing the result only, you can choose to use any virtual framebuffer environment such as XVFB and add the option `-n` (or `--no-window`, equivlantly) for computation mode.
 
-### The Program is Not Using Nvidia Graphics Cards!
+### The Program is not Using Nvidia Graphics Cards!
 
-Set these environment variables before running the program:
+You can use `glxinfo -B` to find out which graphics card the OpenGL is using.
+If you have Nvidia graphics card but OpenGL is not using it, set these environment variables before running the program:
 ```sh
 export __NV_PRIME_RENDER_OFFLOAD=1
 export __GLX_VENDOR_LIBRARY_NAME=nvidia
