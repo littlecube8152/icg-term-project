@@ -2,6 +2,8 @@
 This is the term project for [NTU Computer Graphics (Spring 2025)](https://course.ntu.edu.tw/en/courses/113-2/57650).
 We implemented a ray tracing engine supporting special relativistic effects in C++ with OpenGL.
 
+![Demo](./assets/relativistic-movement.png)
+
 ## Prerequisites
 - C++ compiler supporting C++20 standard.  
   Notably, many compilers does not support C++20 features even if they do have the option.  
