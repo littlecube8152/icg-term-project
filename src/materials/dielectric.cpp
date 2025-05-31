@@ -1,5 +1,7 @@
 #include "materials.h"
 
+#include <cmath>
+
 #include "glm/gtc/epsilon.hpp"
 
 #include "constants.h"
@@ -36,7 +38,7 @@ bool Dielectric::scatter(HitRecord &rec) const {
 float Dielectric::reflectance(const float &cosine, const float &eta) {
     float r0 = (1 - eta) / (1 + eta);
     r0 = r0 * r0;
-    return r0 + (1 - r0) * std::powf((1 - cosine), 5);
+    return r0 + (1 - r0) * (float)std::pow((1.0f - cosine), 5.0f);
 }
 
 

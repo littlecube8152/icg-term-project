@@ -9,12 +9,12 @@ We implemented a ray tracing engine supporting special relativistic effects in C
 - C++ compiler supporting C++20 standard.  
   Notably, many compilers does not support full C++20 features even if they do have the option.  
   It is recommended to use GCC (the GNU Compiler Collection) version 13 or above.
-- Python3.  
-  Python3 is required for preprocessing the shader files.
-- OpenGL 4.5 (or above), GLFW 3, and FFmpeg Libraries.  
+- Python 3 and xxd.  
+  They are required for preprocessing the shader files.
+- OpenGL 4.5 (or above), [GLM](https://github.com/g-truc/glm), GLFW 3, and FFmpeg Libraries.  
   For Debian-based distributions, the dependencies can be installed by
     ```sh
-    apt install libopengl-dev libglfw3-dev libavcodec-dev libavformat-dev libavutil-dev libswscale-dev
+    apt install libopengl-dev libglfw3-dev libglm-dev libavcodec-dev libavformat-dev libavutil-dev libswscale-dev
     ```
 
 As a side note, we have tested the program on NTU CSIE workstation `meow1`.

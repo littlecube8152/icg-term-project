@@ -5,6 +5,7 @@
 
 #include <algorithm>
 #include <array>
+#include <cmath>
 
 static constexpr glm::mat3x3 sRGBToXYZMat(0.4124f, 0.3576f, 0.1805f,
                                           0.2126f, 0.7152f, 0.0722f,
@@ -368,7 +369,7 @@ constexpr glm::vec3 sRGBToHCL(glm::vec3 sRGB_color)
     if (C <= kEpsilon)
         hue = 0.0;
     else if (maxM == sRGB_color[0])
-        hue = std::fmodf((sRGB_color[1] - sRGB_color[2]) / C + 6.0f, 6.0f) * 60.0f;
+        hue = std::fmod((sRGB_color[1] - sRGB_color[2]) / C + 6.0f, 6.0f) * 60.0f;
     else if (maxM == sRGB_color[1])
         hue = ((sRGB_color[2] - sRGB_color[0]) / C + 2.0f) * 60.0f;
     else if (maxM == sRGB_color[2])
@@ -481,9 +482,9 @@ const glm::vec3 lightWavelengthShift(glm::vec3 sRGBcolor, float scale)
     float decay = 1.0f;
 
     if (wavelength < wavelength_start)
-        decay = expf(0.02f * (wavelength - wavelength_start));
+        decay = std::exp(0.02f * (wavelength - wavelength_start));
     if (wavelength_end < wavelength)
-        decay = expf(0.02f * (wavelength_end - wavelength));
+        decay = std::exp(0.02f * (wavelength_end - wavelength));
 
     hclColor[0] = interpolateWavelengthToHue(wavelength);
     hclColor[1] *= decay;
