@@ -1,4 +1,7 @@
 #include "objects.h"
+
+#include <cmath>
+
 #include "constants.h"
 #include "shader_data.h"
 
@@ -29,7 +32,7 @@ bool Sphere::hit(Ray &ray, HitRecord &record) const
         return false;
 
     float alpha = glm::dot(proj, observed_ray.direction());
-    float d_alpha = sqrtf(radius * radius - glm::length2(closest));
+    float d_alpha = std::sqrt(radius * radius - glm::length2(closest));
 
     float hit;
     if (observed_ray.interval.surrounds(alpha - d_alpha))

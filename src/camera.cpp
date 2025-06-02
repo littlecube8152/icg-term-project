@@ -1,5 +1,6 @@
 #include "camera.h"
 
+#include <cmath>
 #include <vector>
 #include <numbers>
 #include <iostream>
@@ -41,7 +42,7 @@ void Camera::initViewport()
     glm::vec3 ux = glm::cross(uy, uz);
 
     pixel_samples_scale = 1.0f / (float)(config.sqrt_samples_per_pixel * config.sqrt_samples_per_pixel);
-    float tan_vfov2 = tanf(config.vfov / 2 / 180 * std::numbers::pi_v<float>);
+    float tan_vfov2 = std::tan(config.vfov / 2 / 180 * std::numbers::pi_v<float>);
     viewport_lower_left = config.lookfrom + -tan_vfov2 * aspect_ratio * ux + -tan_vfov2 * uy - uz;
     viewport_dx = tan_vfov2 * 2 * aspect_ratio / (float)config.image_width * ux;
     viewport_dy = tan_vfov2 * 2 / (float)config.image_height * uy;

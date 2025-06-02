@@ -24,7 +24,7 @@ glm::vec3 InertialFrame::transformVelocityFrom(glm::vec3 measured_relative_veloc
     glm::vec3 this_velocity_yz = velocity_to_transform - this_velocity_x * basis_x;
 
     glm::vec3 beta = measured_relative_velocity / speedOfLight;
-    float gamma = 1.0f / sqrtf(1.0f - glm::dot(beta, beta));
+    float gamma = 1.0f / std::sqrt(1.0f - glm::dot(beta, beta));
 
     float one_minus_speed_prod = 1.0f - this_velocity_x * from_velocity_x / speedOfLight / speedOfLight;
 
@@ -62,7 +62,7 @@ float InertialFrame::getBetaSquare(const InertialFrame &from_frame) const
 }
 float InertialFrame::getGamma(const InertialFrame &from_frame) const
 {
-    return 1.0f / sqrtf(1.0f - getBetaSquare(from_frame));
+    return 1.0f / std::sqrt(1.0f - getBetaSquare(from_frame));
 }
 
 
@@ -71,7 +71,7 @@ std::pair<float, glm::vec3> InertialFrame::transformCoordinateFrom(const Inertia
 {
     glm::vec3 beta = getBeta(from_frame);
     float beta_square = glm::dot(beta, beta);
-    float gamma = 1.0f / sqrtf(1.0f - beta_square);
+    float gamma = 1.0f / std::sqrt(1.0f - beta_square);
     // (gamma - 1) / beta^2, numerically more stable
     float gammam1betainv = gamma * gamma / (1.0f + gamma);
 
@@ -96,7 +96,7 @@ glm::vec3 InertialFrame::transformNormalFrom(const InertialFrame &from_frame, gl
 {
     glm::vec3 beta = getBeta(from_frame);
     float beta_square = glm::dot(beta, beta);
-    float gamma = 1.0f / sqrtf(1.0f - beta_square);
+    float gamma = 1.0f / std::sqrt(1.0f - beta_square);
     // (gamma - 1) / beta^2, numerically more stable
     float gammam1betainv = gamma * gamma / (1.0f + gamma);
 
