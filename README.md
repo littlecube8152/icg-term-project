@@ -58,3 +58,8 @@ export __NV_PRIME_RENDER_OFFLOAD=1
 export __GLX_VENDOR_LIBRARY_NAME=nvidia
 ```
 You can use `glxinfo -B` to find out which graphics card the OpenGL is using.
+
+## Credits
+
+Thanks to [Ray Traching in One Weekend](https://raytracing.github.io/) for providing a brilliant tutorial — our ray tracing engine took it as a starting point.
+We also thank our professor, [Ming Ouhyang](https://www.csie.ntu.edu.tw/~ming/), for permitting us to use the 3D models in the course resources.
