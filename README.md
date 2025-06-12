@@ -5,6 +5,10 @@ We implemented a ray tracing engine supporting special relativistic effects in C
 ![Demo](./assets/relativistic-movement.png)
 ![Video Demo](./assets/demo.mp4)
 
+## License
+This repository is licensed under the [MIT License](LICENSE), except for:
+- The model files under `/model/` directory is not covered by the license; they are a part of the course materials. If you would like to use the models, please contact the instructor of the course for permission.
+
 ## Prerequisites
 - C++ compiler supporting C++20 standard.  
   Notably, many compilers does not support full C++20 features even if they do have the option.  
