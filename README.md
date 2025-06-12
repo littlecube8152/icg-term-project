@@ -7,7 +7,7 @@ We implemented a ray tracing engine supporting special relativistic effects in C
 
 ## License
 This repository is licensed under the [MIT License](LICENSE), except for:
-- The model files under `/model/` directory is not covered by the license; they are a part of the course materials. If you would like to use the models, please contact the instructor of the course for permission.
+- The model files under `/model/` directory are not covered by the license; they are a part of the course materials. If you would like to use the models, please contact the instructor of the course for permission.
 
 ## Prerequisites
 - C++ compiler supporting C++20 standard.  
