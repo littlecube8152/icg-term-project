@@ -36,10 +36,10 @@ When the console prints "`Done!`", it is safe to close the program.
 
 ### Windowless Mode 
 
-For machine without window server, there is a `-n` (shorthand `--no-window`) option for only computing the output.
-However, since GLFW requires and active window server to allocate related contexts including OpenGL context, a virtual frame buffer is required.
-We recommand using [XVFB](https://www.x.org/archive/current/doc/man/man1/Xvfb.1.xhtml) as the virtual frame buffer.
-An example using it would be:
+For machines without window server, there is a `-n` (shorthand `--no-window`) option for only computing the output.
+However, since GLFW requires an active window server to allocate related contexts including OpenGL context, a virtual frame buffer is required.
+We recommend using [XVFB](https://www.x.org/archive/current/doc/man/man1/Xvfb.1.xhtml) as the virtual frame buffer.
+An example of it would be:
 ```
 xvfb-run ./build/bin/main -n
 ```
